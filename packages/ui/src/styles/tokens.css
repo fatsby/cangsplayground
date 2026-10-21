@@ -1,0 +1,154 @@
+/* apps/web/src/styles/tokens.css */
+:root {
+  color-scheme: dark;
+
+  --cp-bg-deep: #080a1a;
+  --cp-bg: #0d0f24;
+  --cp-surface: #171a3a;
+  --cp-surface-2: #20244d;
+  --cp-surface-3: #2a2f63;
+
+  --cp-ink: #f4f3ff;
+  --cp-ink-muted: #a3a1cc;
+  --cp-ink-faint: #6e6c9a;
+  --cp-border: #343a75;
+  --cp-border-strong: #4a519a;
+
+  --cp-primary: #6d4aff;
+  --cp-primary-fg: #ffffff;
+  --cp-primary-neon: #9b85ff;
+  --cp-accent: #00e5c7;
+  --cp-accent-fg: #0d0f24;
+  --cp-accent-neon: #00e5c7;
+  --cp-success: #2be38b;
+  --cp-success-fg: #0d0f24;
+  --cp-warning: #ffb547;
+  --cp-warning-fg: #0d0f24;
+  --cp-danger: #ff4d7a;
+  --cp-danger-fg: #0d0f24;
+  --cp-secret: #ff4d7a;
+  --cp-secret-fg: #0d0f24;
+  --cp-secret-neon: #ff7fa0;
+
+  --glow: var(--cp-primary-neon);
+  --cp-elev-1: 0 0 0 1px var(--cp-border);
+  --cp-elev-2: 0 0 0 1px var(--cp-border), 0 12px 32px -12px rgb(0 0 0 / 0.6);
+  --cp-elev-3: 0 0 0 1px var(--cp-border-strong), 0 24px 64px -16px rgb(0 0 0 / 0.75);
+  --cp-glow-sm:
+    0 0 0 1px var(--glow), 0 0 12px -2px color-mix(in oklab, var(--glow) 70%, transparent);
+  --cp-glow-md:
+    0 0 0 1px var(--glow), 0 8px 24px -6px color-mix(in oklab, var(--glow) 75%, transparent);
+  --cp-glow-lg:
+    0 0 0 1px var(--glow), 0 16px 48px -10px color-mix(in oklab, var(--glow) 85%, transparent);
+
+  --cp-r-sm: 10px;
+  --cp-r: 20px;
+  --cp-r-lg: 28px;
+  --cp-r-pill: 999px;
+  --cp-border-w: 1px;
+  --cp-border-w-strong: 2px;
+
+  --cp-font-display: "Unbounded Variable", "Be Vietnam Pro", system-ui, sans-serif;
+  --cp-font-body: "Be Vietnam Pro", system-ui, sans-serif;
+  --cp-font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --cp-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --cp-dur-fast: 150ms;
+  --cp-dur: 250ms;
+  --cp-dur-slow: 400ms;
+}
+
+:root[data-boost="projector"] {
+  --cp-bg: #161a3d;
+  --cp-surface: #232860;
+  --cp-surface-2: #2d3373;
+  --cp-ink: #ffffff;
+  --cp-ink-muted: #cfcdf0;
+  --cp-border: #5a62b8;
+  --cp-glow-sm: 0 0 0 3px var(--glow);
+  --cp-glow-md: 0 0 0 3px var(--glow);
+  --cp-glow-lg: 0 0 0 3px var(--glow);
+}
+
+body {
+  background-color: var(--cp-bg);
+  background-image:
+    radial-gradient(
+      60vmax 40vmax at 0% 0%,
+      color-mix(in oklab, var(--cp-primary) 25%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50vmax 40vmax at 100% 100%,
+      color-mix(in oklab, var(--cp-accent) 15%, transparent),
+      transparent 70%
+    );
+  background-attachment: fixed;
+  color: var(--cp-ink);
+  font-family: var(--cp-font-body);
+}
+
+@theme inline {
+  --color-bg-deep: var(--cp-bg-deep);
+  --color-bg: var(--cp-bg);
+  --color-surface: var(--cp-surface);
+  --color-surface-2: var(--cp-surface-2);
+  --color-surface-3: var(--cp-surface-3);
+  --color-ink: var(--cp-ink);
+  --color-ink-muted: var(--cp-ink-muted);
+  --color-ink-faint: var(--cp-ink-faint);
+  --color-line: var(--cp-border);
+  --color-line-strong: var(--cp-border-strong);
+  --color-primary: var(--cp-primary);
+  --color-primary-fg: var(--cp-primary-fg);
+  --color-primary-neon: var(--cp-primary-neon);
+  --color-accent: var(--cp-accent);
+  --color-accent-fg: var(--cp-accent-fg);
+  --color-accent-neon: var(--cp-accent-neon);
+  --color-success: var(--cp-success);
+  --color-warning: var(--cp-warning);
+  --color-danger: var(--cp-danger);
+  --color-secret: var(--cp-secret);
+  --color-secret-fg: var(--cp-secret-fg);
+  --color-secret-neon: var(--cp-secret-neon);
+  --color-team: var(--team);
+  --color-team-fg: var(--team-fg);
+  --color-team-neon: var(--team-neon);
+
+  --font-display: var(--cp-font-display);
+  --font-body: var(--cp-font-body);
+  --font-mono: var(--cp-font-mono);
+
+  --radius-sm: var(--cp-r-sm);
+  --radius-ui: var(--cp-r);
+  --radius-lg: var(--cp-r-lg);
+
+  --shadow-elev-1: var(--cp-elev-1);
+  --shadow-elev-2: var(--cp-elev-2);
+  --shadow-elev-3: var(--cp-elev-3);
+  --shadow-glow-sm: var(--cp-glow-sm);
+  --shadow-glow-md: var(--cp-glow-md);
+  --shadow-glow-lg: var(--cp-glow-lg);
+}
+
+:root {
+  --background: var(--cp-bg);
+  --foreground: var(--cp-ink);
+  --card: var(--cp-surface);
+  --card-foreground: var(--cp-ink);
+  --popover: var(--cp-surface-2);
+  --popover-foreground: var(--cp-ink);
+  --primary: var(--cp-primary);
+  --primary-foreground: var(--cp-primary-fg);
+  --secondary: var(--cp-surface-2);
+  --secondary-foreground: var(--cp-ink);
+  --muted: var(--cp-surface-2);
+  --muted-foreground: var(--cp-ink-muted);
+  --accent: var(--cp-surface-3); /* shadcn "accent" = nền hover, KHÁC accent cyan của ClubPlay */
+  --accent-foreground: var(--cp-ink);
+  --destructive: var(--cp-danger);
+  --border: var(--cp-border);
+  --input: var(--cp-border);
+  --ring: var(--cp-accent-neon);
+  --radius: var(--cp-r);
+}

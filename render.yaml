@@ -1,0 +1,13 @@
+# Render blueprint — single instance (state is in RAM in Phase 1). Set PUBLIC_URL to the service URL.
+services:
+  - type: web
+    name: clubplay
+    runtime: docker
+    plan: starter
+    numInstances: 1
+    healthCheckPath: /healthz
+    envVars:
+      - key: PUBLIC_URL
+        sync: false
+      - key: LOBBY_TTL_MINUTES
+        value: "180"
