@@ -29,3 +29,10 @@ export function configDefaults(
     ]),
   );
 }
+
+export function visibleFields(
+  fields: ConfigField[],
+  values: Record<string, unknown>,
+): ConfigField[] {
+  return fields.filter((f) => !f.showWhen || values[f.showWhen.key] === f.showWhen.equals);
+}

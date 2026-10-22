@@ -1,6 +1,10 @@
 import { performance } from "node:perf_hooks";
 import { io, type Socket } from "socket.io-client";
+import { applyPatch, createRng } from "@cangsplayground/core";
+import { createServer } from "../src/index.js";
+import type { WhosTheSpyGroupView } from "@cangsplayground/game-whos-the-spy";
 import type {
+  LobbyView,
   Ack,
   C2SEventName,
   C2SPayload,
@@ -16,7 +20,11 @@ const argument = (name: string, fallback: string) => {
   const index = args.indexOf(name);
   return index < 0 ? fallback : (args[index + 1] ?? fallback);
 };
-const url = argument("--url", "http://localhost:3000");
+const gameId = argument("--game", "free-talk");
+let url = argument("--url", "http://localhost:3000");
+let localServer: Awaited<ReturnType<typeof createServer>> | undefined;
+const views = new Map<Client, LobbyView>();
+const rng = createRng(17);
 const count = Number(argument("--clients", "30"));
 const sockets: Client[] = [];
 let host: Client | undefined;
@@ -30,6 +38,11 @@ async function connect() {
     reconnection: false,
   });
   sockets.push(socket);
+  socket.on("state:sync", (view) => views.set(socket, view));
+  socket.on("state:patch", (patch) => {
+    const view = views.get(socket);
+    if (view) views.set(socket, applyPatch(view, patch));
+  });
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => reject(new Error("Connection timed out.")), 5000);
     socket.once("connect", () => {
@@ -64,6 +77,12 @@ function send<E extends C2SEventName>(
 }
 try {
   if (!Number.isInteger(count) || count < 2 || count > 60) throw new Error("Use 2 to 60 clients.");
+  if (gameId === "whos-the-spy" && !args.includes("--url")) {
+    localServer = await createServer({ seed: 7 });
+    url = await localServer.listen(0, "127.0.0.1");
+  }
+  if (gameId === "whos-the-spy" && count < 3)
+    throw new Error("Who's the Spy needs at least 3 clients.");
   host = await connect();
   const lobby = await send(host, "lobby:create", {});
   code = lobby.code;
@@ -101,13 +120,13 @@ try {
     () =>
       send(host!, "groups:assign", {
         mode: "count",
-        value: Math.min(4, Math.floor(count / 2)),
+        value: Math.min(4, Math.floor(count / (gameId === "whos-the-spy" ? 3 : 2))),
         commandId: commandId(),
       }),
     (patch) => patch.groupsVersion === 1,
   );
   await measured(
-    () => send(host!, "game:select", { gameId: "free-talk", commandId: commandId() }),
+    () => send(host!, "game:select", { gameId, commandId: commandId() }),
     (patch) => patch.game?.stage === "CONFIGURING",
   );
   await measured(
@@ -118,15 +137,73 @@ try {
     () => send(host!, "game:control", { cmd: "start", commandId: commandId() }),
     (patch) => patch.game?.groups[0]?.phase === "RUNNING",
   );
-  for (let i = 0; i < 5; i++)
-    await measured(
-      () =>
-        send(host!, "game:control", {
-          cmd: i % 2 === 0 ? "pause" : "resume",
-          commandId: commandId(),
-        }),
-      (patch) => patch.game?.groups[0]?.phase === (i % 2 === 0 ? "PAUSED" : "RUNNING"),
-    );
+  if (gameId === "whos-the-spy") {
+    const waitFor = async (check: () => boolean) => {
+      const deadline = Date.now() + 5000;
+      while (!check()) {
+        if (Date.now() > deadline) throw new Error("Game state timed out.");
+        await new Promise((resolve) => setTimeout(resolve, 5));
+      }
+    };
+    for (let cycle = 0; cycle < 200; cycle++) {
+      const session = views.get(host!)!.game!;
+      if (session.groups.every((g) => g.phase === "FINISHED")) break;
+      for (const group of session.groups) {
+        const phase = group.phase;
+        if (phase === "FINISHED") continue;
+
+        if (phase === "ROUND_END" && !(group.data as WhosTheSpyGroupView).result)
+          await send(host!, "game:control", {
+            cmd: "nextRound",
+            groupId: group.groupId,
+            commandId: commandId(),
+          });
+        else if (phase === "RUNNING") {
+          const speaker = players.find(
+            (socket) => views.get(socket)?.me?.playerId === group.currentSpeakerId,
+          )!;
+          await send(speaker, "game:action", { type: "turn:done" });
+        } else if (phase === "VOTING") {
+          const summary = views.get(host!)!.groups.find((g) => g.id === group.groupId)!;
+          const active = summary.playerIds.filter((id) => !group.eliminated.includes(id));
+          for (const actor of active) {
+            const socket = players.find((p) => views.get(p)?.me?.playerId === actor)!;
+            const candidates = active.filter((id) => id !== actor);
+            await send(socket, "game:action", {
+              type: "vote",
+              payload: { targetId: candidates[rng.int(candidates.length)]! },
+            });
+          }
+        } else throw new Error(`Unexpected phase ${phase}`);
+        await waitFor(() => {
+          const current = views.get(host!)!.game!.groups.find((g) => g.groupId === group.groupId)!;
+          return (
+            current.phase !== phase ||
+            current.turnIndex !== group.turnIndex ||
+            current.round !== group.round
+          );
+        });
+      }
+    }
+    const view = views.get(host!)!;
+    if (!view.game!.groups.every((g) => g.phase === "FINISHED"))
+      throw new Error("Simulation did not finish.");
+    for (const group of view.game!.groups) {
+      const name = view.groups.find((g) => g.id === group.groupId)!.name;
+      process.stdout.write(
+        `${name}: ${JSON.stringify((group.data as WhosTheSpyGroupView).result)}\n`,
+      );
+    }
+  } else
+    for (let i = 0; i < 5; i++)
+      await measured(
+        () =>
+          send(host!, "game:control", {
+            cmd: i % 2 === 0 ? "pause" : "resume",
+            commandId: commandId(),
+          }),
+        (patch) => patch.game?.groups[0]?.phase === (i % 2 === 0 ? "PAUSED" : "RUNNING"),
+      );
   samples.sort((a, b) => a - b);
   const percentile = (p: number) =>
     samples[Math.min(samples.length - 1, Math.ceil(samples.length * p) - 1)]!.toFixed(2);
@@ -144,4 +221,5 @@ try {
       process.exitCode = 1;
     }
   for (const socket of sockets) socket.disconnect();
+  await localServer?.close();
 }

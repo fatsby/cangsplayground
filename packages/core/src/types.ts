@@ -21,7 +21,7 @@ export type Viewer =
 export type ViewerKind = Viewer["kind"];
 
 /** GAME-03 lifecycle of one group's game. */
-export type GamePhase = "PREPARED" | "RUNNING" | "PAUSED" | "ROUND_END";
+export type GamePhase = "PREPARED" | "RUNNING" | "PAUSED" | "ROUND_END" | "VOTING" | "FINISHED";
 
 /**
  * Server-authoritative timer (TMR-01). Exactly one of these holds:
@@ -57,12 +57,14 @@ export interface ConfigField {
   key: string;
   label: string;
   kind: "number" | "text" | "textarea" | "boolean" | "select";
+  display?: "chips" | "stepper";
   min?: number;
   max?: number;
   step?: number;
   unit?: string; // "sec"
   options?: { value: string; label: string }[];
   help?: string;
+  showWhen?: { key: string; equals: string };
 }
 
 /** GAME-01 card on the Host Console. */
@@ -79,6 +81,7 @@ export interface GameCatalogEntry {
 }
 
 export interface GroupGameView {
+  eliminated: PlayerId[];
   groupId: GroupId;
   phase: GamePhase;
   round: number; // 1-based
@@ -95,7 +98,14 @@ export interface GroupGameView {
   data: unknown;
 }
 
+export interface GameClockView {
+  timer: TimerState;
+  done: boolean;
+}
+
 export interface GameSessionView {
+  voteDurationMs?: number | null;
+  clock: GameClockView | null;
   gameId: string;
   name: string;
   /** Omitted means all controls are supported. Core lifecycle controls are always supported. */

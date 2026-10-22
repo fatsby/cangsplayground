@@ -1,0 +1,164 @@
+/* Who's the Spy — Arcade Night, shared tokens and components. */
+.wts-secret-face,
+.wts-reveal,
+.wts-verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.wts-secret-title {
+  font-family: var(--cp-font-display);
+  color: var(--cp-accent);
+  font-size: 32px;
+  overflow-wrap: anywhere;
+}
+.wts-hints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.wts-voting {
+  flex: 1;
+  gap: 8px;
+  padding: 12px;
+}
+.wts-vote-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wts-vote-heading h1 {
+  font-size: 20px;
+}
+.wts-vote-heading p,
+.wts-vote-action p {
+  font-size: 14px;
+}
+.wts-vote-heading .cp-timer {
+  flex-shrink: 0;
+  width: 72px;
+  font-size: 24px;
+}
+.wts-vote-options {
+  display: grid;
+  gap: 6px;
+}
+.wts-vote-option {
+  justify-content: flex-start;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--cp-r-sm);
+  font-family: var(--cp-font-body);
+  font-size: 15px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.wts-vote-option.wts-selected {
+  border-color: var(--cp-accent);
+  color: var(--cp-accent);
+  background: color-mix(in oklab, var(--cp-accent) 12%, var(--cp-surface));
+  box-shadow: 0 0 0 1px var(--cp-accent);
+  opacity: 1;
+}
+.wts-vote-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  background: var(--cp-surface);
+}
+.wts-vote-progress {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--cp-r-pill);
+  background: var(--cp-surface-3);
+  overflow: hidden;
+}
+.wts-vote-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--cp-accent);
+  transition: width var(--cp-dur-fast);
+}
+.player-screen:has(.wts-voting) {
+  gap: 12px;
+  padding-top: 16px;
+  padding-bottom: 0;
+}
+.player-game:has(.wts-voting) {
+  gap: 8px;
+}
+.wts-result {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  box-shadow: none;
+}
+body:has(.player-screen .wts-result) {
+  --wts-result-color: var(--cp-danger);
+  background-image: radial-gradient(
+    120% 80% at 50% 30%,
+    color-mix(in oklab, var(--wts-result-color) 40%, var(--cp-bg)),
+    var(--cp-bg)
+  );
+}
+body:has(.player-screen .wts-win) {
+  --wts-result-color: var(--cp-success);
+}
+.player-screen:has(.wts-result) {
+  background: transparent;
+}
+.wts-result-symbol {
+  font-size: 56px;
+}
+.wts-win h1,
+.wts-caught {
+  color: var(--cp-success);
+}
+.wts-loss h1,
+.wts-danger {
+  color: var(--cp-danger);
+}
+.wts-reveal {
+  padding: 20px;
+  border-radius: var(--cp-r);
+  background: var(--cp-surface-2);
+}
+.wts-out {
+  color: var(--cp-ink-muted);
+}
+.wts-tally,
+.wts-voted {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.wts-tally li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
+  background: var(--cp-surface-2);
+  border-radius: var(--cp-r-sm);
+}
+.wts-tally strong {
+  font-family: var(--cp-font-mono);
+}
+.wts-wait {
+  text-align: center;
+}
+.projector .wts-voted {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  font-size: 24px;
+  color: var(--cp-success);
+}

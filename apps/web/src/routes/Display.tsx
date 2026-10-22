@@ -5,7 +5,14 @@ import { Maximize, ScanLine } from "lucide-react";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 import confetti from "canvas-confetti";
 import { teamStyle } from "@cangsplayground/core";
-import { Button, GroupCard, LobbyCodeDisplay, Switch, Waiting } from "@cangsplayground/ui";
+import {
+  Button,
+  GameClock,
+  GroupCard,
+  LobbyCodeDisplay,
+  Switch,
+  Waiting,
+} from "@cangsplayground/ui";
 import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
@@ -36,7 +43,9 @@ export default function Display() {
     session = view?.game,
     views = session ? gameViews[session.gameId] : undefined,
     Header = views?.ProjectorHeader,
-    Extra = views?.ProjectorGroupCard;
+    Extra = views?.ProjectorGroupCard,
+    Status = views?.ProjectorGroupStatus,
+    MemberMark = views?.ProjectorMemberMark;
   useEffect(() => {
     let active = true;
     fetch("/api/config")
@@ -144,16 +153,14 @@ export default function Display() {
                   : "Join in. Play together."}
             </p>
           </div>
-          <div className="projector-tools">
-            <Switch label="Projector Boost" checked={boost} onCheckedChange={setBoost} />
-            <Button
-              variant="ghost"
-              aria-label="Enter fullscreen"
-              onClick={() => void document.documentElement.requestFullscreen?.().catch(() => {})}
-            >
-              <Maximize strokeWidth={2.25} />
-            </Button>
-          </div>
+          {session?.clock && (
+            <GameClock
+              clock={session.clock}
+              groups={session.groups}
+              serverNow={serverNow}
+              size="lg"
+            />
+          )}
         </header>
         <LayoutGroup>
           <div className="projector-content">
@@ -282,6 +289,30 @@ export default function Display() {
                         players={view.players}
                         game={runtime}
                         serverNow={serverNow}
+                        roundLabel={runtime ? views?.roundLabel?.(runtime, group) : undefined}
+                        status={
+                          session && runtime && Status ? (
+                            <Status
+                              lobby={view}
+                              session={session}
+                              group={runtime}
+                              serverNow={serverNow}
+                            />
+                          ) : undefined
+                        }
+                        renderMemberMark={
+                          session && runtime && MemberMark
+                            ? (playerId) => (
+                                <MemberMark
+                                  lobby={view}
+                                  session={session}
+                                  group={runtime}
+                                  serverNow={serverNow}
+                                  playerId={playerId}
+                                />
+                              )
+                            : undefined
+                        }
                         renderMember={(player, id) => (
                           <motion.span
                             layoutId={`player-${id}`}
@@ -330,8 +361,19 @@ export default function Display() {
         <footer className="projector-footer">
           <span>CangsPlayground</span>
           <span>
-            {view?.players.length ?? 0} players · {view?.groups.length ?? 0} teams
+            {view?.players.length ?? 0} {view?.players.length === 1 ? "player" : "players"} ·{" "}
+            {view?.groups.length ?? 0} {view?.groups.length === 1 ? "team" : "teams"}
           </span>
+          <div className="projector-tools">
+            <Switch label="Projector Boost" checked={boost} onCheckedChange={setBoost} />
+            <Button
+              variant="ghost"
+              aria-label="Enter fullscreen"
+              onClick={() => void document.documentElement.requestFullscreen?.().catch(() => {})}
+            >
+              <Maximize strokeWidth={2.25} />
+            </Button>
+          </div>
           <span>Listen. Speak. Connect.</span>
         </footer>
       </main>

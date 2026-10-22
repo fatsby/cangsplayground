@@ -15,6 +15,7 @@ function runtime(revealed = false): GroupRuntime<SecretWordData> {
     groupId: "g1",
     phase: revealed ? "ROUND_END" : "RUNNING",
     round: 1,
+    eliminated: [],
     turnOrder: players,
     turnIndex: 0,
     timer: { endsAt: null, pausedRemainingMs: null, durationMs: 45_000 },

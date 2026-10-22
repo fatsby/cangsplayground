@@ -14,9 +14,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { MobileToaster } from "../components/MobileToaster";
-import { describePlan, planGroupSizes, validatePlan, type PlayerSummary } from "@cangsplayground/core";
+import {
+  describePlan,
+  planGroupSizes,
+  validatePlan,
+  type PlayerSummary,
+} from "@cangsplayground/core";
 import {
   Button,
+  allGroupsFinished,
   Drawer,
   EmptyState,
   HostSecretRow,
@@ -103,11 +109,18 @@ export default function Host() {
     };
     if (["exit", "endRound"].includes(cmd))
       setConfirm({
-        title: cmd === "exit" ? "Exit this game?" : "End this round?",
+        title:
+          cmd === "exit"
+            ? "Exit this game?"
+            : gameViews[view!.game!.gameId]?.controlLabels?.endRound
+              ? `${gameViews[view!.game!.gameId]!.controlLabels!.endRound}?`
+              : "End this round?",
         description:
           cmd === "exit"
             ? "Teams stay the same. You can pick a new game."
-            : "The timer will stop for this round.",
+            : view?.game?.voteDurationMs != null
+              ? `Speaking ends now for ${groupId ? "this group" : "all groups"}.`
+              : "The timer will stop for this round.",
         action,
         danger: true,
       });
@@ -334,7 +347,7 @@ export default function Host() {
                 </>
               )}
             </div>
-            {game && (
+            {game && !allGroupsFinished(game.groups) && (
               <div className="host-fixed-controls">
                 <Button
                   variant="primary"
@@ -353,7 +366,8 @@ export default function Host() {
                     <Play size={20} strokeWidth={2.25} />
                   )}
                   {action
-                    ? ((
+                    ? (gameViews[game.gameId]?.controlLabels?.[action.cmd] ??
+                      (
                         {
                           prepare: "Prepare",
                           start: "Start",
@@ -361,7 +375,8 @@ export default function Host() {
                           resume: "Resume",
                           nextRound: "Next",
                         } as Partial<Record<Control, string>>
-                      )[action.cmd] ?? action.label)
+                      )[action.cmd] ??
+                      action.label)
                     : "Start"}
                 </Button>
                 <Button
@@ -380,11 +395,13 @@ export default function Host() {
                   30s
                 </Button>
                 <Button
-                  aria-label="End round for all groups"
+                  hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
+                  aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
                   disabled={busy || !canControl("endRound", game)}
                   onClick={() => control("endRound")}
                 >
                   <Square size={18} strokeWidth={2.25} />
+                  {gameViews[game.gameId]?.controlLabels?.endRound}
                 </Button>
               </div>
             )}

@@ -35,8 +35,9 @@ import {
   type PlayerSummary,
   type GroupGameView,
   type TimerState,
+  type GameClockView,
 } from "@cangsplayground/core";
-import { timerDisplay } from "./timer";
+import { allGroupsFinished, showTurnTimer, timerDisplay } from "./timer";
 
 export function teamVars(index: number): CSSProperties {
   const team = teamStyle(index);
@@ -280,23 +281,53 @@ export function LobbyCodeDisplay({
     </div>
   );
 }
+export function GameClock({
+  clock,
+  serverNow,
+  size = "sm",
+  groups = [],
+}: {
+  clock: GameClockView;
+  serverNow: () => number;
+  size?: "sm" | "lg" | "compact";
+  groups?: Pick<GroupGameView, "phase">[];
+}) {
+  const finished = clock.done ? "Time's up" : allGroupsFinished(groups) ? "Game over" : null;
+  return (
+    <div className={`cp-game-clock cp-game-clock-${size}`}>
+      {size === "compact" ? (
+        <span aria-hidden="true">⏱</span>
+      ) : (
+        <span>{size === "lg" ? "GAME TIME LEFT" : "Game time"}</span>
+      )}
+      {finished ? (
+        <strong className="cp-game-clock-result">{finished}</strong>
+      ) : (
+        <Timer timer={clock.timer} serverNow={serverNow} idleFullDuration />
+      )}
+    </div>
+  );
+}
 export function Timer({
   timer,
   serverNow,
   ring = false,
   className = "",
+  idleFullDuration = false,
 }: {
   timer: TimerState;
   serverNow: () => number;
   ring?: boolean;
   className?: string;
+  idleFullDuration?: boolean;
 }) {
   const [, tick] = useState(0);
   useEffect(() => {
+    if (timer.endsAt === null) return;
     const id = setInterval(() => tick((n) => n + 1), 200);
     return () => clearInterval(id);
-  }, []);
-  const display = timerDisplay(timer, serverNow());
+  }, [timer.endsAt]);
+  const display = timerDisplay(timer, serverNow(), idleFullDuration);
   const milestone =
     [30, 10, 0].includes(display.seconds) && !display.idle ? `${display.seconds} seconds left` : "";
   return (
@@ -354,11 +385,13 @@ export function YourTurn({
   serverNow,
   onDone,
   disabled,
+  doneLabel = "I'm done",
   children,
 }: {
   timer: TimerState;
   serverNow: () => number;
   onDone: () => void;
+  doneLabel?: string;
   disabled?: boolean;
   children?: ReactNode;
 }) {
@@ -377,7 +410,7 @@ export function YourTurn({
       <div className="cp-sticky-action">
         <Button variant="accent" size="lg" onClick={onDone} disabled={disabled}>
           <Mic strokeWidth={2.25} />
-          I'm done
+          {doneLabel}
         </Button>
       </div>
     </section>
@@ -390,6 +423,9 @@ export function GroupCard({
   serverNow,
   children,
   renderMember,
+  renderMemberMark,
+  roundLabel,
+  status,
 }: {
   group: GroupSummary;
   players: PlayerSummary[];
@@ -397,6 +433,9 @@ export function GroupCard({
   serverNow: () => number;
   children?: ReactNode;
   renderMember?: (player: PlayerSummary | undefined, id: string) => ReactNode;
+  renderMemberMark?: (id: string) => ReactNode;
+  roundLabel?: string;
+  status?: ReactNode;
 }) {
   const speaking = game?.phase === "RUNNING";
   return (
@@ -407,14 +446,28 @@ export function GroupCard({
       <header>
         <TeamShape teamIndex={group.index} />
         <h2>{teamName(group.index)}</h2>
-        <span>{group.playerIds.length}</span>
-        {game && <Timer timer={game.timer} serverNow={serverNow} />}
+        <span className="cp-member-count">
+          {group.playerIds.length} {group.playerIds.length === 1 ? "player" : "players"}
+        </span>
+        {game && (
+          <div className="cp-group-status">
+            {status ??
+              (game.phase === "FINISHED" ? (
+                <Chip>Done</Chip>
+              ) : game.phase === "PREPARED" ? (
+                <Chip>Get ready</Chip>
+              ) : game.phase === "PAUSED" ? (
+                <Chip>Paused</Chip>
+              ) : null)}
+            {showTurnTimer(game) && <Timer timer={game.timer} serverNow={serverNow} />}
+          </div>
+        )}
       </header>
       <div className="cp-group-body">
         <ul className="cp-members">
           {group.playerIds.map((id) => (
             <li
-              className={`cp-person ${speaking && game.currentSpeakerId === id ? "cp-speaker" : ""}`}
+              className={`cp-person ${game?.eliminated.includes(id) ? "cp-member-out" : ""} ${speaking && game.currentSpeakerId === id ? "cp-speaker" : ""}`}
               key={id}
             >
               {speaking && game.currentSpeakerId === id && <Mic strokeWidth={2.25} size={24} />}
@@ -424,6 +477,7 @@ export function GroupCard({
                     id,
                   )
                 : (players.find((player) => player.id === id)?.name ?? "Player")}
+              {renderMemberMark?.(id)}
             </li>
           ))}
         </ul>
@@ -431,13 +485,15 @@ export function GroupCard({
       </div>
       {game && (
         <footer>
-          <span>Round {game.round}</span>
-          <span>
-            Next:{" "}
-            <strong className="cp-person">
-              {players.find((p) => p.id === game.nextSpeakerId)?.name ?? "—"}
-            </strong>
-          </span>
+          <span>{roundLabel ?? `Round ${game.round}`}</span>
+          {(game.phase === "RUNNING" || game.phase === "PAUSED") && game.nextSpeakerId && (
+            <span>
+              Next:{" "}
+              <strong className="cp-person">
+                {players.find((p) => p.id === game.nextSpeakerId)?.name ?? "—"}
+              </strong>
+            </span>
+          )}
         </footer>
       )}
     </section>

@@ -42,6 +42,8 @@ export interface PlanCheck {
   reason?: string;
 }
 
+const playerCount = (n: number) => `${n} ${n === 1 ? "player" : "players"}`;
+
 /** GRP-10: at least one group, and every group ≥ the selected game's minimum. */
 export function validatePlan(sizes: readonly number[], minPlayersPerGroup = 1): PlanCheck {
   if (sizes.length === 0) return { ok: false, reason: "You need at least 1 group." };
@@ -49,7 +51,7 @@ export function validatePlan(sizes: readonly number[], minPlayersPerGroup = 1): 
   if (smallest < minPlayersPerGroup) {
     return {
       ok: false,
-      reason: `Each group needs at least ${minPlayersPerGroup} players. Try fewer groups.`,
+      reason: `Each group needs at least ${playerCount(minPlayersPerGroup)}. Try fewer groups.`,
     };
   }
   return { ok: true };
@@ -63,7 +65,7 @@ export function validatePlan(sizes: readonly number[], minPlayersPerGroup = 1): 
  */
 export function describePlan(n: number, mode: GroupMode, value: number): string {
   const sizes = planGroupSizes(n, mode, value);
-  const head = mode === "maxSize" ? `${n} players, max ${value}` : `${n} players`;
+  const head = mode === "maxSize" ? `${playerCount(n)}, max ${value}` : playerCount(n);
   const groups = `${sizes.length} ${sizes.length === 1 ? "group" : "groups"}`;
   const uniform = sizes.every((s) => s === sizes[0]);
   if (mode === "count" && uniform) return `${head} → ${groups} × ${sizes[0] ?? 0}`;

@@ -5,6 +5,7 @@ import type {
   GamePhase,
   GameSessionView,
   GroupId,
+  GroupSummary,
   PlayerId,
   TimerState,
   Viewer,
@@ -34,6 +35,7 @@ export interface GroupRuntime<Data = unknown> {
   phase: GamePhase;
   round: number;
   turnOrder: PlayerId[];
+  eliminated: PlayerId[];
   turnIndex: number;
   timer: TimerState;
   revealed: boolean;
@@ -49,6 +51,23 @@ export interface ActionResult<Data> {
   data?: Data;
   /** Ask core to advance to the next speaker. */
   endTurn?: boolean;
+  closeVote?: boolean;
+}
+
+export interface LeaveOutcome<Data> {
+  data: Data;
+  finished?: boolean;
+  closeVote?: boolean;
+}
+
+export interface VoteOutcome<Data> {
+  data: Data;
+  eliminate?: PlayerId[];
+  finished?: boolean;
+}
+
+export function activePlayers(state: Pick<GroupRuntime, "turnOrder">): PlayerId[] {
+  return [...new Set(state.turnOrder)];
 }
 
 export interface GameModule<Config = any, Data = any> {
@@ -73,9 +92,23 @@ export interface GameModule<Config = any, Data = any> {
   turnDurationMs(config: Config): number | null;
   /** How many times each member speaks per round (default 1). */
   turnsPerPlayer?(config: Config): number;
+  voteDurationMs?(config: Config): number | null;
+  gameDurationMs?(config: Config): number | null;
+  onGameTimeUp?(args: { config: Config; state: GroupRuntime<Data> }): Data;
+  onVoteEnd?(args: { config: Config; state: GroupRuntime<Data> }): VoteOutcome<Data>;
+
+  resolveConfig?(args: { config: Config; rng: Rng }): Config;
+  validateGroup?(args: { config: Config; group: GroupSummary }): string | null;
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */
   prepare(args: { config: Config; group: GroupContext; rng: Rng }): Data;
+
+  onContinue?(args: { config: Config; state: GroupRuntime<Data>; rng: Rng }): Data;
+  onPlayerLeft?(args: {
+    config: Config;
+    state: GroupRuntime<Data>;
+    playerId: PlayerId;
+  }): LeaveOutcome<Data>;
 
   /** Player action (game:action). Return null to reject it. `turn:done` is handled by core. */
   onAction?(args: {
@@ -85,6 +118,13 @@ export interface GameModule<Config = any, Data = any> {
     actor: Viewer;
     rng: Rng;
   }): ActionResult<Data> | null;
+
+  /** Called before the turn index moves; on expiry, follows the legacy onTimerEnd hook. */
+  onTurnEnd?(args: {
+    config: Config;
+    state: GroupRuntime<Data>;
+    reason: "timer" | "done" | "skip";
+  }): Data;
 
   /** Called when a speaker's timer runs out, before core advances the turn. */
   onTimerEnd?(args: { config: Config; state: GroupRuntime<Data> }): Data;

@@ -1,0 +1,166 @@
+{
+  "location": [
+    {
+      "id": "airport",
+      "name": "Airport",
+      "hints": ["passport", "gate", "luggage", "boarding pass"]
+    },
+    {
+      "id": "police-station",
+      "name": "Police station",
+      "hints": ["officer", "uniform", "report", "safe"]
+    },
+    {
+      "id": "hospital",
+      "name": "Hospital",
+      "hints": ["doctor", "nurse", "medicine", "patient"]
+    },
+    {
+      "id": "school",
+      "name": "School",
+      "hints": ["teacher", "classroom", "lesson", "homework"]
+    },
+    {
+      "id": "beach",
+      "name": "Beach",
+      "hints": ["sand", "waves", "sun", "swim"]
+    },
+    {
+      "id": "supermarket",
+      "name": "Supermarket",
+      "hints": ["shopping", "cart", "food", "checkout"]
+    },
+    {
+      "id": "restaurant",
+      "name": "Restaurant",
+      "hints": ["menu", "waiter", "table", "meal"]
+    },
+    {
+      "id": "cinema",
+      "name": "Cinema",
+      "hints": ["movie", "ticket", "popcorn", "screen"]
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "hints": ["books", "quiet", "read", "borrow"]
+    },
+    {
+      "id": "zoo",
+      "name": "Zoo",
+      "hints": ["animals", "cage", "visitor", "feed"]
+    },
+    {
+      "id": "hotel",
+      "name": "Hotel",
+      "hints": ["room", "bed", "reception", "guest"]
+    },
+    {
+      "id": "bank",
+      "name": "Bank",
+      "hints": ["money", "account", "cash", "save"]
+    },
+    {
+      "id": "train-station",
+      "name": "Train station",
+      "hints": ["platform", "ticket", "track", "travel"]
+    },
+    {
+      "id": "park",
+      "name": "Park",
+      "hints": ["trees", "walk", "grass", "bench"]
+    },
+    {
+      "id": "gym",
+      "name": "Gym",
+      "hints": ["exercise", "weights", "fitness", "strong"]
+    },
+    {
+      "id": "museum",
+      "name": "Museum",
+      "hints": ["history", "art", "exhibition", "visitor"]
+    }
+  ],
+  "food": [
+    {
+      "id": "pizza",
+      "name": "Pizza",
+      "hints": ["cheese", "round", "slice", "oven"]
+    },
+    {
+      "id": "burger",
+      "name": "Burger",
+      "hints": ["bread", "meat", "lettuce", "sauce"]
+    },
+    {
+      "id": "sushi",
+      "name": "Sushi",
+      "hints": ["rice", "fish", "seaweed", "roll"]
+    },
+    {
+      "id": "pho",
+      "name": "Pho",
+      "hints": ["noodles", "beef", "soup", "herbs"]
+    },
+    {
+      "id": "ice-cream",
+      "name": "Ice cream",
+      "hints": ["cold", "sweet", "cone", "melt"]
+    },
+    {
+      "id": "fried-chicken",
+      "name": "Fried chicken",
+      "hints": ["crispy", "wings", "oil", "hot"]
+    },
+    {
+      "id": "salad",
+      "name": "Salad",
+      "hints": ["vegetables", "fresh", "bowl", "dressing"]
+    },
+    {
+      "id": "spaghetti",
+      "name": "Spaghetti",
+      "hints": ["pasta", "tomato", "fork", "long"]
+    },
+    {
+      "id": "sandwich",
+      "name": "Sandwich",
+      "hints": ["bread", "filling", "lunch", "cheese"]
+    },
+    {
+      "id": "banh-mi",
+      "name": "Banh mi",
+      "hints": ["bread", "pork", "pickle", "coriander"]
+    },
+    {
+      "id": "hot-pot",
+      "name": "Hot pot",
+      "hints": ["boiling", "broth", "share", "cook"]
+    },
+    {
+      "id": "pancake",
+      "name": "Pancake",
+      "hints": ["breakfast", "flat", "syrup", "pan"]
+    },
+    {
+      "id": "noodle-soup",
+      "name": "Noodle soup",
+      "hints": ["bowl", "broth", "spoon", "hot"]
+    },
+    {
+      "id": "steak",
+      "name": "Steak",
+      "hints": ["beef", "grill", "knife", "juicy"]
+    },
+    {
+      "id": "fried-rice",
+      "name": "Fried rice",
+      "hints": ["grains", "egg", "vegetables", "wok"]
+    },
+    {
+      "id": "cake",
+      "name": "Cake",
+      "hints": ["birthday", "sweet", "candles", "cream"]
+    }
+  ]
+}

@@ -770,3 +770,82 @@ textarea.cp-input {
     transform: none;
   }
 }
+
+.cp-member-out {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+.cp-game-clock {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cp-game-clock > span {
+  color: var(--cp-ink-muted);
+  font-size: 0.75rem;
+}
+.cp-game-clock-lg .cp-timer {
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+
+.cp-game-clock-result {
+  color: var(--cp-accent-neon);
+  font-family: var(--cp-font-mono);
+  white-space: nowrap;
+}
+.cp-game-clock-compact {
+  flex: 0 0 auto;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-pill);
+  background: var(--cp-surface);
+  white-space: nowrap;
+}
+.cp-game-clock-compact .cp-timer,
+.cp-game-clock-compact .cp-game-clock-result {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.cp-game-clock-compact .cp-timer-digits {
+  gap: 4px;
+}
+.cp-game-clock-compact .cp-timer-bar {
+  display: none;
+}
+.cp-game-clock-compact .cp-timer svg {
+  width: 12px;
+  height: 12px;
+}
+.cp-game-clock-lg {
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+.cp-game-clock-lg > span {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+.cp-game-clock-lg .cp-game-clock-result,
+.cp-game-clock-lg .cp-timer {
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+.cp-game-clock-lg .cp-timer-bar {
+  display: none;
+}
+.cp-group-status {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+.cp-group-card footer {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cp-group-card footer > span {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

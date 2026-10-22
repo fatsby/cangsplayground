@@ -5,6 +5,7 @@ import { secretWord } from "@cangsplayground/game-secret-word";
 import { canControl, mainControl, supportsControl } from "../src/components/game-controls";
 const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   groupId: "g1",
+  eliminated: [],
   phase,
   round: 1,
   currentSpeakerId: "p1",
@@ -17,6 +18,7 @@ const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   data: null,
 });
 const session = (...phases: GroupGameView["phase"][]): GameSessionView => ({
+  clock: null,
   gameId: "free-talk",
   name: "Free Talk",
   stage: "ACTIVE",
@@ -39,7 +41,7 @@ describe("host lifecycle availability", () => {
     expect(canControl("pause", mixed)).toBe(true);
     expect(canControl("resume", mixed)).toBe(true);
     expect(canControl("pause", mixed, mixed.groups[1])).toBe(false);
-    expect(mainControl(mixed)).toEqual({ cmd: "pause", label: "Pause" });
+    expect(mainControl(mixed)).toEqual({ cmd: "resume", label: "Resume" });
     expect(mainControl(mixed, mixed.groups[1])).toEqual({ cmd: "resume", label: "Resume" });
   });
   it("offers Prepare while configuring and Next round at the end", () => {
@@ -50,6 +52,7 @@ describe("host lifecycle availability", () => {
     const free = session("RUNNING");
     const secret = {
       ...free,
+      clock: null,
       gameId: secretWord.id,
       unsupportedControls: secretWord.unsupportedControls,
     };
@@ -65,6 +68,7 @@ describe("host lifecycle availability", () => {
   it("uses module capabilities rather than game ids, including for the main control", () => {
     const game = {
       ...session("RUNNING"),
+      clock: null,
       gameId: "another-game",
       unsupportedControls: ["pause"] as const,
     };
@@ -77,4 +81,69 @@ describe("host lifecycle availability", () => {
     expect(supportsControl("reveal", game)).toBe(true);
     expect(canControl("reveal", game)).toBe(true);
   });
+});
+
+it("handles VOTING and FINISHED", () => {
+  const voting = {
+    ...session("VOTING"),
+    groups: [
+      { ...group("VOTING"), timer: { endsAt: 1, pausedRemainingMs: null, durationMs: 30_000 } },
+    ],
+  };
+  expect(canControl("pause", voting)).toBe(true);
+  expect(canControl("resume", voting)).toBe(false);
+  expect(canControl("skip", voting)).toBe(true);
+  expect(canControl("endRound", voting)).toBe(false);
+  const pausedVote = {
+    ...voting,
+    groups: [
+      { ...group("VOTING"), timer: { endsAt: null, pausedRemainingMs: 9000, durationMs: 30_000 } },
+    ],
+  };
+  expect(canControl("resume", pausedVote)).toBe(true);
+  expect(mainControl(pausedVote).cmd).toBe("resume");
+  for (const cmd of [
+    "start",
+    "pause",
+    "resume",
+    "skip",
+    "extend",
+    "endRound",
+    "reveal",
+    "nextRound",
+  ] as const)
+    expect(canControl(cmd, session("FINISHED"))).toBe(false);
+});
+it("only offers Vote now while speaking", () => {
+  expect(canControl("endRound", { ...session("PREPARED"), voteDurationMs: 30_000 })).toBe(false);
+});
+it("offers whole-class clock controls independently of group phases", () => {
+  const waiting = {
+    ...session("ROUND_END"),
+    clock: {
+      done: false,
+      timer: { endsAt: 120_000, pausedRemainingMs: null, durationMs: 120_000 },
+    },
+  };
+  expect(canControl("pause", waiting)).toBe(true);
+  expect(canControl("pause", waiting, waiting.groups[0])).toBe(false);
+  const paused = {
+    ...waiting,
+    clock: {
+      done: false,
+      timer: { endsAt: null, pausedRemainingMs: 120_000, durationMs: 120_000 },
+    },
+  };
+  expect(canControl("resume", paused)).toBe(true);
+  expect(mainControl(paused).cmd).toBe("resume");
+  expect(canControl("resume", paused, paused.groups[0])).toBe(false);
+});
+
+it("prioritizes Continue over Pause and disables clock controls after every group finishes", () => {
+  const waiting = {
+    ...session("ROUND_END", "RUNNING"),
+    clock: { done: false, timer: { endsAt: 100000, pausedRemainingMs: null, durationMs: 100000 } },
+  };
+  expect(mainControl(waiting).cmd).toBe("nextRound");
+  expect(canControl("pause", { ...waiting, groups: [group("FINISHED")] })).toBe(false);
 });
