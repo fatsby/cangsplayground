@@ -196,3 +196,12 @@ describe("config presentation", () => {
     expect(html).toContain("cp-error");
   });
 });
+
+it("uses singular player copy for a one-player minimum", () => {
+  const view = spyLobby();
+  view.groups = [];
+  view.catalog[0]!.minPlayersPerGroup = 1;
+  const html = host(view);
+  expect(html).toContain("Each group needs at least 1 player.");
+  expect(html).not.toContain("1 players");
+});

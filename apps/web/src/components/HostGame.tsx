@@ -91,7 +91,8 @@ export function HostGame({
       )}
       {!allowed && (
         <p className="cp-error">
-          Each group needs at least {entry?.minPlayersPerGroup ?? 1} players. Make groups first.
+          Each group needs at least {entry?.minPlayersPerGroup ?? 1}{" "}
+          {(entry?.minPlayersPerGroup ?? 1) === 1 ? "player" : "players"}. Make groups first.
         </p>
       )}
       {game.stage === "ACTIVE" && (
