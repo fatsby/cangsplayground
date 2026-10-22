@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Gamepad2, ArrowRight } from "lucide-react";
-import { Button, Input, Panel } from "@clubplay/ui";
-import { isValidLobbyCode, normalizeLobbyCode, PLAYER_NAME_MAX } from "@clubplay/core";
+import { Button, Input, Panel } from "@cangsplayground/ui";
+import { isValidLobbyCode, normalizeLobbyCode, PLAYER_NAME_MAX } from "@cangsplayground/core";
 import { connect, readToken, request, saveToken } from "../socket";
 export default function Join() {
   const params = useParams(),
@@ -42,7 +42,7 @@ export default function Join() {
     <main className="mobile-screen join-screen">
       <div className="brand">
         <Gamepad2 strokeWidth={2.25} size={28} />
-        <span>ClubPlay</span>
+        <span>CangsPlayground</span>
       </div>
       <div className="join-intro">
         <p className="eyebrow">YOUR GROUP IS WAITING</p>

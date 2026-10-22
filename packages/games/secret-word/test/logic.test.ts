@@ -1,4 +1,4 @@
-import { createRng, type GroupRuntime } from "@clubplay/core";
+import { createRng, type GroupRuntime } from "@cangsplayground/core";
 import { describe, expect, it } from "vitest";
 import { secretWord, type SecretWordData } from "../src/index.js";
 

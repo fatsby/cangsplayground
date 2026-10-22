@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { SecretCard, HostSecretRow } from "@clubplay/ui";
+import { SecretCard, HostSecretRow } from "@cangsplayground/ui";
 import { ConfigForm } from "../src/components/ConfigForm";
-import type { ConfigField } from "@clubplay/core";
+import type { ConfigField } from "@cangsplayground/core";
 
 describe("catalog config form rendering", () => {
   it("renders all field kinds with accessible labels and catalog bounds/options", () => {

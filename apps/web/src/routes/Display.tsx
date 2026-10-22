@@ -4,8 +4,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { Maximize, ScanLine } from "lucide-react";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 import confetti from "canvas-confetti";
-import { teamStyle } from "@clubplay/core";
-import { Button, GroupCard, LobbyCodeDisplay, Switch, Waiting } from "@clubplay/ui";
+import { teamStyle } from "@cangsplayground/core";
+import { Button, GroupCard, LobbyCodeDisplay, Switch, Waiting } from "@cangsplayground/ui";
 import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
@@ -26,7 +26,7 @@ export default function Display() {
     [pairError, setPairError] = useState(""),
     [pairing, setPairing] = useState(false),
     [now, setNow] = useState(Date.now()),
-    [boost, setBoost] = useState(() => localStorage.getItem("clubplay:boost") !== "off"),
+    [boost, setBoost] = useState(() => localStorage.getItem("cangsplayground:boost") !== "off"),
     [cursor, setCursor] = useState(true);
   const confettiTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const cursorTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined),
@@ -58,7 +58,7 @@ export default function Display() {
     const root = document.documentElement;
     if (boost) root.dataset.boost = "projector";
     else delete root.dataset.boost;
-    localStorage.setItem("clubplay:boost", boost ? "on" : "off");
+    localStorage.setItem("cangsplayground:boost", boost ? "on" : "off");
     const key = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === "b" && !(event.target instanceof HTMLInputElement))
         setBoost((v) => !v);
@@ -135,7 +135,7 @@ export default function Display() {
             qr={<QR value={`${publicUrl}/join/${code}`} label={`Join lobby ${code}`} />}
           />
           <div className="projector-title">
-            <h1>{session?.name ?? "ClubPlay"}</h1>
+            <h1>{session?.name ?? "CangsPlayground"}</h1>
             <p className="cp-muted">
               {view?.locked
                 ? "Lobby locked"
@@ -328,7 +328,7 @@ export default function Display() {
           </div>
         )}
         <footer className="projector-footer">
-          <span>ClubPlay</span>
+          <span>CangsPlayground</span>
           <span>
             {view?.players.length ?? 0} players · {view?.groups.length ?? 0} teams
           </span>

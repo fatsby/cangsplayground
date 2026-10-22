@@ -9,8 +9,8 @@ import {
   type ClientToServerEvents,
   type LobbyView,
   type ServerToClientEvents,
-} from "@clubplay/core";
-import type { SecretWordGroupView } from "@clubplay/game-secret-word";
+} from "@cangsplayground/core";
+import type { SecretWordGroupView } from "@cangsplayground/game-secret-word";
 import { createServer } from "../src/index.js";
 
 // PRD §17 "DevTools" criterion with a real private-tier game, end to end over sockets:

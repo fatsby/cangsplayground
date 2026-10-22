@@ -35,7 +35,7 @@ import {
   type PlayerSummary,
   type GroupGameView,
   type TimerState,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 import { timerDisplay } from "./timer";
 
 export function teamVars(index: number): CSSProperties {

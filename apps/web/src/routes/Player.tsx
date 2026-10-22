@@ -9,7 +9,7 @@ import {
   Waiting,
   YourTurn,
   teamVars,
-} from "@clubplay/ui";
+} from "@cangsplayground/ui";
 import { toast } from "sonner";
 import { MobileToaster } from "../components/MobileToaster";
 import { gameViews } from "../games/registry";

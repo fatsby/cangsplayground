@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { MobileToaster } from "../components/MobileToaster";
-import { describePlan, planGroupSizes, validatePlan, type PlayerSummary } from "@clubplay/core";
+import { describePlan, planGroupSizes, validatePlan, type PlayerSummary } from "@cangsplayground/core";
 import {
   Button,
   Drawer,
@@ -26,7 +26,7 @@ import {
   Switch,
   Tabs,
   Waiting,
-} from "@clubplay/ui";
+} from "@cangsplayground/ui";
 import { connect, hostCommand, readToken, request, saveToken } from "../socket";
 import { useLobbyStore } from "../store";
 import { Loading, SessionBoundary, useRole } from "../components/session";

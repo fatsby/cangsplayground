@@ -199,13 +199,13 @@ importers:
 
   apps/server:
     dependencies:
-      '@clubplay/core':
+      '@cangsplayground/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@clubplay/game-free-talk':
+      '@cangsplayground/game-free-talk':
         specifier: workspace:*
         version: link:../../packages/games/free-talk
-      '@clubplay/game-secret-word':
+      '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
       '@fastify/static':
@@ -233,16 +233,16 @@ importers:
 
   apps/web:
     dependencies:
-      '@clubplay/core':
+      '@cangsplayground/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@clubplay/game-free-talk':
+      '@cangsplayground/game-free-talk':
         specifier: workspace:*
         version: link:../../packages/games/free-talk
-      '@clubplay/game-secret-word':
+      '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
-      '@clubplay/ui':
+      '@cangsplayground/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@fontsource-variable/unbounded':
@@ -336,10 +336,10 @@ importers:
 
   packages/games/free-talk:
     dependencies:
-      '@clubplay/core':
+      '@cangsplayground/core':
         specifier: workspace:*
         version: link:../../core
-      '@clubplay/ui':
+      '@cangsplayground/ui':
         specifier: workspace:*
         version: link:../../ui
       zod:
@@ -355,10 +355,10 @@ importers:
 
   packages/games/secret-word:
     dependencies:
-      '@clubplay/core':
+      '@cangsplayground/core':
         specifier: workspace:*
         version: link:../../core
-      '@clubplay/ui':
+      '@cangsplayground/ui':
         specifier: workspace:*
         version: link:../../ui
       zod:
@@ -374,7 +374,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@clubplay/core':
+      '@cangsplayground/core':
         specifier: workspace:*
         version: link:../core
       clsx:

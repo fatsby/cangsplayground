@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { GameSessionView, GroupGameView } from "@clubplay/core";
+import type { GameSessionView, GroupGameView } from "@cangsplayground/core";
 import { canControl, mainControl } from "../src/components/game-controls";
 const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   groupId: "g1",

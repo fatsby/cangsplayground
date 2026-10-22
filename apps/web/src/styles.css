@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "@clubplay/ui/styles/tokens.css";
-@import "@clubplay/ui/styles/components.css";
+@import "@cangsplayground/ui/styles/tokens.css";
+@import "@cangsplayground/ui/styles/components.css";
 @source "../../../packages/ui/src";
 @source "../../../packages/games/free-talk/src/views";
 .route-loading {

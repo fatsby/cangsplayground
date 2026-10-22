@@ -1,4 +1,4 @@
-import { shuffle, type GameModule } from "@clubplay/core";
+import { shuffle, type GameModule } from "@cangsplayground/core";
 import wordBank from "../data/words.json" with { type: "json" };
 import {
   GAME_ID,

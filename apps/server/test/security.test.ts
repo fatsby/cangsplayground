@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { createRng, type GameModule } from "@clubplay/core";
-import freeTalk from "@clubplay/game-free-talk";
+import { createRng, type GameModule } from "@cangsplayground/core";
+import freeTalk from "@cangsplayground/game-free-talk";
 import { LobbyManager } from "../src/lobby/LobbyManager.js";
 import { buildView, Broadcaster, type AppSocket } from "../src/broadcast.js";
 import { registry } from "../src/games/registry.js";

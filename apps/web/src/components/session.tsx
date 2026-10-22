@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
-import { Button, EmptyState, ReconnectingBanner, Waiting } from "@clubplay/ui";
+import { Button, EmptyState, ReconnectingBanner, Waiting } from "@cangsplayground/ui";
 import { useLobbyStore } from "../store";
 import { connectRole, socket, type Role } from "../socket";
 export function useRole(kind: Role["kind"], code: string, token?: string) {

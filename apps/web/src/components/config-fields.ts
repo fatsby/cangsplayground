@@ -1,4 +1,4 @@
-import type { ConfigField } from "@clubplay/core";
+import type { ConfigField } from "@cangsplayground/core";
 export function fieldControl(field: ConfigField) {
   return field.kind === "boolean" ? "switch" : field.kind;
 }

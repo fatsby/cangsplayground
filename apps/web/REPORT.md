@@ -1,4 +1,4 @@
-# ClubPlay Phase 1 web delivery
+# CangsPlayground Phase 1 web delivery
 
 Implemented the lazy-loaded create/join/player/host/projector routes, typed reconnecting Socket.IO client, Zustand view/clock store, Arcade Night UI kit, catalog-driven configuration, and Free Talk GameViews. No commits, resets, checkouts, or stashes were made. No core or server source files were edited.
 
@@ -6,14 +6,14 @@ Implemented the lazy-loaded create/join/player/host/projector routes, typed reco
 
 All requested checks pass:
 
-- `pnpm --filter @clubplay/web build`
-- `pnpm --filter @clubplay/web typecheck`
+- `pnpm --filter @cangsplayground/web build`
+- `pnpm --filter @cangsplayground/web typecheck`
 - `pnpm exec tsc -p packages/ui/tsconfig.json`
 - `pnpm exec tsc -p packages/games/free-talk/tsconfig.json`
 - `pnpm exec eslint apps/web packages/ui packages/games/free-talk/src/views` — zero errors or warnings
-- `pnpm --filter @clubplay/web test` — 14 tests across 3 files
+- `pnpm --filter @cangsplayground/web test` — 14 tests across 3 files
 - `pnpm -r test` — 47 tests pass: core 8, web 14, Free Talk 2, Secret Word 5, server 18; UI components are exercised by the web rendering tests
-- `pnpm --filter @clubplay/web size` — 165,301 bytes gzip for Player and every static JS dependency; asserts <200,000 bytes and excludes Host/Display entry points
+- `pnpm --filter @cangsplayground/web size` — 165,301 bytes gzip for Player and every static JS dependency; asserts <200,000 bytes and excludes Host/Display entry points
 
 Tests cover store patch merging and stale patches; clock correction with the smallest RTT; corrected, paused, expired and warning timers; all five config field kinds and real server-rendered controls; hidden player/host secrets absent from HTML; and valid lifecycle controls, including mixed group phases.
 
@@ -40,7 +40,7 @@ The Player total from Vite's rounded chunk figures is **166.80 kB gzip**, below 
 
 ## Browser and live smoke
 
-The existing process on port 3000 was an unrelated Next.js app and was left alone. With coordinator approval/instruction, ran ClubPlay on 3100 and Vite on 5173 with `CLUBPLAY_SERVER_URL=http://localhost:3100`; Vite keeps the required 3000 default when no override is provided.
+The existing process on port 3000 was an unrelated Next.js app and was left alone. With coordinator approval/instruction, ran CangsPlayground on 3100 and Vite on 5173 with `CANGSPLAYGROUND_SERVER_URL=http://localhost:3100`; Vite keeps the required 3000 default when no override is provided.
 
 Live Orca-browser smoke passed: create lobby; join as Thảo; issue a pairing token, remove the stored host token and claim through the paired host route; live player list; assign a team and match it on projector/player; add two late players and reassign; select Free Talk, render/save catalog settings, prepare and start; receive prompt and speaking order; reload the player with the same name/team/order and timer 0:50 → 0:49; kick through two Drawers and receive the removed screen; close through a Drawer and receive the ended screen. The projector hid pairing controls while the host was attached.
 
@@ -54,7 +54,7 @@ The embedded browser could not produce screenshots (`Page.captureScreenshot`: pa
 - Crowded wide projector cards use three name columns (four for a very large single team) instead of the default two. This keeps all 60 names on screen at the required font size. Compact card spacing and a one-row header/footer preserve 48px timers without clipping.
 - Projector pairing and Boost controls follow the task's explicit requirements despite DESIGN §9's general restriction on projector buttons. B still toggles persisted Boost; fullscreen and cursor hiding are implemented.
 - Covered secret content unmounts immediately on release, cancel, lost pointer capture, blur or page hiding. Hidden host rows blur a placeholder instead of retaining secret content in the DOM.
-- Radix primitives and Vaul were added to `@clubplay/ui` with `pnpm --filter @clubplay/ui add vaul radix-ui`; pnpm updated the workspace lockfile automatically. The lockfile was never hand-edited.
+- Radix primitives and Vaul were added to `@cangsplayground/ui` with `pnpm --filter @cangsplayground/ui add vaul radix-ui`; pnpm updated the workspace lockfile automatically. The lockfile was never hand-edited.
 - No changes to DESIGN.md were made because that document is outside this worker's ownership. The UI kit exports the exact supplied GameViews/GameViewProps contract plus its required components.
 - Secret Word view registration remains the coordinator's responsibility, as instructed. Free Talk is registered in the web registry.
 

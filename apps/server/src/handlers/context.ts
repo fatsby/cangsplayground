@@ -1,4 +1,4 @@
-import { schemas, type Ack, type C2SEventName, type C2SResults, type Viewer } from "@clubplay/core";
+import { schemas, type Ack, type C2SEventName, type C2SResults, type Viewer } from "@cangsplayground/core";
 import type { z } from "zod";
 import type { AppSocket, Broadcaster } from "../broadcast.js";
 import type { Lobby } from "../lobby/Lobby.js";

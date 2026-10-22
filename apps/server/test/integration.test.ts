@@ -9,7 +9,7 @@ import {
   type ClientToServerEvents,
   type LobbyView,
   type ServerToClientEvents,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 import { createServer } from "../src/index.js";
 
 type Client = Socket<ServerToClientEvents, ClientToServerEvents>;

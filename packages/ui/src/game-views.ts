@@ -1,5 +1,5 @@
 import type * as React from "react";
-import type { LobbyView, GameSessionView, GroupGameView } from "@clubplay/core";
+import type { LobbyView, GameSessionView, GroupGameView } from "@cangsplayground/core";
 export interface GameViewProps {
   lobby: LobbyView;
   session: GameSessionView;

@@ -1,4 +1,4 @@
-import type { C2SPayload, GameSessionView, GroupGameView } from "@clubplay/core";
+import type { C2SPayload, GameSessionView, GroupGameView } from "@cangsplayground/core";
 export type Control = C2SPayload<"game:control">["cmd"];
 export function canControl(cmd: Control, session: GameSessionView, group?: GroupGameView): boolean {
   if (cmd === "exit") return true;

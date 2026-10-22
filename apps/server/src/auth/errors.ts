@@ -1,4 +1,4 @@
-import type { Ack, ErrorCode } from "@clubplay/core";
+import type { Ack, ErrorCode } from "@cangsplayground/core";
 export class CommandError extends Error {
   constructor(
     public code: ErrorCode,

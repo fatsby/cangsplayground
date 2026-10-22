@@ -1,6 +1,6 @@
-# Phase 1 — Implementation design (ClubPlay)
+# Phase 1 — Implementation design (CangsPlayground)
 
-Source of truth for product: `PRD-ESL-Minigame-Platform.md`. Stack: `TECH-STACK-ClubPlay.md`. UI: `DESIGN.md`.
+Source of truth for product: `PRD-ESL-Minigame-Platform.md`. Stack: `TECH-STACK-CangsPlayground.md`. UI: `DESIGN.md`.
 This file fixes the decisions the PRD leaves open so server and web can be built in parallel.
 
 ## 0. Already in the repo (do not redesign)
@@ -29,10 +29,10 @@ If you must change a core type, keep it backward compatible and mention it in yo
 
 - Tokens: `crypto.randomBytes(24).toString("base64url")` (≥128-bit, NFR-06). Player ids: `nanoid`-like random 10 chars (use `crypto.randomUUID()` slice is fine).
 - Server keeps a global index `token → { code, role: "host" | "player", playerId? }`.
-- **Create (laptop):** `/` → [Create lobby] → `lobby:create` → store `hostToken` in `localStorage["clubplay:host:<CODE>"]` → navigate `/display/<CODE>`.
+- **Create (laptop):** `/` → [Create lobby] → `lobby:create` → store `hostToken` in `localStorage["cangsplayground:host:<CODE>"]` → navigate `/display/<CODE>`.
 - **Projector:** `display:watch {code}` → socket is a `projector` viewer (public view only). If the laptop has the hostToken for this code it shows a **[Pair host phone]** button → `host:pair {code, hostToken}` → one-time `pairToken` valid **2 minutes** → QR `${PUBLIC_URL}/host/<CODE>#pair=<pairToken>`. QR is hidden when `view.hostConnected` becomes true or the token expires. This satisfies LOB-03 and the edge case "host lost phone → rescan, needs the laptop" without ever printing the real hostToken on the projector.
 - **Host phone:** `/host/<CODE>#pair=…` → `host:claim` → store hostToken → `host:attach`. Without `#pair`, use the stored hostToken; none → show "Scan the host QR on the projector".
-- **Player:** `/join/<CODE>` (QR target; `/join` without code shows a code input) → name → `lobby:join` → store `playerToken` in `localStorage["clubplay:player:<CODE>"]` → `/play/<CODE>` → `session:resume {token}` on every (re)connect. `NOT_FOUND` → clear token, go to `/join/<CODE>`.
+- **Player:** `/join/<CODE>` (QR target; `/join` without code shows a code input) → name → `lobby:join` → store `playerToken` in `localStorage["cangsplayground:player:<CODE>"]` → `/play/<CODE>` → `session:resume {token}` on every (re)connect. `NOT_FOUND` → clear token, go to `/join/<CODE>`.
 - Same token in two tabs = same player (JOIN-03, edge case). Player is `connected` while ≥1 socket is attached; `away` after 5 min offline (NFR-05).
 - Rate limit (NFR-06): per IP, max 10 failed code/token lookups per minute across `display:watch`, `lobby:join`, `host:claim`, `session:resume` → `RATE_LIMITED`.
 - Names (JOIN-02): trimmed, 1–20 chars, case-insensitive unique; on clash return `NAME_TAKEN` with `suggestion` = first free `Name2`, `Name3`….
@@ -111,7 +111,7 @@ src/timer/TimerService.ts
 src/games/registry.ts   gameId → GameModule  (adding a game = one import line here)
 src/broadcast.ts        buildView + per-socket diff + emit
 test/                   vitest: lobby/groups/lifecycle unit tests, viewFor filtering, socket integration (30 clients)
-scripts/simulate.ts     `pnpm --filter @clubplay/server sim -- --url http://localhost:3000 --clients 30`
+scripts/simulate.ts     `pnpm --filter @cangsplayground/server sim -- --url http://localhost:3000 --clients 30`
 ```
 
 ## 8. Web layout (`apps/web`, `packages/ui`)

@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")!).render(
     <Suspense
       fallback={
         <div className="route-loading" role="status">
-          Opening ClubPlay…
+          Opening CangsPlayground…
         </div>
       }
     >

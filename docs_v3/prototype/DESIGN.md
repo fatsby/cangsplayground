@@ -1,6 +1,6 @@
-# DESIGN.md — ClubPlay · Arcade Night
+# DESIGN.md — CangsPlayground · Arcade Night
 
-> Tài liệu quy ước thiết kế **duy nhất** cho UI của ClubPlay. Áp dụng cho `apps/web`, `packages/ui`, `packages/games/*/src/views`.
+> Tài liệu quy ước thiết kế **duy nhất** cho UI của CangsPlayground. Áp dụng cho `apps/web`, `packages/ui`, `packages/games/*/src/views`.
 > Agent (Claude) và dev **đọc file này trước khi viết bất kỳ UI nào** và tuân thủ tuyệt đối. Nếu gặp trường hợp chưa được nêu, chọn phương án gần nhất với tinh thần ở mục 1 và ghi chú lại trong PR.
 >
 > File này thay thế bản DESIGN.md nhiều style trước đó. Style đã chốt: **Arcade Night**. Không còn `data-style`, không có light theme.
@@ -359,7 +359,7 @@ Tất cả nằm trong `packages/ui`. Tên, biến thể và hành vi dưới đ
 ### LobbyCodeDisplay (Projector)
 - Mỗi ký tự 1 ô: nền `--cp-surface`, viền 1px `--cp-accent-neon`, chữ `--cp-accent-neon`, bo `--cp-r-sm`, `--glow: var(--cp-accent-neon)` + `--cp-glow-sm`.
 - QR bên phải, cao bằng khối mã, **đen trên khung trắng**, padding 8px.
-- Dòng phụ: "Scan or go to **clubplay.app**".
+- Dòng phụ: "Scan or go to **cangsplayground.app**".
 
 ### Input
 - Nền `--cp-surface-2`, viền 1px `--cp-border`, bo `--cp-r-sm`, cao 48px, chữ body 600 17px.
@@ -563,7 +563,7 @@ Sau `shadcn init`, thay toàn bộ biến màu shadcn trong CSS bằng khối n�
   --secondary-foreground: var(--cp-ink);
   --muted: var(--cp-surface-2);
   --muted-foreground: var(--cp-ink-muted);
-  --accent: var(--cp-surface-3);          /* shadcn "accent" = nền hover, KHÁC accent cyan của ClubPlay */
+  --accent: var(--cp-surface-3);          /* shadcn "accent" = nền hover, KHÁC accent cyan của CangsPlayground */
   --accent-foreground: var(--cp-ink);
   --destructive: var(--cp-danger);
   --border: var(--cp-border);

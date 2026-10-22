@@ -5,7 +5,7 @@ import {
   TurnIndicator,
   type GameViewProps,
   type GameViews,
-} from "@clubplay/ui";
+} from "@cangsplayground/ui";
 import type { SecretWordGroupView, SecretWordPublicInfo } from "../types";
 import "./secret-word.css";
 

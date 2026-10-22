@@ -1,4 +1,4 @@
-# Tech Stack — ClubPlay
+# Tech Stack — CangsPlayground
 
 | Mục | Nội dung |
 |---|---|
@@ -60,7 +60,7 @@
 ## 4. Cấu trúc thư mục
 
 ```
-clubplay/
+cangsplayground/
 ├─ apps/
 │  ├─ server/
 │  │  ├─ src/

@@ -1,4 +1,4 @@
-import type { GameModule } from "@clubplay/core";
+import type { GameModule } from "@cangsplayground/core";
 import { GAME_ID, configSchema, type FreeTalkConfig, type FreeTalkData } from "./types.js";
 
 export const freeTalk: GameModule<FreeTalkConfig, FreeTalkData> = {

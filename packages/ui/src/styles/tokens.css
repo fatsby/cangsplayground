@@ -144,7 +144,7 @@ body {
   --secondary-foreground: var(--cp-ink);
   --muted: var(--cp-surface-2);
   --muted-foreground: var(--cp-ink-muted);
-  --accent: var(--cp-surface-3); /* shadcn "accent" = nền hover, KHÁC accent cyan của ClubPlay */
+  --accent: var(--cp-surface-3); /* shadcn "accent" = nền hover, KHÁC accent cyan của CangsPlayground */
   --accent-foreground: var(--cp-ink);
   --destructive: var(--cp-danger);
   --border: var(--cp-border);

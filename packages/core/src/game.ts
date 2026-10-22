@@ -10,7 +10,7 @@ import type { ConfigField, GamePhase, GroupId, PlayerId, TimerState, Viewer } fr
  * per viewer in viewFor(). Core never sends `data` to a client without viewFor().
  *
  * The client-side half (React components) lives in the package's `./views` entry and
- * is typed in @clubplay/ui (GameViews).
+ * is typed in @cangsplayground/ui (GameViews).
  */
 
 export interface GroupContext {

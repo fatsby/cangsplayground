@@ -8,7 +8,7 @@ import {
   type LobbyView,
   type ServerToClientEvents,
   type Viewer,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 import type { Socket } from "socket.io";
 import type { Lobby } from "./lobby/Lobby.js";
 import { registry } from "./games/registry.js";

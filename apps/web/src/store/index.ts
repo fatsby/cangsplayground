@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { applyPatch, type LobbyPatch, type LobbyView } from "@clubplay/core";
+import { applyPatch, type LobbyPatch, type LobbyView } from "@cangsplayground/core";
 export type Connection = "connecting" | "online" | "reconnecting";
 export type TerminalStatus = "closed" | "kicked" | null;
 export interface LobbyStore {

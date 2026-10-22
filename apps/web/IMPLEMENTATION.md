@@ -1,4 +1,4 @@
-# ClubPlay web implementation ledger
+# CangsPlayground web implementation ledger
 
 The dispatched design and Phase 1 implementation document are the approved specification. Work remains in the assigned paths; no commits, resets, or worktree changes.
 

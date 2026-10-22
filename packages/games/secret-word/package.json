@@ -1,5 +1,5 @@
 {
-  "name": "@clubplay/game-secret-word",
+  "name": "@cangsplayground/game-secret-word",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,8 +14,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@clubplay/core": "workspace:*",
-    "@clubplay/ui": "workspace:*",
+    "@cangsplayground/core": "workspace:*",
+    "@cangsplayground/ui": "workspace:*",
     "zod": "^4.6.7"
   },
   "devDependencies": {

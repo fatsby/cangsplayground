@@ -1,4 +1,4 @@
-import { Chip, Panel, TurnIndicator, type GameViewProps, type GameViews } from "@clubplay/ui";
+import { Chip, Panel, TurnIndicator, type GameViewProps, type GameViews } from "@cangsplayground/ui";
 import type { FreeTalkGroupView, FreeTalkPublicInfo } from "../types";
 function info(session: GameViewProps["session"]) {
   return session.publicInfo as FreeTalkPublicInfo | null;

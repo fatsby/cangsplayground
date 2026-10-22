@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { LobbyView, ConfigField } from "@clubplay/core";
+import type { LobbyView, ConfigField } from "@cangsplayground/core";
 import { createLobbyStore } from "../src/store";
 import { bestClockSample } from "../src/socket/clock";
-import { timerDisplay } from "@clubplay/ui";
+import { timerDisplay } from "@cangsplayground/ui";
 import { configDefaults, configValue, fieldControl } from "../src/components/config-fields";
 
 const view: LobbyView = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createRng, type GroupRuntime } from "@clubplay/core";
+import { createRng, type GroupRuntime } from "@cangsplayground/core";
 import freeTalk, { freeTalk as named } from "../src/index.js";
 
 describe("Free Talk Timer", () => {

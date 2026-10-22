@@ -22,7 +22,7 @@ await proj
   .click();
 await proj.waitForURL(/\/display\/[A-Z0-9]{6}/);
 const code = proj.url().split("/display/")[1];
-const hostToken = await proj.evaluate((c) => localStorage.getItem(`clubplay:host:${c}`), code);
+const hostToken = await proj.evaluate((c) => localStorage.getItem(`cangsplayground:host:${c}`), code);
 const qr = proj.locator(".qr-frame").first();
 await qr.waitFor();
 

@@ -1,5 +1,5 @@
 {
-  "name": "@clubplay/web",
+  "name": "@cangsplayground/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -23,10 +23,10 @@
     "vite": "^8.3.4"
   },
   "dependencies": {
-    "@clubplay/core": "workspace:*",
-    "@clubplay/game-free-talk": "workspace:*",
-    "@clubplay/game-secret-word": "workspace:*",
-    "@clubplay/ui": "workspace:*",
+    "@cangsplayground/core": "workspace:*",
+    "@cangsplayground/game-free-talk": "workspace:*",
+    "@cangsplayground/game-secret-word": "workspace:*",
+    "@cangsplayground/ui": "workspace:*",
     "@fontsource-variable/unbounded": "^5.3.0",
     "@fontsource/be-vietnam-pro": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",

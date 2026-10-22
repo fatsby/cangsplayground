@@ -1,4 +1,4 @@
-import { remainingMs, type TimerState } from "@clubplay/core";
+import { remainingMs, type TimerState } from "@cangsplayground/core";
 export function timerDisplay(timer: TimerState, now: number) {
   const ms = remainingMs(timer, now);
   const seconds = Math.ceil(ms / 1000);

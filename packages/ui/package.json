@@ -1,5 +1,5 @@
 {
-  "name": "@clubplay/ui",
+  "name": "@cangsplayground/ui",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@clubplay/core": "workspace:*",
+    "@cangsplayground/core": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^1.60.0",
     "motion": "^14.4.0",

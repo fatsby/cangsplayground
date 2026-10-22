@@ -8,7 +8,7 @@ import type {
   ClientToServerEvents,
   LobbyPatch,
   ServerToClientEvents,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 
 type Client = Socket<ServerToClientEvents, ClientToServerEvents>;
 const args = process.argv.slice(2);

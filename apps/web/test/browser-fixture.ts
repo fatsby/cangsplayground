@@ -1,7 +1,7 @@
 /** Browser review data only; this module is never imported by the application. */
 import { socket, saveToken } from "../src/socket";
 import { useLobbyStore } from "../src/store";
-import { teamName, type LobbyView, type ViewerKind } from "@clubplay/core";
+import { teamName, type LobbyView, type ViewerKind } from "@cangsplayground/core";
 const names = [
   "Thảo",
   "Bảo",

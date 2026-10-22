@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Gamepad2, ArrowRight, Monitor, Users, Mic } from "lucide-react";
-import { Button, Chip, Input, Panel } from "@clubplay/ui";
-import { isValidLobbyCode, normalizeLobbyCode } from "@clubplay/core";
+import { Button, Chip, Input, Panel } from "@cangsplayground/ui";
+import { isValidLobbyCode, normalizeLobbyCode } from "@cangsplayground/core";
 import { connect, request, saveToken } from "../socket";
 export default function Home() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function Home() {
     <main className="home">
       <header className="brand">
         <Gamepad2 strokeWidth={2.25} size={32} />
-        <span>ClubPlay</span>
+        <span>CangsPlayground</span>
         <Chip>Class time. Play time.</Chip>
       </header>
       <section className="home-hero">

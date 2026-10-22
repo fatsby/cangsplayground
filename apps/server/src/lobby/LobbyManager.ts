@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import { createRng, generateLobbyCode, LOBBY_TTL_MINUTES_DEFAULT } from "@clubplay/core";
+import { createRng, generateLobbyCode, LOBBY_TTL_MINUTES_DEFAULT } from "@cangsplayground/core";
 import { Lobby } from "./Lobby.js";
 import { newToken } from "../auth/tokens.js";
 import { fail } from "../auth/errors.js";

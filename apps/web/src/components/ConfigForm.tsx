@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
-import type { ConfigField } from "@clubplay/core";
-import { Button, Input, Switch } from "@clubplay/ui";
+import type { ConfigField } from "@cangsplayground/core";
+import { Button, Input, Switch } from "@cangsplayground/ui";
 import { configDefaults, configValue, fieldControl } from "./config-fields";
 export function ConfigForm({
   fields,

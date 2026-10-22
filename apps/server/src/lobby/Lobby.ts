@@ -15,7 +15,7 @@ import {
   type HostWarning,
   type Rng,
   type GameModule,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
 import { newPlayerId, newToken } from "../auth/tokens.js";

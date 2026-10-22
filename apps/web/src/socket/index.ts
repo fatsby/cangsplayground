@@ -7,14 +7,14 @@ import {
   type C2SResults,
   type ClientToServerEvents,
   type ServerToClientEvents,
-} from "@clubplay/core";
+} from "@cangsplayground/core";
 import { useLobbyStore } from "../store";
 import { bestClockSample, type ClockSample } from "./clock";
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
   reconnection: true,
 });
-export const tokenKey = (role: "host" | "player", code: string) => `clubplay:${role}:${code}`;
+export const tokenKey = (role: "host" | "player", code: string) => `cangsplayground:${role}:${code}`;
 export function readToken(role: "host" | "player", code: string) {
   return localStorage.getItem(tokenKey(role, code));
 }

@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import { existsSync } from "node:fs";
-import type { ClientToServerEvents, ServerToClientEvents, Viewer } from "@clubplay/core";
+import type { ClientToServerEvents, ServerToClientEvents, Viewer } from "@cangsplayground/core";
 import { Broadcaster, type AppSocket } from "./broadcast.js";
 import { readConfig } from "./config.js";
 import { LobbyManager } from "./lobby/LobbyManager.js";
@@ -184,7 +184,7 @@ export async function createServer(
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const server = await createServer();
   const address = await server.listen();
-  process.stdout.write(`ClubPlay server: ${address}\n`);
+  process.stdout.write(`CangsPlayground server: ${address}\n`);
   for (const signal of ["SIGINT", "SIGTERM"] as const)
     process.once(signal, () => {
       void server.close().then(() => process.exit(0));

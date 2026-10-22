@@ -1,5 +1,5 @@
-import type { GameSessionView, GroupGameView, LobbyView } from "@clubplay/core";
-import { Button, Chip, EmptyState, Panel, TeamBadge, Timer } from "@clubplay/ui";
+import type { GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
+import { Button, Chip, EmptyState, Panel, TeamBadge, Timer } from "@cangsplayground/ui";
 import { ConfigForm } from "./ConfigForm";
 import { canControl, mainControl, type Control } from "./game-controls";
 export function HostGame({

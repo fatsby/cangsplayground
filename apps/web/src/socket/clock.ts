@@ -1,4 +1,4 @@
-import { clockSample } from "@clubplay/core";
+import { clockSample } from "@cangsplayground/core";
 export type ClockSample = ReturnType<typeof clockSample>;
 export function bestClockSample(
   previous: ClockSample | null,

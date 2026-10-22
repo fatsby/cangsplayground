@@ -1,4 +1,4 @@
-# PRD — ClubPlay: Nền tảng minigame real-time cho ESL Speaking Club
+# PRD — CangsPlayground: Nền tảng minigame real-time cho ESL Speaking Club
 
 | Mục | Nội dung |
 |---|---|
@@ -6,7 +6,7 @@
 | Ngày | 21/10/2026 |
 | Tác giả | Fatsby (PO) |
 | Trạng thái | Sẵn sàng review → bắt đầu Phase 1 |
-| Tên sản phẩm | ClubPlay *(tên tạm, đổi tùy ý)* |
+| Tên sản phẩm | CangsPlayground *(tên tạm, đổi tùy ý)* |
 
 ---
 
