@@ -41,7 +41,7 @@ describe("host lifecycle availability", () => {
     expect(canControl("pause", mixed)).toBe(true);
     expect(canControl("resume", mixed)).toBe(true);
     expect(canControl("pause", mixed, mixed.groups[1])).toBe(false);
-    expect(mainControl(mixed)).toEqual({ cmd: "pause", label: "Pause" });
+    expect(mainControl(mixed)).toEqual({ cmd: "resume", label: "Resume" });
     expect(mainControl(mixed, mixed.groups[1])).toEqual({ cmd: "resume", label: "Resume" });
   });
   it("offers Prepare while configuring and Next round at the end", () => {
@@ -137,4 +137,13 @@ it("offers whole-class clock controls independently of group phases", () => {
   expect(canControl("resume", paused)).toBe(true);
   expect(mainControl(paused).cmd).toBe("resume");
   expect(canControl("resume", paused, paused.groups[0])).toBe(false);
+});
+
+it("prioritizes Continue over Pause and disables clock controls after every group finishes", () => {
+  const waiting = {
+    ...session("ROUND_END", "RUNNING"),
+    clock: { done: false, timer: { endsAt: 100000, pausedRemainingMs: null, durationMs: 100000 } },
+  };
+  expect(mainControl(waiting).cmd).toBe("nextRound");
+  expect(canControl("pause", { ...waiting, groups: [group("FINISHED")] })).toBe(false);
 });

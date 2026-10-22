@@ -1,0 +1,63 @@
+import type { GroupGameView, LobbyView } from "@cangsplayground/core";
+import spy from "@cangsplayground/game-whos-the-spy";
+export function spyLobby(phase: GroupGameView["phase"] = "RUNNING"): LobbyView {
+  return {
+    viewer: { kind: "host" },
+    code: "ABC234",
+    status: "open",
+    locked: false,
+    hostConnected: true,
+    createdAt: 0,
+    maxPlayers: 60,
+    groupsVersion: 1,
+    me: null,
+    warnings: [],
+    version: 1,
+    players: ["Ada", "Bo", "Cy", "Dee"].map((name, i) => ({
+      id: `p${i}`,
+      name,
+      groupId: "g1",
+      connected: true,
+      away: false,
+    })),
+    groups: [{ id: "g1", index: 0, name: "Team Red", playerIds: ["p0", "p1", "p2", "p3"] }],
+    catalog: [{ ...spy, defaultConfig: { ...spy.defaultConfig }, configFields: spy.configFields }],
+    game: {
+      gameId: spy.id,
+      name: spy.name,
+      stage: "ACTIVE",
+      config: { ...spy.defaultConfig },
+      publicInfo: { category: "location", turnSeconds: 60 },
+      voteDurationMs: 30000,
+      clock: { done: false, timer: { endsAt: null, pausedRemainingMs: null, durationMs: 720000 } },
+      groups: [
+        {
+          groupId: "g1",
+          phase,
+          round: 1,
+          eliminated: [],
+          currentSpeakerId: "p0",
+          nextSpeakerId: "p1",
+          turnOrder: ["p0", "p1", "p2", "p3"],
+          turnIndex: 4,
+          turnCount: 8,
+          timer: { endsAt: null, pausedRemainingMs: null, durationMs: 60000 },
+          revealed: false,
+          data: {
+            category: "location",
+            role: null,
+            topic: { name: "Airport", hints: [] },
+            spies: ["p2"],
+            voted: ["p0"],
+            myVote: null,
+            votes: {},
+            voteNumber: 0,
+            lastVote: null,
+            spiesLeft: 1,
+            result: null,
+          },
+        },
+      ],
+    },
+  };
+}

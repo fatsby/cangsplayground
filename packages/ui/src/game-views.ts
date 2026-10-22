@@ -3,6 +3,7 @@ import type {
   LobbyView,
   GameSessionView,
   GroupGameView,
+  GroupSummary,
   C2SPayload,
   GameAction,
 } from "@cangsplayground/core";
@@ -15,6 +16,11 @@ export interface GameViewProps {
 }
 export type GameControl = C2SPayload<"game:control">["cmd"];
 export interface GameViews {
+  roundLabel?: (group: GroupGameView, summary: GroupSummary) => string;
+  HostGroupStatus?: React.ComponentType<GameViewProps>;
+  ProjectorGroupStatus?: React.ComponentType<GameViewProps>;
+  ProjectorMemberMark?: React.ComponentType<GameViewProps & { playerId: string }>;
+  HostConfigNote?: React.ComponentType<{ lobby: LobbyView; session: GameSessionView }>;
   controlLabels?: Partial<Record<GameControl, string | null>>;
   ProjectorGroupCard?: React.ComponentType<GameViewProps>;
   HostGroupPanel?: React.ComponentType<GameViewProps>;

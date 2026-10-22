@@ -674,3 +674,156 @@
   margin: 0;
   white-space: nowrap;
 }
+
+/* Phone status stays compact beside long names and a team badge. */
+.player-header {
+  gap: 8px;
+}
+.player-header > strong {
+  flex: 1 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player-header > .cp-team-badge {
+  flex-shrink: 0;
+  font-size: 12px;
+  gap: 5px;
+  padding: 6px 8px;
+}
+.host-fixed-controls > .cp-button {
+  flex-shrink: 0;
+  gap: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.host-fixed-controls > .cp-button svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+.host-fixed-controls > .cp-button:first-child {
+  flex: 1 0 auto;
+}
+.host-fixed-controls {
+  gap: 6px;
+  padding: 12px;
+}
+.host-screen details > summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding-block: 4px;
+}
+.host-screen details[open] > summary {
+  margin-bottom: 16px;
+}
+.config-chip-field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.config-chip-field legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.config-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.config-chip {
+  position: relative;
+  cursor: pointer;
+}
+.config-chip input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.config-chip span {
+  display: block;
+  padding: 8px 12px;
+  background: var(--cp-surface);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-pill);
+  font-size: 14px;
+}
+.config-chip input:checked + span {
+  background: var(--cp-primary);
+  color: var(--cp-primary-fg);
+  border-color: var(--cp-primary);
+}
+.config-chip input:focus-visible + span {
+  outline: 2px solid var(--cp-accent-neon);
+  outline-offset: 3px;
+}
+.config-chip-field:disabled {
+  opacity: 0.5;
+}
+.config-stepper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.config-stepper [role="spinbutton"] {
+  min-width: 3ch;
+  text-align: center;
+  font-family: var(--cp-font-mono);
+}
+.config-stepper .cp-button {
+  min-width: 48px;
+  min-height: 48px;
+}
+.projector-header > .cp-game-clock {
+  margin-left: auto;
+}
+.projector:has(.cp-game-clock) .projector-title h1 {
+  font-size: clamp(26px, 2.2vw, 44px);
+}
+.projector .projector-footer .projector-tools .cp-switch-row {
+  flex-direction: row;
+}
+.projector .projector-footer .projector-tools label {
+  font-size: 14px;
+}
+.projector .cp-group-card > header {
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+}
+.projector .cp-group-card > header > .cp-member-count {
+  font-size: 14px;
+  white-space: nowrap;
+}
+.projector .cp-group-status {
+  grid-column: 3;
+  grid-row: 1;
+  flex-wrap: wrap;
+  max-width: 240px;
+}
+.projector .cp-group-status .cp-chip {
+  font-size: 18px;
+  white-space: normal;
+  text-align: center;
+}
+.projector .cp-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.projector .cp-group-card .cp-members li > .cp-person,
+.projector .cp-group-card .cp-members li > span:first-of-type {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.projector .game-progress {
+  position: static;
+  transform: none;
+  margin-top: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

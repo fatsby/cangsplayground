@@ -57,6 +57,7 @@ export interface ConfigField {
   key: string;
   label: string;
   kind: "number" | "text" | "textarea" | "boolean" | "select";
+  display?: "chips" | "stepper";
   min?: number;
   max?: number;
   step?: number;

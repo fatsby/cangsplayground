@@ -22,6 +22,7 @@ import {
 } from "@cangsplayground/core";
 import {
   Button,
+  allGroupsFinished,
   Drawer,
   EmptyState,
   HostSecretRow,
@@ -346,7 +347,7 @@ export default function Host() {
                 </>
               )}
             </div>
-            {game && (
+            {game && !allGroupsFinished(game.groups) && (
               <div className="host-fixed-controls">
                 <Button
                   variant="primary"

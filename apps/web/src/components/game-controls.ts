@@ -7,6 +7,8 @@ export function canControl(cmd: Control, session: GameSessionView, group?: Group
   if (!supportsControl(cmd, session)) return false;
   if (cmd === "exit") return true;
   if (cmd === "prepare") return session.stage === "CONFIGURING";
+  if (session.groups.length > 0 && session.groups.every((g) => g.phase === "FINISHED"))
+    return false;
   if (!group && session.stage === "ACTIVE" && session.clock && !session.clock.done) {
     if (cmd === "pause" && session.clock.timer.endsAt !== null) return true;
     if (cmd === "resume" && session.clock.timer.pausedRemainingMs !== null) return true;
@@ -40,9 +42,9 @@ export function mainControl(
   for (const [cmd, label] of [
     ["prepare", "Prepare game"],
     ["start", "Start round"],
-    ["pause", "Pause"],
     ["resume", "Resume"],
     ["nextRound", "Next round"],
+    ["pause", "Pause"],
   ] as const)
     if (canControl(cmd, session, group)) return { cmd, label };
   return { cmd: "start", label: "Start round" };
