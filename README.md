@@ -1,4 +1,4 @@
-# ClubPlay — Phase 1 prototype
+# CangsPlayground — Phase 1 prototype
 
 Real-time minigame platform for the ESL Speaking Club. Specs: `docs_v3/prototype/` (PRD, TECH-STACK, DESIGN, PHASE1-IMPLEMENTATION).
 
@@ -15,8 +15,8 @@ Development (server :3000, Vite :5173 with proxy):
 ```bash
 pnpm dev
 # if :3000 is taken
-PORT=3100 pnpm --filter @clubplay/server dev
-CLUBPLAY_SERVER_URL=http://localhost:3100 pnpm --filter @clubplay/web dev
+PORT=3100 pnpm --filter @cangsplayground/server dev
+CANGSPLAYGROUND_SERVER_URL=http://localhost:3100 pnpm --filter @cangsplayground/web dev
 ```
 
 Production (one service — Node serves the built web app + Socket.IO):
@@ -27,7 +27,7 @@ PORT=3000 PUBLIC_URL=https://your.domain LOBBY_TTL_MINUTES=180 pnpm start
 ```
 
 `PUBLIC_URL` is what the QR codes point to (default: first LAN IPv4 + port, so phones on the same Wi-Fi work).
-Load check: `pnpm --filter @clubplay/server sim -- --url http://localhost:3000 --clients 30`.
+Load check: `pnpm --filter @cangsplayground/server sim -- --url http://localhost:3000 --clients 30`.
 
 ## Acceptance (PRD §17)
 
@@ -39,6 +39,11 @@ repeated re-assign / game change. Needs Chromium (`CHROMIUM_PATH=…` or `pnpm e
 
 `Dockerfile` builds the single service; `render.yaml` is a Render blueprint (1 instance — Phase 1 state is in RAM).
 Set `PUBLIC_URL` to the public HTTPS URL so QR codes point there.
+
+**Local (Docker Compose):** `scripts/docker-up.sh [port]` builds and starts the `cangsplayground` container on host port
+3100 (or `HOST_PORT` from `.env`, see `.env.example`), with `PUBLIC_URL` set to this machine's current LAN IP so phones
+on the same network can scan the QR. Re-run it after the IP changes. Logs: `docker compose logs -f`; stop:
+`docker compose down`. It restarts with Docker unless stopped.
 
 ## Views
 

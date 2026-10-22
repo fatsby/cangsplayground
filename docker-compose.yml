@@ -1,0 +1,14 @@
+# Local deploy — single instance (state is in RAM in Phase 1).
+# PUBLIC_URL must be reachable from players' phones (LAN IP, not localhost): see scripts/docker-up.sh.
+services:
+  cangsplayground:
+    build: .
+    image: cangsplayground:local
+    container_name: cangsplayground
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${HOST_PORT:-3100}:3000"
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL:?set PUBLIC_URL in .env or run scripts/docker-up.sh}
+      LOBBY_TTL_MINUTES: ${LOBBY_TTL_MINUTES:-180}
