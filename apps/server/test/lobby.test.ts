@@ -183,10 +183,11 @@ it("applies new timing from the next turn and accepts Done only from the current
   expect(() => lobby.action(group.turnOrder[1]!, { type: "turn:done" })).toThrow(
     "Wait for your turn",
   );
-  lobby.action(group.turnOrder[0]!, { type: "turn:done" });
+  const speaker = group.turnOrder[0]!;
+  lobby.action(speaker, { type: "turn:done" });
   expect(group.turnIndex).toBe(1);
   expect(group.timer.durationMs).toBe(30000);
-  expect((group.data as { spoken: string[] }).spoken).toEqual([]);
+  expect((group.data as { spoken: string[] }).spoken).toEqual([speaker]);
 });
 
 it("rejects nextRound with INVALID_STATE when no requested group has ended", () => {
@@ -217,3 +218,26 @@ it.each(["free-talk", "secret-word"])(
     expect(() => lobby.control("start")).toThrow("not ready");
   },
 );
+
+it("Free Talk projector counts timer and Done completions but not host skips", () => {
+  vi.useFakeTimers();
+  const { lobby } = setup(3);
+  lobby.assign("count", 1);
+  lobby.selectGame("free-talk");
+  lobby.control("prepare");
+  lobby.control("start");
+  const group = lobby.game!.groups[0]!,
+    [first, , third] = group.turnOrder;
+  lobby.action(first!, { type: "turn:done" });
+  expect(buildView(lobby, { kind: "projector" }).game!.groups[0]!.data).toEqual({
+    spoken: [first],
+  });
+  lobby.control("skip");
+  const endsAt = group.timer.endsAt!;
+  vi.advanceTimersByTime(60_000);
+  lobby.expire(group.groupId, endsAt);
+  expect(group.phase).toBe("ROUND_END");
+  expect(buildView(lobby, { kind: "projector" }).game!.groups[0]!.data).toEqual({
+    spoken: [first, third],
+  });
+});

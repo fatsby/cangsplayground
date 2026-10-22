@@ -343,7 +343,7 @@ export class Lobby {
           if (group.phase !== "RUNNING" && group.phase !== "PAUSED" && group.phase !== "VOTING")
             continue;
           if (group.phase === "VOTING") this.closeVote(group);
-          else this.advance(group, false);
+          else this.advance(group, "skip");
           break;
         case "extend":
           if (group.phase !== "RUNNING" && group.phase !== "PAUSED" && group.phase !== "VOTING")
@@ -469,9 +469,12 @@ export class Lobby {
       this.idle(group);
     }
   }
-  advance(group: GroupRuntime, expired: boolean) {
-    if (expired && this.game?.module.onTimerEnd)
-      group.data = this.game.module.onTimerEnd({ config: this.game.config, state: group });
+  advance(group: GroupRuntime, reason: "timer" | "done" | "skip") {
+    const game = this.game!;
+    if (reason === "timer" && game.module.onTimerEnd)
+      group.data = game.module.onTimerEnd({ config: game.config, state: group });
+    if (game.module.onTurnEnd)
+      group.data = game.module.onTurnEnd({ config: game.config, state: group, reason });
     group.turnIndex++;
     if (group.turnIndex >= group.turnOrder.length) {
       this.endTurns(group);
@@ -487,7 +490,7 @@ export class Lobby {
     )
       return;
     if (group.phase === "VOTING") this.closeVote(group);
-    else this.advance(group, true);
+    else this.advance(group, "timer");
     this.changed();
   }
   private removeTurns(group: GroupRuntime, playerId: string) {
@@ -510,7 +513,7 @@ export class Lobby {
     if (action.type === "turn:done") {
       if (group.phase !== "RUNNING" || group.turnOrder[group.turnIndex] !== playerId)
         fail("UNAUTHORIZED", "Wait for your turn.");
-      this.advance(group, false);
+      this.advance(group, "done");
     } else {
       const result = game.module.onAction?.({
         config: game.config,
@@ -521,7 +524,7 @@ export class Lobby {
       });
       if (!result) fail("INVALID_STATE", "This action is not ready.");
       if (result.data !== undefined) group.data = result.data;
-      if (result.endTurn) this.advance(group, false);
+      if (result.endTurn) this.advance(group, "done");
       if (result.closeVote && group.phase === "VOTING") this.closeVote(group);
     }
     this.changed();

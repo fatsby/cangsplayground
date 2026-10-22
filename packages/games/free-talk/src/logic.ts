@@ -33,9 +33,12 @@ export const freeTalk: GameModule<FreeTalkConfig, FreeTalkData> = {
   turnDurationMs: (config) => config.turnSeconds * 1000,
   turnsPerPlayer: (config) => config.turnsPerPlayer,
   prepare: () => ({ spoken: [] }),
-  onTimerEnd: ({ state }) => {
+  onTurnEnd: ({ state, reason }) => {
     const speaker = state.turnOrder[state.turnIndex];
-    return { spoken: speaker ? [...state.data.spoken, speaker] : [...state.data.spoken] };
+    return {
+      spoken:
+        speaker && reason !== "skip" ? [...state.data.spoken, speaker] : [...state.data.spoken],
+    };
   },
   publicInfo: (config) => ({ prompt: config.prompt, turnSeconds: config.turnSeconds }),
   viewFor: ({ state }) => ({ spoken: [...state.data.spoken] }),

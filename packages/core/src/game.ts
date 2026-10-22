@@ -119,6 +119,13 @@ export interface GameModule<Config = any, Data = any> {
     rng: Rng;
   }): ActionResult<Data> | null;
 
+  /** Called before the turn index moves; on expiry, follows the legacy onTimerEnd hook. */
+  onTurnEnd?(args: {
+    config: Config;
+    state: GroupRuntime<Data>;
+    reason: "timer" | "done" | "skip";
+  }): Data;
+
   /** Called when a speaker's timer runs out, before core advances the turn. */
   onTimerEnd?(args: { config: Config; state: GroupRuntime<Data> }): Data;
 
