@@ -245,6 +245,9 @@ importers:
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
+      '@cangsplayground/game-whos-the-spy':
+        specifier: workspace:*
+        version: link:../../packages/games/whos-the-spy
       '@cangsplayground/ui':
         specifier: workspace:*
         version: link:../../packages/ui

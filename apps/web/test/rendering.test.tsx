@@ -5,6 +5,8 @@ import { ConfigForm } from "../src/components/ConfigForm";
 import type { ConfigField, GameModule, GroupGameView, LobbyView } from "@cangsplayground/core";
 import { freeTalk } from "@cangsplayground/game-free-talk";
 import { secretWord } from "@cangsplayground/game-secret-word";
+import whosTheSpy, { type WhosTheSpyGroupView } from "@cangsplayground/game-whos-the-spy";
+import whosTheSpyViews, { SecretFace } from "@cangsplayground/game-whos-the-spy/views";
 import { HostGame } from "../src/components/HostGame";
 
 function hostView(module: GameModule, phase: GroupGameView["phase"]): LobbyView {
@@ -145,4 +147,110 @@ describe("hidden secrets", () => {
       ),
     ).toContain("SECRET HOST DATA");
   });
+});
+
+function spyView(phase: GroupGameView["phase"], data: Partial<WhosTheSpyGroupView> = {}) {
+  const lobby = hostView(whosTheSpy, phase);
+  lobby.players = ["Ada", "Bo", "Cy"].map((name, i) => ({
+    id: `p${i + 1}`,
+    name,
+    groupId: "g1",
+    connected: true,
+    away: false,
+  }));
+  lobby.me = { playerId: "p1", name: "Ada", groupId: "g1" };
+  lobby.viewer = { kind: "player", playerId: "p1" };
+  const session = lobby.game!,
+    group = session.groups[0]!;
+  session.publicInfo = { category: "location", turnSeconds: 60 };
+  session.voteDurationMs = 30000;
+  group.timer = { endsAt: 30000, pausedRemainingMs: null, durationMs: 30000 };
+  group.data = {
+    category: "location",
+    role: "spy",
+    topic: null,
+    spies: null,
+    voted: [],
+    myVote: null,
+    votes: null,
+    voteNumber: 0,
+    lastVote: null,
+    spiesLeft: 1,
+    result: null,
+    ...data,
+  } satisfies WhosTheSpyGroupView;
+  return { lobby, session, group, me: lobby.me, serverNow: () => 0 };
+}
+it("spy PlayerScreen shows role and category after hold, no topic", () => {
+  const props = spyView("RUNNING");
+  const html = renderToStaticMarkup(<whosTheSpyViews.PlayerScreen {...props} />);
+  expect(html).toContain("Hold to see your card");
+  expect(html).not.toContain("You are the SPY");
+  const face = renderToStaticMarkup(<SecretFace data={props.group.data as WhosTheSpyGroupView} />);
+  expect(face).toContain("You are the SPY");
+  expect(face).toContain("Category: Location");
+  expect(face).not.toContain("Airport");
+});
+it("vote screen excludes me and locks", () => {
+  const html = renderToStaticMarkup(
+    <whosTheSpyViews.PlayerScreen {...spyView("VOTING", { myVote: "p2", voted: ["p1"] })} />,
+  );
+  expect(html).toContain("Bo");
+  expect(html).toContain("Cy");
+  expect(html).not.toContain(">Ada<");
+  expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Vote locked<\/button>/);
+  expect(html).toContain('aria-pressed="true"');
+  expect(html).toContain("1 of 3 voted");
+  expect(html).toContain("0:30");
+});
+it("result screen for spies by time", () => {
+  const html = renderToStaticMarkup(
+    <whosTheSpyViews.PlayerScreen
+      {...spyView("FINISHED", {
+        result: { winner: "spies", reason: "time" },
+        topic: { name: "Airport", hints: [] },
+        spies: ["p2"],
+      })}
+    />,
+  );
+  expect(html).toContain("Spy wins!");
+  expect(html).toContain("Time&#x27;s up. A spy is still in the game.");
+  expect(html).toContain("The topic was");
+  expect(html).toContain("Airport");
+  expect(html).toContain("Spy: Bo");
+});
+it("controlLabels rename and hide host buttons", () => {
+  const props = spyView("ROUND_END");
+  const html = renderToStaticMarkup(
+    <HostGame
+      view={props.lobby}
+      busy={false}
+      serverNow={() => 0}
+      select={() => {}}
+      configure={async () => true}
+      control={() => {}}
+    />,
+  );
+  expect(html).toContain("Vote now");
+  expect(html).toContain("Continue");
+  expect(html).not.toContain(">Reveal</button>");
+});
+it("eliminated players can watch but have no secret card or voting controls", () => {
+  const props = spyView("VOTING");
+  props.group.eliminated = ["p1"];
+  const html = renderToStaticMarkup(<whosTheSpyViews.PlayerScreen {...props} />);
+  expect(html).toContain("You&#x27;re out");
+  expect(html).toContain("No talking, no voting.");
+  expect(html).not.toContain("Hold to see");
+  expect(html).not.toContain("Lock my vote");
+});
+it("vote result explains ties and waits for the teacher", () => {
+  const html = renderToStaticMarkup(
+    <whosTheSpyViews.PlayerScreen
+      {...spyView("ROUND_END", { lastVote: { out: null, wasSpy: false, tally: { p1: 1, p2: 1 } } })}
+    />,
+  );
+  expect(html).toContain("No one was voted out");
+  expect(html).toContain("It&#x27;s a tie.");
+  expect(html).toContain("Wait for your teacher…");
 });

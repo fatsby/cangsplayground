@@ -17,7 +17,7 @@ it("starts on first start, pauses only for whole-class pause, ends every unfinis
   expect(lobby.game!.clock!.timer.endsAt).toBeNull();
   lobby.control("start");
   expect(lobby.game!.clock!.timer.endsAt).toBe(Date.now() + 120_000);
-  const [g1, g2] = lobby.game!.groups;
+  const [g1] = lobby.game!.groups;
   lobby.control("pause", g1!.groupId);
   expect(lobby.game!.clock!.timer.endsAt).not.toBeNull();
   lobby.control("pause");

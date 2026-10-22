@@ -1,3 +1,4 @@
+import type { GameAction } from "@cangsplayground/core";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -44,11 +45,24 @@ export default function Player() {
     setBusy(false);
     if (!result.ok) toast.error(result.error.message);
   };
+  const act = async (action: GameAction) => {
+    const result = await request("game:action", action);
+    if (!result.ok) toast.error(result.error.message);
+    return result.ok;
+  };
+  const TurnTip = session ? gameViews[session.gameId]?.PlayerTurnTip : undefined;
   const Screen = session ? gameViews[session.gameId]?.PlayerScreen : undefined;
   const isMine = runtime?.currentSpeakerId === view?.me?.playerId && runtime?.phase === "RUNNING";
   const gameScreen =
     view?.me && session && runtime && Screen ? (
-      <Screen lobby={view} session={session} group={runtime} me={view.me} serverNow={serverNow} />
+      <Screen
+        lobby={view}
+        session={session}
+        group={runtime}
+        me={view.me}
+        serverNow={serverNow}
+        act={act}
+      />
     ) : null;
   return (
     <SessionBoundary code={code} error={error}>
@@ -100,15 +114,22 @@ export default function Player() {
                 <p className="cp-muted">Wait for your teacher</p>
               </section>
             ) : isMine ? (
-              <YourTurn
-                key={`${runtime.round}-${runtime.turnIndex}`}
-                timer={runtime.timer}
-                serverNow={serverNow}
-                onDone={() => void done()}
-                disabled={busy || connection !== "online"}
-              >
-                {gameScreen}
-              </YourTurn>
+              <>
+                <YourTurn
+                  key={`${runtime.round}-${runtime.turnIndex}`}
+                  timer={runtime.timer}
+                  serverNow={serverNow}
+                  onDone={() => void done()}
+                  disabled={busy || connection !== "online"}
+                >
+                  {TurnTip ? (
+                    <TurnTip lobby={view} session={session} group={runtime} serverNow={serverNow} />
+                  ) : (
+                    gameScreen
+                  )}
+                </YourTurn>
+                {TurnTip && gameScreen}
+              </>
             ) : (
               <section className="player-game cp-stack">
                 <div className="cp-row cp-spread">
@@ -125,7 +146,9 @@ export default function Player() {
                               ? "Round finished"
                               : "Listen to your team"}
                   </span>
-                  <Timer timer={runtime.timer} serverNow={serverNow} />
+                  {runtime.phase !== "VOTING" && (
+                    <Timer timer={runtime.timer} serverNow={serverNow} />
+                  )}
                 </div>
                 {gameScreen}
               </section>
