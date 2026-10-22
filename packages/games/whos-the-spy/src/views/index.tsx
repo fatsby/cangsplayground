@@ -63,16 +63,16 @@ function VoteScreen(props: PlayerProps) {
   const { lobby, group, me, act, serverNow } = props,
     data = dataOf(group);
   const [selected, setSelected] = useState<string | null>(null),
-    [submitting, setSubmitting] = useState(false),
-    [localVote, setLocalVote] = useState<string | null>(null);
-  const locked = data.myVote ?? localVote,
+    [submitting, setSubmitting] = useState(false);
+  const locked = data.myVote,
     active = activeMembers(props),
     paused = group.timer.endsAt === null;
+  const targetId = selected && active.includes(selected) ? selected : null;
   const lock = async () => {
-    if (!selected || !act || locked || submitting || paused) return;
+    if (!targetId || !act || locked || submitting || paused) return;
     setSubmitting(true);
     try {
-      if (await act({ type: "vote", payload: { targetId: selected } })) setLocalVote(selected);
+      await act({ type: "vote", payload: { targetId } });
     } finally {
       setSubmitting(false);
     }
@@ -89,8 +89,8 @@ function VoteScreen(props: PlayerProps) {
           .map((id) => (
             <Button
               key={id}
-              className={`wts-vote-option ${(locked ?? selected) === id ? "wts-selected" : ""}`}
-              aria-pressed={(locked ?? selected) === id}
+              className={`wts-vote-option ${(locked ?? targetId) === id ? "wts-selected" : ""}`}
+              aria-pressed={(locked ?? targetId) === id}
               disabled={!!locked || submitting || paused}
               onClick={() => setSelected(id)}
             >
@@ -104,7 +104,7 @@ function VoteScreen(props: PlayerProps) {
       <progress aria-label="Players who voted" max={active.length} value={data.voted.length} />
       <Button
         variant="primary"
-        disabled={!!locked || !selected || submitting || paused || !act}
+        disabled={!!locked || !targetId || submitting || paused || !act}
         onClick={() => void lock()}
       >
         {locked ? "Vote locked" : "Lock my vote"}
