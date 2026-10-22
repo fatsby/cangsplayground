@@ -5,6 +5,7 @@ import type {
   GamePhase,
   GameSessionView,
   GroupId,
+  GroupSummary,
   PlayerId,
   TimerState,
   Viewer,
@@ -95,6 +96,9 @@ export interface GameModule<Config = any, Data = any> {
   gameDurationMs?(config: Config): number | null;
   onGameTimeUp?(args: { config: Config; state: GroupRuntime<Data> }): Data;
   onVoteEnd?(args: { config: Config; state: GroupRuntime<Data> }): VoteOutcome<Data>;
+
+  resolveConfig?(args: { config: Config; rng: Rng }): Config;
+  validateGroup?(args: { config: Config; group: GroupSummary }): string | null;
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */
   prepare(args: { config: Config; group: GroupContext; rng: Rng }): Data;

@@ -249,12 +249,16 @@ export class Lobby {
       }),
     };
   }
-  private validateGroups(summaries: GroupSummary[]) {
+  private validateGroups(summaries: GroupSummary[], config = this.game!.config) {
     const check = validatePlan(
       summaries.map((g) => g.playerIds.length),
       this.game!.module.minPlayersPerGroup,
     );
     if (!check.ok) fail("GROUPS_TOO_SMALL", check.reason!);
+    for (const group of summaries) {
+      const message = this.game!.module.validateGroup?.({ config, group });
+      if (message !== null && message !== undefined) fail("GROUPS_TOO_SMALL", message);
+    }
   }
   control(cmd: Control, groupId?: string) {
     const game = this.game;
@@ -267,7 +271,11 @@ export class Lobby {
     }
     if (cmd === "prepare") {
       if (game.stage !== "CONFIGURING") fail("INVALID_STATE", "This game is already ready.");
-      this.validateGroups(this.groups);
+      const config =
+        game.module.resolveConfig?.({ config: structuredClone(game.config), rng: this.rng }) ??
+        game.config;
+      this.validateGroups(this.groups, config);
+      game.config = config;
       game.groups = this.groups.map((g) => this.prepareGroup(g, 1));
       game.stage = "ACTIVE";
       const durationMs = game.module.gameDurationMs?.(game.config);

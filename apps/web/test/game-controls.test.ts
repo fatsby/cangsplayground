@@ -82,3 +82,38 @@ describe("host lifecycle availability", () => {
     expect(canControl("reveal", game)).toBe(true);
   });
 });
+
+it("handles VOTING and FINISHED", () => {
+  const voting = {
+    ...session("VOTING"),
+    groups: [
+      { ...group("VOTING"), timer: { endsAt: 1, pausedRemainingMs: null, durationMs: 30_000 } },
+    ],
+  };
+  expect(canControl("pause", voting)).toBe(true);
+  expect(canControl("resume", voting)).toBe(false);
+  expect(canControl("skip", voting)).toBe(true);
+  expect(canControl("endRound", voting)).toBe(false);
+  const pausedVote = {
+    ...voting,
+    groups: [
+      { ...group("VOTING"), timer: { endsAt: null, pausedRemainingMs: 9000, durationMs: 30_000 } },
+    ],
+  };
+  expect(canControl("resume", pausedVote)).toBe(true);
+  expect(mainControl(pausedVote).cmd).toBe("resume");
+  for (const cmd of [
+    "start",
+    "pause",
+    "resume",
+    "skip",
+    "extend",
+    "endRound",
+    "reveal",
+    "nextRound",
+  ] as const)
+    expect(canControl(cmd, session("FINISHED"))).toBe(false);
+});
+it("only offers Vote now while speaking", () => {
+  expect(canControl("endRound", { ...session("PREPARED"), voteDurationMs: 30_000 })).toBe(false);
+});

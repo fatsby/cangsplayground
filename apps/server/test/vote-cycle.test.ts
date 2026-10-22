@@ -1,6 +1,7 @@
 import { voteGame, setupVote } from "./vote-game.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { activePlayers } from "@cangsplayground/core";
+import { Lobby } from "../src/lobby/Lobby.js";
 import { TimerService } from "../src/timer/TimerService.js";
 import { buildView } from "../src/broadcast.js";
 import { registry } from "../src/games/registry.js";
@@ -119,4 +120,25 @@ describe("continue and leaving", () => {
     lobby.removePlayer(players[3]!.id);
     expect(group().phase).toBe("VOTING");
   });
+});
+
+it("resolveConfig runs once at prepare; validateGroup blocks prepare atomically", () => {
+  const resolveConfig = vi.fn(({ config }) => ({ ...config, resolved: true }));
+  registry.set(voteGame.id, {
+    ...voteGame,
+    resolveConfig,
+    validateGroup: ({ group }) => (group.playerIds.length < 4 ? `${group.name} is small.` : null),
+  });
+  const lobby = new Lobby({ code: "ABC234", hostToken: "secret", seed: 1 });
+  for (let i = 0; i < 3; i++) lobby.join(`P${i}`);
+  lobby.selectGame(voteGame.id);
+  lobby.assign("count", 1);
+  expect(() => lobby.control("prepare")).toThrow("Team Red is small.");
+  expect(lobby.game!.config).toEqual({});
+  resolveConfig.mockClear();
+  lobby.join("P3");
+  lobby.assign("count", 1);
+  lobby.control("prepare");
+  expect(resolveConfig).toHaveBeenCalledTimes(1);
+  expect(lobby.game!.config.resolved).toBe(true);
 });

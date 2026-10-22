@@ -10,17 +10,22 @@ export function canControl(cmd: Control, session: GameSessionView, group?: Group
   const groups = group ? [group] : session.groups;
   return groups.some(
     (g) =>
+      g.phase !== "FINISHED" &&
       (
-        ({
+        {
           start: g.phase === "PREPARED",
-          pause: g.phase === "RUNNING",
-          resume: g.phase === "PAUSED",
-          skip: g.phase === "RUNNING" || g.phase === "PAUSED",
-          extend: g.phase === "RUNNING" || g.phase === "PAUSED",
-          endRound: g.phase !== "ROUND_END",
+          pause: g.phase === "RUNNING" || (g.phase === "VOTING" && g.timer.endsAt !== null),
+          resume:
+            g.phase === "PAUSED" || (g.phase === "VOTING" && g.timer.pausedRemainingMs !== null),
+          skip: g.phase === "RUNNING" || g.phase === "PAUSED" || g.phase === "VOTING",
+          extend: g.phase === "RUNNING" || g.phase === "PAUSED" || g.phase === "VOTING",
+          endRound:
+            g.phase !== "ROUND_END" &&
+            g.phase !== "VOTING" &&
+            (session.voteDurationMs == null || g.phase === "RUNNING" || g.phase === "PAUSED"),
           reveal: g.phase === "ROUND_END" && !g.revealed,
           nextRound: g.phase === "ROUND_END",
-        }) as Partial<Record<Control, boolean>>
+        } as Partial<Record<Control, boolean>>
       )[cmd] === true,
   );
 }

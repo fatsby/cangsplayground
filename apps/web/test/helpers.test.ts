@@ -3,7 +3,12 @@ import type { LobbyView, ConfigField } from "@cangsplayground/core";
 import { createLobbyStore } from "../src/store";
 import { bestClockSample } from "../src/socket/clock";
 import { timerDisplay } from "@cangsplayground/ui";
-import { configDefaults, configValue, fieldControl } from "../src/components/config-fields";
+import {
+  configDefaults,
+  configValue,
+  fieldControl,
+  visibleFields,
+} from "../src/components/config-fields";
 
 const view: LobbyView = {
   viewer: { kind: "player", playerId: "p1" },
@@ -90,4 +95,16 @@ describe("catalog-driven config fields", () => {
       configDefaults(fields, { seconds: 60, ready: true }, { seconds: 30, ready: false }),
     ).toMatchObject({ seconds: 30, ready: false, level: "a2", prompt: "", title: "" });
   });
+});
+
+it("visibleFields hides fields whose showWhen does not match", () => {
+  const fields = [
+    { key: "category", label: "C", kind: "select" },
+    { key: "foodTopic", label: "F", kind: "select", showWhen: { key: "category", equals: "food" } },
+  ] as ConfigField[];
+  expect(visibleFields(fields, { category: "location" }).map((f) => f.key)).toEqual(["category"]);
+  expect(visibleFields(fields, { category: "food" }).map((f) => f.key)).toEqual([
+    "category",
+    "foodTopic",
+  ]);
 });

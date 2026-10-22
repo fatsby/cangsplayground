@@ -35,6 +35,7 @@ import {
   type PlayerSummary,
   type GroupGameView,
   type TimerState,
+  type GameClockView,
 } from "@cangsplayground/core";
 import { timerDisplay } from "./timer";
 
@@ -280,6 +281,22 @@ export function LobbyCodeDisplay({
     </div>
   );
 }
+export function GameClock({
+  clock,
+  serverNow,
+  size = "sm",
+}: {
+  clock: GameClockView;
+  serverNow: () => number;
+  size?: "sm" | "lg";
+}) {
+  return (
+    <div className={`cp-game-clock cp-game-clock-${size}`}>
+      <span>{clock.done ? "Time's up" : "Game time"}</span>
+      {!clock.done && <Timer timer={clock.timer} serverNow={serverNow} />}
+    </div>
+  );
+}
 export function Timer({
   timer,
   serverNow,
@@ -414,7 +431,7 @@ export function GroupCard({
         <ul className="cp-members">
           {group.playerIds.map((id) => (
             <li
-              className={`cp-person ${speaking && game.currentSpeakerId === id ? "cp-speaker" : ""}`}
+              className={`cp-person ${game?.eliminated.includes(id) ? "cp-member-out" : ""} ${speaking && game.currentSpeakerId === id ? "cp-speaker" : ""}`}
               key={id}
             >
               {speaking && game.currentSpeakerId === id && <Mic strokeWidth={2.25} size={24} />}

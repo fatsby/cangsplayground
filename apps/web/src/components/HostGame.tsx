@@ -1,5 +1,6 @@
 import type { GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
-import { Button, Chip, EmptyState, Panel, TeamBadge, Timer } from "@cangsplayground/ui";
+import { Button, Chip, EmptyState, Panel, TeamBadge, Timer, GameClock } from "@cangsplayground/ui";
+import { gameViews } from "../games/registry";
 import { ConfigForm } from "./ConfigForm";
 import { canControl, mainControl, supportsControl, type Control } from "./game-controls";
 export function HostGame({
@@ -37,6 +38,7 @@ export function HostGame({
         {!view.catalog.length && <EmptyState message="No games are ready yet" />}
       </div>
     );
+  const labels = gameViews[game.gameId]?.controlLabels;
   const allowed =
     view.groups.length > 0 &&
     view.groups.every((g) => g.playerIds.length >= (entry?.minPlayersPerGroup ?? 1));
@@ -46,6 +48,7 @@ export function HostGame({
         <h1>{game.name}</h1>
         <Chip>{game.stage === "CONFIGURING" ? "Set up" : "Playing"}</Chip>
       </div>
+      {game.clock && <GameClock clock={game.clock} serverNow={serverNow} />}
       {entry && (
         <Panel className="cp-stack">
           <h2>Game settings</h2>
@@ -77,7 +80,19 @@ export function HostGame({
                 <Panel key={runtime.groupId} className="cp-stack">
                   <div className="cp-row cp-spread">
                     <TeamBadge teamIndex={group.index} />
-                    <span className="cp-muted">Round {runtime.round}</span>
+                    <Chip>
+                      {runtime.phase === "RUNNING"
+                        ? "Speaking"
+                        : runtime.phase === "VOTING"
+                          ? "Voting"
+                          : runtime.phase === "ROUND_END"
+                            ? "Waiting"
+                            : runtime.phase === "FINISHED"
+                              ? "Finished"
+                              : runtime.phase === "PAUSED"
+                                ? "Paused"
+                                : "Ready"}
+                    </Chip>
                   </div>
                   <Timer timer={runtime.timer} serverNow={serverNow} />
                   <p className="cp-person">
@@ -85,10 +100,11 @@ export function HostGame({
                   </p>
                   <div className="cp-row">
                     <Button
+                      hidden={labels?.[mainControl(game, runtime).cmd] === null}
                       disabled={busy || !canControl(mainControl(game, runtime).cmd, game, runtime)}
                       onClick={() => control(mainControl(game, runtime).cmd, runtime.groupId)}
                     >
-                      {mainControl(game, runtime).label}
+                      {labels?.[mainControl(game, runtime).cmd] ?? mainControl(game, runtime).label}
                     </Button>
                   </div>
                   <SecondaryControls
@@ -133,14 +149,17 @@ function SecondaryControls({
           ["resume", "Resume"],
         ] as const
       )
-        .filter(([cmd]) => supportsControl(cmd, game))
+        .filter(
+          ([cmd]) =>
+            supportsControl(cmd, game) && gameViews[game.gameId]?.controlLabels?.[cmd] !== null,
+        )
         .map(([cmd, label]) => (
           <Button
             key={cmd}
             disabled={disabled || !canControl(cmd, game, group)}
             onClick={() => control(cmd, group?.groupId)}
           >
-            {label}
+            {gameViews[game.gameId]?.controlLabels?.[cmd] ?? label}
           </Button>
         ))}
     </div>

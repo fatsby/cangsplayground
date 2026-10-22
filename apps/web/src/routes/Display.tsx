@@ -5,7 +5,14 @@ import { Maximize, ScanLine } from "lucide-react";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 import confetti from "canvas-confetti";
 import { teamStyle } from "@cangsplayground/core";
-import { Button, GroupCard, LobbyCodeDisplay, Switch, Waiting } from "@cangsplayground/ui";
+import {
+  Button,
+  GameClock,
+  GroupCard,
+  LobbyCodeDisplay,
+  Switch,
+  Waiting,
+} from "@cangsplayground/ui";
 import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
@@ -159,6 +166,9 @@ export default function Display() {
           <div className="projector-content">
             {session && (
               <div className="projector-public">
+                {session.clock && (
+                  <GameClock clock={session.clock} serverNow={serverNow} size="lg" />
+                )}
                 {Header ? (
                   <Header session={session} />
                 ) : session.publicInfo && typeof session.publicInfo === "object" ? (

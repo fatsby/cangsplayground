@@ -6,6 +6,7 @@ import {
   TeamBadge,
   TeamShape,
   Timer,
+  GameClock,
   Waiting,
   YourTurn,
   teamVars,
@@ -62,6 +63,7 @@ export default function Player() {
           <>
             <header className="player-header">
               <strong className="cp-person">{view.me.name}</strong>
+              {session?.clock && <GameClock clock={session.clock} serverNow={serverNow} />}
               {group && <TeamBadge teamIndex={group.index} />}
             </header>
             {!group ? (
@@ -115,9 +117,13 @@ export default function Player() {
                       ? "Game paused"
                       : runtime.phase === "PREPARED"
                         ? "Get ready"
-                        : runtime.phase === "ROUND_END"
-                          ? "Round finished"
-                          : "Listen to your team"}
+                        : runtime.phase === "VOTING"
+                          ? "Vote now"
+                          : runtime.phase === "FINISHED"
+                            ? "Game over"
+                            : runtime.phase === "ROUND_END"
+                              ? "Round finished"
+                              : "Listen to your team"}
                   </span>
                   <Timer timer={runtime.timer} serverNow={serverNow} />
                 </div>

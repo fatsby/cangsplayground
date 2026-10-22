@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import type { ConfigField } from "@cangsplayground/core";
 import { Button, Input, Switch } from "@cangsplayground/ui";
-import { configDefaults, configValue, fieldControl } from "./config-fields";
+import { configDefaults, configValue, fieldControl, visibleFields } from "./config-fields";
 export function ConfigForm({
   fields,
   defaults,
@@ -33,7 +33,7 @@ export function ConfigForm({
         }
       }}
     >
-      {fields.map((field) => {
+      {visibleFields(fields, values).map((field) => {
         const control = fieldControl(field),
           fieldId = `${id}-${field.key}`,
           value = values[field.key];

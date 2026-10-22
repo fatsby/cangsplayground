@@ -63,6 +63,7 @@ export interface ConfigField {
   unit?: string; // "sec"
   options?: { value: string; label: string }[];
   help?: string;
+  showWhen?: { key: string; equals: string };
 }
 
 /** GAME-01 card on the Host Console. */
@@ -102,6 +103,7 @@ export interface GameClockView {
 }
 
 export interface GameSessionView {
+  voteDurationMs?: number | null;
   clock: GameClockView | null;
   gameId: string;
   name: string;

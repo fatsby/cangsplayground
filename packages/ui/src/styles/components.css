@@ -770,3 +770,20 @@ textarea.cp-input {
     transform: none;
   }
 }
+
+.cp-member-out {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+.cp-game-clock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+.cp-game-clock > span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.cp-game-clock-lg .cp-timer {
+  font-size: clamp(2rem, 4vw, 4rem);
+}
