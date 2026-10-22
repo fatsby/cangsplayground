@@ -183,3 +183,137 @@ describe("Who's the Spy", () => {
     expect(JSON.stringify(whosTheSpy.publicInfo(config))).not.toMatch(/airport/i);
   });
 });
+
+function vote(state: GroupRuntime<WhosTheSpyData>, actor: string, targetId: unknown) {
+  return whosTheSpy.onAction!({
+    config,
+    state,
+    actor: { kind: "player", playerId: actor },
+    action: { type: "vote", payload: { targetId } },
+    rng: createRng(1),
+  });
+}
+it("accepts one locked vote per active player and asks to close when everyone voted", () => {
+  const state = runtime({}, { phase: "VOTING", turnOrder: ["a", "b", "c"] });
+  const first = vote(state, "a", "b")!;
+  expect(first.closeVote).toBe(false);
+  state.data = first.data!;
+  expect(vote(state, "a", "c")).toBeNull();
+  expect(vote(state, "b", "b")).toBeNull();
+  expect(vote(state, "d", "a")).toBeNull();
+  expect(vote(state, "b", "x")).toBeNull();
+  expect(vote(state, "b", 42)).toBeNull();
+  state.data = vote(state, "b", "a")!.data!;
+  expect(vote(state, "c", "a")!.closeVote).toBe(true);
+  expect(view(state, { kind: "player", playerId: "a" }).myVote).toBe("b");
+  expect(
+    vote(runtime({}, { phase: "VOTING", turnOrder: ["a", "b", "c"], eliminated: ["x"] }), "x", "a"),
+  ).toBeNull();
+});
+it("rejects votes while the vote timer is paused or outside VOTING", () => {
+  for (const phase of ["PREPARED", "RUNNING", "PAUSED", "ROUND_END", "FINISHED"] as const)
+    expect(vote(runtime({}, { phase }), "a", "b")).toBeNull();
+  expect(
+    vote(
+      runtime(
+        {},
+        { phase: "VOTING", timer: { endsAt: null, pausedRemainingMs: 9000, durationMs: 30000 } },
+      ),
+      "a",
+      "b",
+    ),
+  ).toBeNull();
+});
+it("onVoteEnd: plurality eliminates; tie or no votes eliminates nobody", () => {
+  const end = (votes: Record<string, string>) =>
+    whosTheSpy.onVoteEnd!({ config, state: runtime({ votes }, { phase: "VOTING" }) });
+  const plural = end({ a: "b", c: "b", b: "a" });
+  expect(plural.eliminate).toEqual(["b"]);
+  expect(plural.data).toMatchObject({
+    votes: {},
+    voteNumber: 1,
+    lastVote: { out: "b", wasSpy: true, tally: { b: 2, a: 1 } },
+  });
+  expect(end({ a: "b", b: "a" }).data.lastVote!.out).toBeNull();
+  expect(end({}).data.lastVote).toEqual({ out: null, wasSpy: false, tally: {} });
+  expect(end({ a: "b", c: "b", outsider: "a", b: "gone" }).data.lastVote!.tally).toEqual({ b: 2 });
+});
+it("team wins when the last spy is voted out; spies win when civilians <= spies", () => {
+  const end = (
+    votes: Record<string, string>,
+    spies: string[] = ["b"],
+    turnOrder = ["a", "b", "c"],
+  ) =>
+    whosTheSpy.onVoteEnd!({
+      config,
+      state: runtime({ votes, spies }, { phase: "VOTING", turnOrder }),
+    });
+  expect(end({ a: "b", c: "b", b: "a" })).toMatchObject({
+    finished: true,
+    data: { result: { winner: "team", reason: "caught" } },
+  });
+  expect(end({ a: "b", c: "a", b: "a" })).toMatchObject({
+    finished: true,
+    data: { result: { winner: "spies", reason: "outnumbered" } },
+  });
+  expect(end({ b: "a", c: "a", d: "a" }, ["b", "d"], ["a", "b", "c", "d", "e"])).toMatchObject({
+    finished: true,
+    data: { result: { winner: "spies", reason: "outnumbered" } },
+  });
+});
+it("onPlayerLeft drops votes, can finish, can close the vote", () => {
+  const left = (state: GroupRuntime<WhosTheSpyData>, playerId: string) =>
+    whosTheSpy.onPlayerLeft!({ config, state, playerId });
+  expect(left(runtime({}, { turnOrder: ["a", "c"] }), "b")).toMatchObject({
+    finished: true,
+    data: { result: { winner: "team", reason: "left" } },
+  });
+  expect(left(runtime({}, { turnOrder: ["b", "c"] }), "a")).toMatchObject({
+    finished: true,
+    data: { result: { winner: "spies", reason: "outnumbered" } },
+  });
+  const outcome = left(
+    runtime(
+      { spies: ["d"], votes: { a: "c", c: "a", b: "d", d: "b" } },
+      { phase: "VOTING", turnOrder: ["a", "c", "d"] },
+    ),
+    "b",
+  );
+  expect(outcome.data.votes).toEqual({ a: "c", c: "a" });
+  expect(outcome.closeVote).toBe(false);
+  expect(
+    left(
+      runtime(
+        { spies: ["d"], votes: { a: "c", c: "a", d: "a" } },
+        { phase: "VOTING", turnOrder: ["a", "c", "d"] },
+      ),
+      "b",
+    ).closeVote,
+  ).toBe(true);
+  expect(left(runtime({}, { phase: "VOTING", turnOrder: ["a", "c", "d"] }), "b").closeVote).toBe(
+    false,
+  );
+});
+it("onGameTimeUp sets spies/time only when unfinished", () => {
+  for (const phase of ["RUNNING", "VOTING", "ROUND_END", "PAUSED", "PREPARED"] as const) {
+    const state = runtime({}, { phase });
+    expect(whosTheSpy.onGameTimeUp!({ config, state }).result).toEqual({
+      winner: "spies",
+      reason: "time",
+    });
+  }
+  const state = runtime({ result: { winner: "team", reason: "caught" } });
+  expect(whosTheSpy.onGameTimeUp!({ config, state }).result).toEqual(state.data.result);
+});
+it("onContinue clears votes and lastVote, keeps spies/topic/voteNumber", () => {
+  const state = runtime({
+    votes: { a: "b" },
+    voteNumber: 2,
+    lastVote: { out: "a", wasSpy: false, tally: { a: 2 } },
+  });
+  expect(whosTheSpy.onContinue!({ config, state, rng: createRng(1) })).toEqual({
+    ...state.data,
+    votes: {},
+    lastVote: null,
+  });
+});

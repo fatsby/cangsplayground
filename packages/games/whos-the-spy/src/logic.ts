@@ -9,7 +9,18 @@ import {
   type WhosTheSpyData,
   type WhosTheSpyGroupView,
   type WhosTheSpyPublicInfo,
+  type GameResult,
 } from "./types.js";
+function resultFor(
+  active: string[],
+  spies: string[],
+  reason: "caught" | "left",
+): GameResult | null {
+  const count = active.filter((id) => spies.includes(id)).length;
+  if (count === 0) return { winner: "team", reason };
+  if (active.length - count <= count) return { winner: "spies", reason: "outnumbered" };
+  return null;
+}
 export const whosTheSpy: GameModule<WhosTheSpyConfig, WhosTheSpyData> = {
   id: GAME_ID,
   name: "Who's the Spy",
@@ -96,6 +107,80 @@ export const whosTheSpy: GameModule<WhosTheSpyConfig, WhosTheSpyData> = {
       result: null,
     };
   },
+  onAction({ state, actor, action }) {
+    if (
+      action.type !== "vote" ||
+      state.phase !== "VOTING" ||
+      state.timer.endsAt === null ||
+      actor.kind !== "player"
+    )
+      return null;
+    const active = activePlayers(state),
+      id = actor.playerId;
+    const payload = action.payload;
+    const target =
+      payload && typeof payload === "object" && "targetId" in payload ? payload.targetId : null;
+    if (
+      !active.includes(id) ||
+      Object.hasOwn(state.data.votes, id) ||
+      typeof target !== "string" ||
+      target === id ||
+      !active.includes(target)
+    )
+      return null;
+    const votes = { ...state.data.votes, [id]: target };
+    return {
+      data: { ...state.data, votes },
+      closeVote: active.every((p) => Object.hasOwn(votes, p)),
+    };
+  },
+  onVoteEnd({ state }) {
+    const active = activePlayers(state),
+      tally: Record<string, number> = {};
+    for (const [voter, target] of Object.entries(state.data.votes)) {
+      if (active.includes(voter) && active.includes(target))
+        tally[target] = (tally[target] ?? 0) + 1;
+    }
+    const max = Math.max(0, ...Object.values(tally));
+    const leaders = Object.keys(tally).filter((id) => tally[id] === max);
+    const out = max > 0 && leaders.length === 1 ? leaders[0]! : null;
+    const result = resultFor(
+      active.filter((id) => id !== out),
+      state.data.spies,
+      "caught",
+    );
+    return {
+      data: {
+        ...state.data,
+        votes: {},
+        voteNumber: state.data.voteNumber + 1,
+        lastVote: { out, wasSpy: out !== null && state.data.spies.includes(out), tally },
+        result,
+      },
+      eliminate: out ? [out] : [],
+      finished: result !== null,
+    };
+  },
+  onContinue: ({ state }) => ({ ...state.data, votes: {}, lastVote: null }),
+  onPlayerLeft({ state, playerId }) {
+    const votes = Object.fromEntries(
+      Object.entries(state.data.votes).filter(
+        ([voter, target]) => voter !== playerId && target !== playerId,
+      ),
+    );
+    const active = activePlayers(state);
+    const result = state.data.result ?? resultFor(active, state.data.spies, "left");
+    return {
+      data: { ...state.data, votes, result },
+      finished: result !== null,
+      closeVote:
+        state.phase === "VOTING" &&
+        Object.keys(votes).length > 0 &&
+        active.every((id) => Object.hasOwn(votes, id)),
+    };
+  },
+  onGameTimeUp: ({ state }) =>
+    state.data.result ? state.data : { ...state.data, result: { winner: "spies", reason: "time" } },
   publicInfo: (c): WhosTheSpyPublicInfo => ({ category: c.category, turnSeconds: c.turnSeconds }),
   viewFor({ state, viewer, isMember }): WhosTheSpyGroupView {
     const d = state.data,
