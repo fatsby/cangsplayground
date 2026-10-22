@@ -226,3 +226,18 @@ it("shows preparation instructions instead of Now/Next before Start", () => {
   expect(root.textContent).not.toContain("Now:");
   expect(root.textContent).not.toContain("Next:");
 });
+it("keeps the purple primary vote action and teal progress together in a sticky footer", () => {
+  const root = screen(playerView("VOTING", { voted: ["p2", "p3"] }));
+  const footer = root.querySelector(".cp-sticky-action");
+  const lock = [...root.querySelectorAll("button")].find(
+    (button) => button.textContent === "Lock my vote",
+  );
+  expect(lock?.classList.contains("cp-button-primary")).toBe(true);
+  expect(footer?.contains(lock!)).toBe(true);
+  expect(footer?.textContent).toContain("2 of 7 voted");
+  const progress = footer?.querySelector('[role="progressbar"]');
+  expect(progress?.getAttribute("aria-valuenow")).toBe("2");
+  expect(progress?.getAttribute("aria-valuemax")).toBe("7");
+  expect(root.querySelector("progress")).toBeNull();
+  expect(root.querySelectorAll(".wts-vote-option")).toHaveLength(6);
+});

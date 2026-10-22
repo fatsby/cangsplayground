@@ -81,9 +81,13 @@ function VoteScreen(props: PlayerProps) {
   };
   return (
     <Panel className="cp-stack wts-voting">
-      <h1>Who's the spy?</h1>
-      <p className="cp-muted">Vote {data.voteNumber + 1} · Pick one player</p>
-      <Timer timer={group.timer} serverNow={serverNow} />
+      <div className="wts-vote-heading">
+        <div>
+          <h1>Who's the spy?</h1>
+          <p className="cp-muted">Vote {data.voteNumber + 1} · Pick one player</p>
+        </div>
+        <Timer timer={group.timer} serverNow={serverNow} />
+      </div>
       {paused && <p className="cp-muted">Game paused. Wait for your teacher…</p>}
       <div className="wts-vote-options" aria-label="Pick one player">
         {active
@@ -100,17 +104,30 @@ function VoteScreen(props: PlayerProps) {
             </Button>
           ))}
       </div>
-      <p>
-        {data.voted.length} of {active.length} voted
-      </p>
-      <progress aria-label="Players who voted" max={active.length} value={data.voted.length} />
-      <Button
-        variant="primary"
-        disabled={!!locked || !targetId || submitting || paused || !act}
-        onClick={() => void lock()}
-      >
-        {locked ? "Vote locked" : "Lock my vote"}
-      </Button>
+      <div className="cp-sticky-action wts-vote-action">
+        <p>
+          {data.voted.length} of {active.length} voted
+        </p>
+        <div
+          className="wts-vote-progress"
+          role="progressbar"
+          aria-label="Players who voted"
+          aria-valuemin={0}
+          aria-valuemax={active.length}
+          aria-valuenow={data.voted.length}
+        >
+          <span
+            style={{ width: `${active.length ? (data.voted.length / active.length) * 100 : 0}%` }}
+          />
+        </div>
+        <Button
+          variant="primary"
+          disabled={!!locked || !targetId || submitting || paused || !act}
+          onClick={() => void lock()}
+        >
+          {locked ? "Vote locked" : "Lock my vote"}
+        </Button>
+      </div>
     </Panel>
   );
 }
