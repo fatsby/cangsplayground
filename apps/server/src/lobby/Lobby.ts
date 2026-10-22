@@ -132,7 +132,10 @@ export class Lobby {
       for (const group of this.game.groups) {
         if (group.groupId !== player.groupId) continue;
         this.removeTurns(group, playerId);
-        if (group.phase === "FINISHED") continue;
+        if (group.phase === "FINISHED") {
+          this.clearRoundWarnings(group.groupId);
+          continue;
+        }
         const outcome = this.game.module.onPlayerLeft?.({
           config: this.game.config,
           state: group,
@@ -140,10 +143,8 @@ export class Lobby {
         });
         if (outcome) {
           group.data = outcome.data;
-          if (outcome.finished) {
-            group.phase = "FINISHED";
-            this.idle(group);
-          } else if (outcome.closeVote && group.phase === "VOTING") this.closeVote(group);
+          if (outcome.finished) this.finishGroup(group);
+          else if (outcome.closeVote && group.phase === "VOTING") this.closeVote(group);
         }
       }
     }
@@ -216,6 +217,16 @@ export class Lobby {
   }
   private duration() {
     return this.game!.module.turnDurationMs(this.game!.config) ?? 0;
+  }
+  private clearRoundWarnings(groupId: string) {
+    this.warnings = this.warnings.filter(
+      (warning) => warning.code !== "PLAYER_LEFT_MID_ROUND" || warning.groupId !== groupId,
+    );
+  }
+  private finishGroup(group: GroupRuntime) {
+    group.phase = "FINISHED";
+    this.idle(group);
+    this.clearRoundWarnings(group.groupId);
   }
   private idle(group: GroupRuntime) {
     group.timer = { endsAt: null, pausedRemainingMs: null, durationMs: this.duration() };
@@ -376,7 +387,7 @@ export class Lobby {
                 group.round + 1,
               ),
             );
-          this.warnings = [];
+          this.clearRoundWarnings(group.groupId);
           break;
       }
       accepted = true;
@@ -412,8 +423,7 @@ export class Lobby {
     for (const group of game.groups) {
       if (group.phase === "FINISHED") continue;
       group.data = game.module.onGameTimeUp?.({ config: game.config, state: group }) ?? group.data;
-      group.phase = "FINISHED";
-      this.idle(group);
+      this.finishGroup(group);
     }
     game.clock = {
       timer: { ...game.clock.timer, endsAt: null, pausedRemainingMs: null },
@@ -453,8 +463,11 @@ export class Lobby {
       }
     }
     group.turnIndex = group.turnOrder.length;
-    group.phase = outcome?.finished ? "FINISHED" : "ROUND_END";
-    this.idle(group);
+    if (outcome?.finished) this.finishGroup(group);
+    else {
+      group.phase = "ROUND_END";
+      this.idle(group);
+    }
   }
   advance(group: GroupRuntime, expired: boolean) {
     if (expired && this.game?.module.onTimerEnd)
