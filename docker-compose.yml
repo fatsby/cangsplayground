@@ -12,3 +12,16 @@ services:
     environment:
       PUBLIC_URL: ${PUBLIC_URL:?set PUBLIC_URL in .env or run scripts/docker-up.sh}
       LOBBY_TTL_MINUTES: ${LOBBY_TTL_MINUTES:-180}
+
+  # Cloudflare Tunnel (profile "tunnel"): publishes the app at TUNNEL_PUBLIC_URL without opening ports.
+  # The tunnel's public hostname must point to http://cangsplayground:3000 (set in the Cloudflare dashboard).
+  cloudflared:
+    image: cloudflare/cloudflared:2026.9.3
+    container_name: cangsplayground-tunnel
+    profiles: [tunnel]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      - cangsplayground
