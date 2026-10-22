@@ -16,6 +16,7 @@ import {
   type HostWarning,
   type Rng,
   type GameModule,
+  type GameClockView,
 } from "@cangsplayground/core";
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
@@ -30,6 +31,7 @@ export interface Player {
   lastSeenAt: number;
 }
 export interface Session {
+  clock: GameClockView | null;
   module: GameModule;
   config: Record<string, any>;
   stage: "CONFIGURING" | "ACTIVE";
@@ -196,6 +198,7 @@ export class Lobby {
     if (!module) fail("NOT_FOUND", "Game not found.");
     this.game = {
       module,
+      clock: null,
       config: structuredClone(module.defaultConfig),
       stage: "CONFIGURING",
       groups: [],
@@ -267,6 +270,11 @@ export class Lobby {
       this.validateGroups(this.groups);
       game.groups = this.groups.map((g) => this.prepareGroup(g, 1));
       game.stage = "ACTIVE";
+      const durationMs = game.module.gameDurationMs?.(game.config);
+      game.clock =
+        typeof durationMs === "number"
+          ? { timer: { endsAt: null, pausedRemainingMs: null, durationMs }, done: false }
+          : null;
       this.changed();
       return;
     }
@@ -364,6 +372,41 @@ export class Lobby {
       accepted = true;
     }
     if (!accepted) fail("INVALID_STATE", "This action is not ready.");
+    const clock = game.clock;
+    if (clock && !clock.done) {
+      const timer = clock.timer;
+      if (cmd === "start" && timer.endsAt === null && timer.pausedRemainingMs === null)
+        timer.endsAt = this.now() + timer.durationMs;
+      if (cmd === "pause" && !groupId && timer.endsAt !== null) {
+        timer.pausedRemainingMs = Math.max(0, timer.endsAt - this.now());
+        timer.endsAt = null;
+      }
+      if (cmd === "resume" && !groupId && timer.pausedRemainingMs !== null) {
+        timer.endsAt = this.now() + timer.pausedRemainingMs;
+        timer.pausedRemainingMs = null;
+      }
+    }
+    this.changed();
+  }
+  expireClock(endsAt: number) {
+    const game = this.game;
+    if (
+      !game?.clock ||
+      game.clock.done ||
+      game.clock.timer.endsAt !== endsAt ||
+      this.now() < endsAt
+    )
+      return;
+    for (const group of game.groups) {
+      if (group.phase === "FINISHED") continue;
+      group.data = game.module.onGameTimeUp?.({ config: game.config, state: group }) ?? group.data;
+      group.phase = "FINISHED";
+      this.idle(group);
+    }
+    game.clock = {
+      timer: { ...game.clock.timer, endsAt: null, pausedRemainingMs: null },
+      done: true,
+    };
     this.changed();
   }
   private endTurns(group: GroupRuntime) {

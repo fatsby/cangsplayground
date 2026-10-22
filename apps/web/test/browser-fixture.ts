@@ -104,6 +104,7 @@ export function fixture(
     version: 1,
     game: ["game", "turn"].includes(phase)
       ? {
+          clock: null,
           gameId: "free-talk",
           name: "Free Talk Timer",
           stage: "ACTIVE",

@@ -48,6 +48,7 @@ export function buildView(lobby: Lobby, viewer: Viewer): LobbyView {
     game: game
       ? {
           gameId: game.module.id,
+          clock: game.clock ? structuredClone(game.clock) : null,
           name: game.module.name,
           unsupportedControls: [...(game.module.unsupportedControls ?? [])],
           stage: game.stage,

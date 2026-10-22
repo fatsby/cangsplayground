@@ -24,6 +24,7 @@ function hostView(module: GameModule, phase: GroupGameView["phase"]): LobbyView 
     warnings: [],
     version: 1,
     game: {
+      clock: null,
       gameId: module.id,
       name: module.name,
       stage: "ACTIVE",

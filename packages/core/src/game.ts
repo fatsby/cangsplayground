@@ -92,6 +92,8 @@ export interface GameModule<Config = any, Data = any> {
   /** How many times each member speaks per round (default 1). */
   turnsPerPlayer?(config: Config): number;
   voteDurationMs?(config: Config): number | null;
+  gameDurationMs?(config: Config): number | null;
+  onGameTimeUp?(args: { config: Config; state: GroupRuntime<Data> }): Data;
   onVoteEnd?(args: { config: Config; state: GroupRuntime<Data> }): VoteOutcome<Data>;
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */

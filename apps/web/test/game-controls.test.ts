@@ -18,6 +18,7 @@ const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   data: null,
 });
 const session = (...phases: GroupGameView["phase"][]): GameSessionView => ({
+  clock: null,
   gameId: "free-talk",
   name: "Free Talk",
   stage: "ACTIVE",
@@ -51,6 +52,7 @@ describe("host lifecycle availability", () => {
     const free = session("RUNNING");
     const secret = {
       ...free,
+      clock: null,
       gameId: secretWord.id,
       unsupportedControls: secretWord.unsupportedControls,
     };
@@ -66,6 +68,7 @@ describe("host lifecycle availability", () => {
   it("uses module capabilities rather than game ids, including for the main control", () => {
     const game = {
       ...session("RUNNING"),
+      clock: null,
       gameId: "another-game",
       unsupportedControls: ["pause"] as const,
     };

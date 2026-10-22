@@ -96,7 +96,13 @@ export interface GroupGameView {
   data: unknown;
 }
 
+export interface GameClockView {
+  timer: TimerState;
+  done: boolean;
+}
+
 export interface GameSessionView {
+  clock: GameClockView | null;
   gameId: string;
   name: string;
   /** Omitted means all controls are supported. Core lifecycle controls are always supported. */
