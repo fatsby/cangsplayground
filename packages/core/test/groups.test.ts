@@ -58,6 +58,11 @@ describe("validatePlan / describePlan", () => {
     expect(describePlan(24, "count", 4)).toBe("24 players → 4 groups × 6");
     expect(describePlan(25, "maxSize", 6)).toBe("25 players, max 6 → 5 groups (5, 5, 5, 5, 5)");
   });
+
+  it("uses the singular for one player", () => {
+    expect(describePlan(1, "count", 1)).toBe("1 player → 1 group × 1");
+    expect(validatePlan([0], 1).reason).toBe("Each group needs at least 1 player. Try fewer groups.");
+  });
 });
 
 describe("lobby code & teams", () => {

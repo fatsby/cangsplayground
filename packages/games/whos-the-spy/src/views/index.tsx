@@ -252,9 +252,7 @@ function PlayerScreen(props: PlayerProps) {
   return (
     <div className="cp-stack">
       <h1>Who's the Spy</h1>
-      <p className="cp-muted">
-        Round {group.round} · Category: {categoryName(data.category)}
-      </p>
+      <p className="cp-muted">Category: {categoryName(data.category)}</p>
       <SecretCard>
         <SecretFace data={data} />
       </SecretCard>
