@@ -1,5 +1,16 @@
+import { useState } from "react";
 import type { GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
-import { Button, Chip, EmptyState, Panel, TeamBadge, Timer, GameClock } from "@cangsplayground/ui";
+import {
+  Button,
+  Chip,
+  EmptyState,
+  Panel,
+  TeamBadge,
+  Timer,
+  GameClock,
+  allGroupsFinished,
+  showTurnTimer,
+} from "@cangsplayground/ui";
 import { gameViews } from "../games/registry";
 import { ConfigForm } from "./ConfigForm";
 import { canControl, mainControl, supportsControl, type Control } from "./game-controls";
@@ -18,6 +29,9 @@ export function HostGame({
   configure: (config: Record<string, unknown>) => Promise<boolean>;
   control: (cmd: Control, groupId?: string) => void;
 }) {
+  const [draft, setDraft] = useState<{ gameId: string; config: Record<string, unknown> } | null>(
+    null,
+  );
   const game = view.game,
     entry = view.catalog.find((e) => e.id === game?.gameId);
   if (!game)
@@ -38,7 +52,11 @@ export function HostGame({
         {!view.catalog.length && <EmptyState message="No games are ready yet" />}
       </div>
     );
-  const labels = gameViews[game.gameId]?.controlLabels;
+  const views = gameViews[game.gameId];
+  const labels = views?.controlLabels;
+  const Status = views?.HostGroupStatus;
+  const Note = views?.HostConfigNote;
+  const finished = allGroupsFinished(game.groups);
   const allowed =
     view.groups.length > 0 &&
     view.groups.every((g) => g.playerIds.length >= (entry?.minPlayersPerGroup ?? 1));
@@ -46,20 +64,29 @@ export function HostGame({
     <div className="cp-stack">
       <div className="cp-row cp-spread">
         <h1>{game.name}</h1>
-        <Chip>{game.stage === "CONFIGURING" ? "Set up" : "Playing"}</Chip>
+        <Chip>{game.stage === "CONFIGURING" ? "Set up" : finished ? "Finished" : "Playing"}</Chip>
       </div>
-      {game.clock && <GameClock clock={game.clock} serverNow={serverNow} />}
+      {game.clock && <GameClock clock={game.clock} groups={game.groups} serverNow={serverNow} />}
       {entry && (
         <Panel className="cp-stack">
-          <h2>Game settings</h2>
-          <ConfigForm
-            key={game.gameId}
-            fields={entry.configFields}
-            defaults={entry.defaultConfig}
-            config={game.config ?? entry.defaultConfig}
-            disabled={busy}
-            onSave={configure}
-          />
+          <details key={`${game.gameId}-${game.stage}`} open={game.stage === "CONFIGURING"}>
+            <summary>Game settings</summary>
+            <ConfigForm
+              key={game.gameId}
+              fields={entry.configFields}
+              defaults={entry.defaultConfig}
+              config={game.config ?? entry.defaultConfig}
+              disabled={busy}
+              onSave={configure}
+              onValuesChange={(config) => setDraft({ gameId: game.gameId, config })}
+            />
+            {Note && (
+              <Note
+                lobby={view}
+                session={draft?.gameId === game.gameId ? { ...game, config: draft.config } : game}
+              />
+            )}
+          </details>
         </Panel>
       )}
       {!allowed && (
@@ -69,10 +96,12 @@ export function HostGame({
       )}
       {game.stage === "ACTIVE" && (
         <>
-          <Panel className="cp-stack">
-            <h2>All groups</h2>
-            <SecondaryControls game={game} disabled={busy} control={control} />
-          </Panel>
+          {!finished && (
+            <Panel className="cp-stack">
+              <h2>All groups</h2>
+              <SecondaryControls game={game} disabled={busy} control={control} />
+            </Panel>
+          )}
           {game.groups.map((runtime) => {
             const group = view.groups.find((g) => g.id === runtime.groupId);
             return (
@@ -80,39 +109,56 @@ export function HostGame({
                 <Panel key={runtime.groupId} className="cp-stack">
                   <div className="cp-row cp-spread">
                     <TeamBadge teamIndex={group.index} />
-                    <Chip>
-                      {runtime.phase === "RUNNING"
-                        ? "Speaking"
-                        : runtime.phase === "VOTING"
-                          ? "Voting"
-                          : runtime.phase === "ROUND_END"
-                            ? "Waiting"
-                            : runtime.phase === "FINISHED"
-                              ? "Finished"
-                              : runtime.phase === "PAUSED"
-                                ? "Paused"
-                                : "Ready"}
-                    </Chip>
+                    {Status ? (
+                      <Status lobby={view} session={game} group={runtime} serverNow={serverNow} />
+                    ) : (
+                      <Chip>
+                        {runtime.phase === "RUNNING"
+                          ? "Speaking"
+                          : runtime.phase === "VOTING"
+                            ? "Voting"
+                            : runtime.phase === "ROUND_END"
+                              ? "Waiting"
+                              : runtime.phase === "FINISHED"
+                                ? "Finished"
+                                : runtime.phase === "PAUSED"
+                                  ? "Paused"
+                                  : "Get ready"}
+                      </Chip>
+                    )}
                   </div>
-                  <Timer timer={runtime.timer} serverNow={serverNow} />
-                  <p className="cp-person">
-                    Now: {view.players.find((p) => p.id === runtime.currentSpeakerId)?.name ?? "—"}
+                  <p className="cp-muted">
+                    {views?.roundLabel?.(runtime, group) ?? `Round ${runtime.round}`}
                   </p>
-                  <div className="cp-row">
-                    <Button
-                      hidden={labels?.[mainControl(game, runtime).cmd] === null}
-                      disabled={busy || !canControl(mainControl(game, runtime).cmd, game, runtime)}
-                      onClick={() => control(mainControl(game, runtime).cmd, runtime.groupId)}
-                    >
-                      {labels?.[mainControl(game, runtime).cmd] ?? mainControl(game, runtime).label}
-                    </Button>
-                  </div>
-                  <SecondaryControls
-                    game={game}
-                    group={runtime}
-                    disabled={busy}
-                    control={control}
-                  />
+                  {showTurnTimer(runtime) && <Timer timer={runtime.timer} serverNow={serverNow} />}
+                  {(runtime.phase === "RUNNING" || runtime.phase === "PAUSED") && !Status && (
+                    <p className="cp-person">
+                      Now:{" "}
+                      {view.players.find((p) => p.id === runtime.currentSpeakerId)?.name ?? "—"}
+                    </p>
+                  )}
+                  {runtime.phase !== "FINISHED" && (
+                    <>
+                      <div className="cp-row">
+                        <Button
+                          hidden={labels?.[mainControl(game, runtime).cmd] === null}
+                          disabled={
+                            busy || !canControl(mainControl(game, runtime).cmd, game, runtime)
+                          }
+                          onClick={() => control(mainControl(game, runtime).cmd, runtime.groupId)}
+                        >
+                          {labels?.[mainControl(game, runtime).cmd] ??
+                            mainControl(game, runtime).label}
+                        </Button>
+                      </div>
+                      <SecondaryControls
+                        game={game}
+                        group={runtime}
+                        disabled={busy}
+                        control={control}
+                      />
+                    </>
+                  )}
                 </Panel>
               )
             );
@@ -151,7 +197,9 @@ function SecondaryControls({
       )
         .filter(
           ([cmd]) =>
-            supportsControl(cmd, game) && gameViews[game.gameId]?.controlLabels?.[cmd] !== null,
+            (!group || mainControl(game, group).cmd !== cmd) &&
+            supportsControl(cmd, game) &&
+            gameViews[game.gameId]?.controlLabels?.[cmd] !== null,
         )
         .map(([cmd, label]) => (
           <Button

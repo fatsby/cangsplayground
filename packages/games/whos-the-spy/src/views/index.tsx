@@ -1,3 +1,6 @@
+import { roundLabel } from "./round.js";
+import { HostGroupStatus, HostConfigNote } from "./host.js";
+import { ProjectorGroupStatus, ProjectorMemberMark } from "./projector.js";
 import { useState } from "react";
 import {
   Button,
@@ -230,35 +233,21 @@ function PlayerScreen(props: PlayerProps) {
 }
 function ProjectorHeader({ session }: { session: GameViewProps["session"] }) {
   const info = session.publicInfo as WhosTheSpyPublicInfo;
-  return <Chip>Category: {categoryName(info.category)}</Chip>;
+  return <div className="wts-projector-category"><Chip>Category: {categoryName(info.category)}</Chip></div>;
 }
 function ProjectorGroupCard(props: GameViewProps) {
   const data = dataOf(props.group);
   if (!data) return null;
   if (props.group.phase === "FINISHED")
-    return (
-      <p
-        className={`game-progress ${data.result?.winner === "team" ? "wts-caught" : "wts-danger"}`}
-      >
-        {data.result?.winner === "team" ? "Team wins!" : "Spy wins!"}
-      </p>
-    );
-  if (props.group.phase === "VOTING")
-    return (
-      <div className="cp-stack">
-        <strong>
-          Voting {data.voted.length}/{activeMembers(props).length}
-        </strong>
-        <ul className="wts-voted">
-          {data.voted.map((id) => (
-            <li key={id}>✓ {nameOf(props.lobby, id)}</li>
-          ))}
-        </ul>
-      </div>
-    );
+    return <p className={`wts-projector-result ${data.result?.winner === "team" ? "wts-team-result" : "wts-spy-result"}`}>
+      {data.result?.winner === "team" ? "Team wins!" : "Spy wins!"}
+    </p>;
+  if (props.group.phase === "VOTING") return null;
   if (props.group.phase === "ROUND_END")
-    return <p className="game-progress">Wait for your teacher…</p>;
-  return <p className="game-progress">Describe the topic. Keep it secret.</p>;
+    return <p className="wts-projector-tip">Wait for your teacher…</p>;
+  if (props.group.phase === "PAUSED" || props.session.clock?.timer.pausedRemainingMs != null)
+    return <p className="wts-projector-tip">Wait for your teacher…</p>;
+  return <p className="wts-projector-tip">Describe the topic. Keep it secret.</p>;
 }
 function HostGroupPanel({ lobby, group }: GameViewProps) {
   const data = dataOf(group);
@@ -280,6 +269,11 @@ function HostGroupPanel({ lobby, group }: GameViewProps) {
   );
 }
 export const whosTheSpyViews: GameViews = {
+  roundLabel,
+  HostGroupStatus,
+  HostConfigNote,
+  ProjectorGroupStatus,
+  ProjectorMemberMark,
   ProjectorHeader,
   ProjectorGroupCard,
   HostGroupPanel,
