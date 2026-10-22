@@ -73,3 +73,32 @@ it("clock expiry finishes paused and prepared groups and ignores stale callbacks
   expect(g1!.phase).toBe("FINISHED");
   expect(g2!.phase).toBe("FINISHED");
 });
+
+it("whole-class clock controls still work after every group was resumed separately (S2)", () => {
+  registry.set(voteGame.id, { ...voteGame, gameDurationMs: () => 120_000 });
+  const { lobby } = setupVote(8, 2);
+  lobby.control("start");
+  lobby.control("pause");
+  for (const group of lobby.game!.groups) lobby.control("resume", group.groupId);
+  expect(lobby.game!.groups.every((g) => g.phase === "RUNNING")).toBe(true);
+  expect(lobby.game!.clock!.timer.endsAt).toBeNull();
+  lobby.control("resume");
+  expect(lobby.game!.clock!.timer.endsAt).toBe(Date.now() + 120_000);
+  for (const group of lobby.game!.groups) lobby.control("pause", group.groupId);
+  lobby.control("pause");
+  expect(lobby.game!.clock!.timer).toMatchObject({ endsAt: null, pausedRemainingMs: 120_000 });
+  expect(() => lobby.control("pause")).toThrow("not ready");
+});
+it("the clock pauses and resumes while every unfinished group waits for Continue", () => {
+  registry.set(voteGame.id, { ...voteGame, gameDurationMs: () => 120_000 });
+  const { lobby } = setupVote(4);
+  lobby.control("start");
+  lobby.control("endRound");
+  lobby.control("skip");
+  expect(lobby.game!.groups[0]!.phase).toBe("ROUND_END");
+  lobby.control("pause");
+  expect(lobby.game!.clock!.timer.endsAt).toBeNull();
+  vi.advanceTimersByTime(5000);
+  lobby.control("resume");
+  expect(lobby.game!.clock!.timer.endsAt).toBe(Date.now() + 120_000);
+});

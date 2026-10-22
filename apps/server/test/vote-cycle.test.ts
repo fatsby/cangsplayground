@@ -142,3 +142,19 @@ it("resolveConfig runs once at prepare; validateGroup blocks prepare atomically"
   expect(resolveConfig).toHaveBeenCalledTimes(1);
   expect(lobby.game!.config.resolved).toBe(true);
 });
+
+it.each(["endRound", "skip", "leave"] as const)(
+  "opening a vote via %s while paused keeps its timer paused",
+  (trigger) => {
+    const { lobby, group } = setupVote(4);
+    lobby.control("start");
+    if (trigger !== "endRound") for (let i = 0; i < 7; i++) lobby.control("skip");
+    lobby.control("pause");
+    if (trigger === "leave") lobby.removePlayer(group().turnOrder[group().turnIndex]!);
+    else lobby.control(trigger);
+    expect(group().phase).toBe("VOTING");
+    expect(group().timer).toEqual({ endsAt: null, pausedRemainingMs: 30_000, durationMs: 30_000 });
+    lobby.control("resume");
+    expect(group().timer.endsAt).toBe(Date.now() + 30_000);
+  },
+);

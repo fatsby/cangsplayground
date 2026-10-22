@@ -317,3 +317,11 @@ it("onContinue clears votes and lastVote, keeps spies/topic/voteNumber", () => {
     lastVote: null,
   });
 });
+it("a summary member without a dealt role cannot see a role or topic before the result", () => {
+  const state = runtime({}, { turnOrder: ["a", "b", "c"], eliminated: [] });
+  expect(view(state, { kind: "player", playerId: "d" }, true)).toMatchObject({
+    role: null,
+    topic: null,
+    spies: null,
+  });
+});

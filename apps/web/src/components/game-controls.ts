@@ -7,6 +7,10 @@ export function canControl(cmd: Control, session: GameSessionView, group?: Group
   if (!supportsControl(cmd, session)) return false;
   if (cmd === "exit") return true;
   if (cmd === "prepare") return session.stage === "CONFIGURING";
+  if (!group && session.stage === "ACTIVE" && session.clock && !session.clock.done) {
+    if (cmd === "pause" && session.clock.timer.endsAt !== null) return true;
+    if (cmd === "resume" && session.clock.timer.pausedRemainingMs !== null) return true;
+  }
   const groups = group ? [group] : session.groups;
   return groups.some(
     (g) =>

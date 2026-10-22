@@ -203,3 +203,17 @@ it("rejects nextRound with INVALID_STATE when no requested group has ended", () 
     }
   }
 });
+it.each(["free-talk", "secret-word"])(
+  "ends an empty PREPARED %s group when its last member leaves (S8)",
+  (gameId) => {
+    const { lobby, players } = setup(3);
+    lobby.selectGame(gameId);
+    lobby.assign("count", 1);
+    lobby.control("prepare");
+    const group = lobby.game!.groups[0]!;
+    for (const player of players) lobby.removePlayer(player.id);
+    expect(group.turnOrder).toEqual([]);
+    expect(group.phase).toBe("ROUND_END");
+    expect(() => lobby.control("start")).toThrow("not ready");
+  },
+);

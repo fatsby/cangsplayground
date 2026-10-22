@@ -185,7 +185,12 @@ export const whosTheSpy: GameModule<WhosTheSpyConfig, WhosTheSpyData> = {
   viewFor({ state, viewer, isMember }): WhosTheSpyGroupView {
     const d = state.data,
       host = viewer.kind === "host",
-      member = viewer.kind === "player" && isMember;
+      member =
+        viewer.kind === "player" &&
+        isMember &&
+        (d.result !== null ||
+          activePlayers(state).includes(viewer.playerId) ||
+          state.eliminated.includes(viewer.playerId));
     const out = member && state.eliminated.includes(viewer.playerId);
     const role = member ? (d.spies.includes(viewer.playerId) ? "spy" : "civilian") : null;
     const reveal = host || (member && d.result !== null);

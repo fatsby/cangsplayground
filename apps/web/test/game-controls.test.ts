@@ -117,3 +117,24 @@ it("handles VOTING and FINISHED", () => {
 it("only offers Vote now while speaking", () => {
   expect(canControl("endRound", { ...session("PREPARED"), voteDurationMs: 30_000 })).toBe(false);
 });
+it("offers whole-class clock controls independently of group phases", () => {
+  const waiting = {
+    ...session("ROUND_END"),
+    clock: {
+      done: false,
+      timer: { endsAt: 120_000, pausedRemainingMs: null, durationMs: 120_000 },
+    },
+  };
+  expect(canControl("pause", waiting)).toBe(true);
+  expect(canControl("pause", waiting, waiting.groups[0])).toBe(false);
+  const paused = {
+    ...waiting,
+    clock: {
+      done: false,
+      timer: { endsAt: null, pausedRemainingMs: 120_000, durationMs: 120_000 },
+    },
+  };
+  expect(canControl("resume", paused)).toBe(true);
+  expect(mainControl(paused).cmd).toBe("resume");
+  expect(canControl("resume", paused, paused.groups[0])).toBe(false);
+});

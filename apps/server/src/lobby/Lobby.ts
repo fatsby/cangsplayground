@@ -176,6 +176,8 @@ export class Lobby {
     return { sizes };
   }
   move(playerId: string, toGroupId: string | null) {
+    if (this.game?.stage === "ACTIVE" && this.game.module.voteDurationMs)
+      fail("INVALID_STATE", "Exit the game to move players.");
     const player = this.players.get(playerId);
     if (!player) fail("NOT_FOUND", "Player not found.");
     const target = this.groups.find((g) => g.id === toGroupId);
@@ -379,21 +381,23 @@ export class Lobby {
       }
       accepted = true;
     }
-    if (!accepted) fail("INVALID_STATE", "This action is not ready.");
     const clock = game.clock;
     if (clock && !clock.done) {
       const timer = clock.timer;
-      if (cmd === "start" && timer.endsAt === null && timer.pausedRemainingMs === null)
+      if (accepted && cmd === "start" && timer.endsAt === null && timer.pausedRemainingMs === null)
         timer.endsAt = this.now() + timer.durationMs;
       if (cmd === "pause" && !groupId && timer.endsAt !== null) {
         timer.pausedRemainingMs = Math.max(0, timer.endsAt - this.now());
         timer.endsAt = null;
+        accepted = true;
       }
       if (cmd === "resume" && !groupId && timer.pausedRemainingMs !== null) {
         timer.endsAt = this.now() + timer.pausedRemainingMs;
         timer.pausedRemainingMs = null;
+        accepted = true;
       }
     }
+    if (!accepted) fail("INVALID_STATE", "This action is not ready.");
     this.changed();
   }
   expireClock(endsAt: number) {
@@ -429,9 +433,14 @@ export class Lobby {
     group: GroupRuntime,
     duration = this.game!.module.voteDurationMs!(this.game!.config)!,
   ) {
+    const paused = group.phase === "PAUSED";
     group.phase = "VOTING";
     group.turnIndex = group.turnOrder.length;
-    group.timer = { endsAt: this.now() + duration, pausedRemainingMs: null, durationMs: duration };
+    group.timer = {
+      endsAt: paused ? null : this.now() + duration,
+      pausedRemainingMs: paused ? duration : null,
+      durationMs: duration,
+    };
   }
   private closeVote(group: GroupRuntime) {
     const game = this.game!;
@@ -473,7 +482,9 @@ export class Lobby {
     const before = group.turnOrder.slice(0, group.turnIndex).filter((id) => id === playerId).length;
     group.turnOrder = group.turnOrder.filter((id) => id !== playerId);
     group.turnIndex -= before;
-    if (group.phase !== "RUNNING" && group.phase !== "PAUSED") return;
+    if (group.phase === "ROUND_END" || group.phase === "FINISHED") return;
+    if (this.game!.module.voteDurationMs && group.phase !== "RUNNING" && group.phase !== "PAUSED")
+      return;
     if (group.turnIndex >= group.turnOrder.length) this.endTurns(group);
     else if (current) this.freshTurn(group);
   }
