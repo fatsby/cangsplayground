@@ -1,0 +1,97 @@
+<style>
+  .flow { display:flex; gap:18px; overflow-x:auto; padding:8px 2px 16px; }
+  .step { flex:0 0 200px; }
+  .step .cap { font-size:12px; text-transform:uppercase; letter-spacing:.05em; opacity:.7; margin-bottom:6px; }
+  .phone { border:2px solid currentColor; border-radius:22px; padding:14px 12px; height:380px; display:flex; flex-direction:column; gap:10px; font-size:14px; }
+  .phone .top { display:flex; justify-content:space-between; font-size:11px; opacity:.7; }
+  .big { font-size:22px; font-weight:700; text-align:center; margin:8px 0 2px; }
+  .muted { opacity:.65; font-size:12px; text-align:center; }
+  .card { border:1px dashed currentColor; border-radius:12px; padding:12px; text-align:center; }
+  .spy { border-style:solid; border-width:2px; }
+  .pill { display:inline-block; border:1px solid currentColor; border-radius:999px; padding:1px 8px; font-size:11px; }
+  .row { display:flex; justify-content:space-between; align-items:center; border:1px solid currentColor; border-radius:8px; padding:6px 8px; font-size:13px; }
+  .row.sel { border-width:2px; font-weight:700; }
+  .row.out { opacity:.4; text-decoration:line-through; }
+  .btn { margin-top:auto; border:2px solid currentColor; border-radius:10px; text-align:center; padding:8px; font-weight:700; }
+  .timer { font-size:34px; font-weight:800; text-align:center; letter-spacing:.03em; }
+</style>
+
+<h2>Who's the Spy — màn hình điện thoại học sinh</h2>
+<p class="subtitle">Một lượt chơi từ trái sang phải. Kéo ngang nếu không thấy hết.</p>
+
+<div class="flow">
+
+  <div class="step">
+    <div class="cap">1a · Phát vai — dân</div>
+    <div class="phone">
+      <div class="top"><span>Nhóm 2</span><span>⏱ Game 12:00</span></div>
+      <div class="muted">Topic của bạn</div>
+      <div class="card"><div class="muted">Location</div><div class="big">Airport</div></div>
+      <div class="muted">Đừng nói thẳng tên topic.<br>Tìm ra ai không biết topic.</div>
+      <div class="muted" style="margin-top:auto">Đang chờ giáo viên bấm bắt đầu…</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="cap">1b · Phát vai — spy</div>
+    <div class="phone">
+      <div class="top"><span>Nhóm 2</span><span>⏱ Game 12:00</span></div>
+      <div class="card spy"><div class="big">🕵️ Bạn là SPY</div><div class="muted">Category: Location</div></div>
+      <div class="muted">Bạn không biết topic.<br>Nghe người khác nói và giả vờ như bạn biết.</div>
+      <div class="muted" style="margin-top:auto">Đang chờ giáo viên bấm bắt đầu…</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="cap">2 · Đang nói</div>
+    <div class="phone">
+      <div class="top"><span>Vòng 1/2</span><span>⏱ Game 10:42</span></div>
+      <div class="muted">Đang nói</div>
+      <div class="big">Minh An</div>
+      <div class="timer">0:37</div>
+      <div class="row"><span>1. Minh An</span><span class="pill">đang nói</span></div>
+      <div class="row"><span>2. Bảo</span><span></span></div>
+      <div class="row"><span>3. Linh (bạn)</span><span></span></div>
+      <div class="row"><span>4. Quân</span><span></span></div>
+      <div class="muted">Bấm "Xem lại vai" để xem topic của bạn</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="cap">3 · Vote</div>
+    <div class="phone">
+      <div class="top"><span>Vote lần 1</span><span>⏱ Game 4:10</span></div>
+      <div class="big" style="font-size:18px">Ai là spy?</div>
+      <div class="row"><span>Minh An</span></div>
+      <div class="row sel"><span>Bảo</span><span>✓</span></div>
+      <div class="row"><span>Quân</span></div>
+      <div class="muted">Đã vote: 2/4</div>
+      <div class="btn">Chốt vote</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="cap">4 · Kết quả vote</div>
+    <div class="phone">
+      <div class="top"><span>Vote lần 1</span><span>⏱ Game 3:55</span></div>
+      <div class="muted">Bị loại</div>
+      <div class="big">Bảo</div>
+      <div class="card"><b>KHÔNG phải spy</b><div class="muted">Spy vẫn còn trong nhóm!</div></div>
+      <div class="row out"><span>Bảo</span><span>3 phiếu</span></div>
+      <div class="row"><span>Quân</span><span>1 phiếu</span></div>
+      <div class="muted" style="margin-top:auto">Nói tiếp 2 vòng nữa…</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="cap">5 · Hết game</div>
+    <div class="phone">
+      <div class="top"><span>Nhóm 2</span><span>Kết thúc</span></div>
+      <div class="big">🎉 Dân thắng!</div>
+      <div class="card"><div class="muted">Topic là</div><div class="big">Airport</div></div>
+      <div class="muted">Spy: <b>Quân</b></div>
+      <div class="muted" style="margin-top:auto">Chờ giáo viên…</div>
+    </div>
+  </div>
+
+</div>

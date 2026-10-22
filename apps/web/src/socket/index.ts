@@ -10,6 +10,7 @@ import {
 } from "@cangsplayground/core";
 import { useLobbyStore } from "../store";
 import { bestClockSample, type ClockSample } from "./clock";
+import { newCommandId } from "./command-id";
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
   reconnection: true,
@@ -61,7 +62,7 @@ export function hostCommand<E extends HostEvent>(
   event: E,
   payload: Omit<C2SPayload<E>, "commandId">,
 ) {
-  return request(event, { ...payload, commandId: crypto.randomUUID() } as C2SPayload<E>);
+  return request(event, { ...payload, commandId: newCommandId() } as C2SPayload<E>);
 }
 let sample: ClockSample | null = null;
 let probing = false;

@@ -1,0 +1,354 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who's the Spy — new screens</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Unbounded:wght@500..800&family=Outfit:wght@400..700&display=swap">
+<style>
+:root {
+  --bg: #0D0F24; --surface: #171A3A; --surface-2: #20244D;
+  --ink: #F4F3FF; --muted: #A3A1CC; --border: #343A75;
+  --primary: #7C5CFF; --primary-fg: #FFFFFF;
+  --accent: #00E5C7; --accent-fg: #0D0F24;
+  --success: #2BE38B; --success-fg: #0D0F24;
+  --warning: #FFB547; --warning-fg: #0D0F24;
+  --danger: #FF4D7A; --danger-fg: #FFFFFF;
+  --secret: #FF4D7A; --secret-fg: #FFFFFF;
+  --shadow: 0 0 0 1px var(--border), 0 8px 24px -8px color-mix(in oklab, var(--primary) 60%, transparent);
+  --shadow-lg: 0 0 0 1px var(--border), 0 16px 48px -12px color-mix(in oklab, var(--primary) 70%, transparent);
+  --radius: 20px; --border-w: 1px;
+  --font-display: "Unbounded", "Outfit", system-ui, sans-serif;
+  --font-body: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --frame: #05060F;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); padding: 0 16px;
+  background-image: radial-gradient(60vmax 40vmax at 0% 0%, color-mix(in oklab, var(--primary) 25%, transparent), transparent 70%),
+    radial-gradient(50vmax 40vmax at 100% 100%, color-mix(in oklab, var(--accent) 15%, transparent), transparent 70%);
+  background-attachment: fixed; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 28px 0 72px; display: flex; flex-direction: column; gap: 48px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 40px); margin: 0; line-height: 1.1; }
+.lead { color: var(--muted); margin: 6px 0 0; max-width: 70ch; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sec-head h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin: 2px 0 4px; }
+.sec-head p { margin: 0; color: var(--muted); max-width: 70ch; }
+.sec { display: flex; flex-direction: column; gap: 20px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 16px;
+  min-height: 48px; padding: 0 20px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.btn.lg { min-height: 56px; font-size: 17px; width: 100%; }
+.btn.primary { background: var(--primary); color: var(--primary-fg); border-color: transparent; box-shadow: 0 0 0 1px var(--primary), 0 8px 24px -6px color-mix(in oklab, var(--primary) 80%, transparent); }
+.btn.danger { background: var(--danger); color: var(--danger-fg); border-color: transparent; box-shadow: 0 0 0 1px var(--danger), 0 8px 24px -6px color-mix(in oklab, var(--danger) 70%, transparent); }
+.btn[disabled] { opacity: .45; box-shadow: none; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 8px; border-radius: 999px; background: var(--team); color: var(--team-fg);
+  font-family: var(--font-display); font-weight: 700; font-size: 14px; white-space: nowrap; box-shadow: 0 0 16px -2px color-mix(in oklab, var(--team) 80%, transparent); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.dot { width: 12px; height: 12px; display: inline-block; background: currentColor; border-radius: 3px; }
+
+/* phones */
+.phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 32px 24px; justify-items: center; }
+.device { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 300px; }
+.device figcaption { font-size: 15px; color: var(--muted); text-align: center; max-width: 34ch; }
+.device figcaption b { color: var(--ink); font-family: var(--font-display); }
+.device figcaption i { color: var(--warning); font-style: normal; font-weight: 700; }
+.phone { width: 100%; height: 600px; border-radius: 40px; background: var(--frame); padding: 9px; box-shadow: var(--shadow-lg); }
+.screen { height: 100%; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); position: relative; }
+.screen.team { background: color-mix(in oklab, var(--team) 14%, var(--surface)); }
+.sb { display: flex; justify-content: space-between; align-items: center; padding: 10px 22px 4px; font-size: 13px; font-weight: 700; }
+.sb .notch { width: 72px; height: 20px; border-radius: 12px; background: var(--frame); }
+.pbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 16px 10px; }
+.pbar .me { font-family: var(--font-display); font-weight: 800; font-size: 17px; }
+.pbody { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; min-height: 0; }
+.pfoot { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.gtitle { display: flex; flex-direction: column; gap: 2px; }
+.gtitle .h { font-family: var(--font-display); font-weight: 800; font-size: 22px; line-height: 1.1; }
+.gtitle .s { font-size: 14px; color: var(--muted); font-weight: 600; }
+.gclock { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
+.gclock.warn { color: var(--warning); }
+
+.vlist { display: flex; flex-direction: column; gap: 8px; }
+.vopt { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); font-weight: 700; font-size: 16px; min-height: 52px; }
+.vopt .r { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--muted); flex: none; }
+.vopt.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 20px -6px var(--accent); }
+.vopt.sel .r { border-color: var(--accent); background: radial-gradient(var(--accent) 45%, transparent 50%); }
+.vopt.out { opacity: .4; text-decoration: line-through; }
+.vopt .tag { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 600; text-decoration: none; }
+.meter { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); font-weight: 600; }
+.meter .bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.meter .bar i { display: block; height: 100%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+
+.verdict { border-radius: var(--radius); padding: 18px 16px; text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.verdict .k { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; opacity: .85; }
+.verdict .who { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 1.05; }
+.verdict .what { font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+.verdict.safe { background: var(--surface); box-shadow: 0 0 0 1px var(--border); }
+.verdict.safe .what { color: var(--warning); }
+.verdict.caught { background: color-mix(in oklab, var(--danger) 22%, var(--surface)); box-shadow: 0 0 0 1px var(--danger), 0 16px 40px -10px color-mix(in oklab, var(--danger) 80%, transparent); }
+.verdict.caught .what { color: var(--danger); }
+.tally { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+.tally div { display: flex; justify-content: space-between; font-weight: 600; }
+.tally div b { font-family: var(--font-mono); }
+.tally div.top { color: var(--danger); }
+.next { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; padding: 14px; border-radius: var(--radius); background: var(--surface-2); text-align: center; }
+
+.ghost-screen { background: radial-gradient(120% 80% at 50% 25%, color-mix(in oklab, var(--muted) 18%, var(--bg)), var(--bg)); }
+.ghost-hero { font-family: var(--font-display); font-weight: 800; font-size: 28px; text-align: center; line-height: 1.1; color: var(--muted); margin-top: 8px; }
+.watch { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.watch .lbl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.watch .v { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+
+.win { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; text-align: center; padding: 0 16px; }
+.win .crown { font-size: 56px; line-height: 1; }
+.win .t { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 1.05; }
+.screen.win-v { background: radial-gradient(120% 80% at 50% 30%, color-mix(in oklab, var(--success) 40%, var(--bg)), var(--bg)); }
+.screen.win-v .t { color: var(--success); text-shadow: 0 0 24px color-mix(in oklab, var(--success) 70%, transparent); }
+.screen.win-s { background: radial-gradient(120% 80% at 50% 30%, color-mix(in oklab, var(--danger) 40%, var(--bg)), var(--bg)); }
+.screen.win-s .t { color: var(--danger); text-shadow: 0 0 24px color-mix(in oklab, var(--danger) 70%, transparent); }
+.reveal { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.reveal .lbl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.reveal .word { font-family: var(--font-display); font-weight: 800; font-size: 26px; color: var(--accent); }
+.reveal .spies { font-weight: 700; }
+.reveal .spies span { color: var(--danger); }
+
+/* host config */
+.hc-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 10px; }
+.hc-head .role { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.hc-head .code { font-family: var(--font-mono); font-weight: 700; font-size: 20px; }
+.online { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; }
+.online i { width: 9px; height: 9px; border-radius: 50%; background: var(--success); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > label { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg span { text-align: center; padding: 8px; border-radius: 12px; background: var(--surface-2); font-weight: 700; font-size: 14px; }
+.seg span.on { background: var(--primary); color: var(--primary-fg); box-shadow: 0 0 16px -4px var(--primary); }
+.topics { display: flex; flex-wrap: wrap; gap: 6px; }
+.topics span { padding: 6px 10px; border-radius: 999px; background: var(--surface-2); font-weight: 700; font-size: 13px; }
+.topics span.on { background: var(--accent); color: var(--accent-fg); box-shadow: 0 0 14px -4px var(--accent); }
+.topics span.rnd { border: 1px dashed var(--muted); background: transparent; }
+.step { display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); border-radius: 12px; padding: 4px 6px 4px 12px; font-weight: 700; }
+.step .ctl { display: flex; align-items: center; gap: 8px; }
+.step .ctl b { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: var(--surface); font-size: 18px; }
+.step .ctl .v { font-family: var(--font-mono); min-width: 46px; text-align: center; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hint { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+/* projector */
+.proj-scroll { overflow-x: auto; padding-bottom: 12px; }
+.projector { container-type: inline-size; min-width: 680px; aspect-ratio: 16 / 9; background: var(--bg); border: 10px solid var(--frame); border-radius: 18px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; overflow: hidden;
+  background-image: radial-gradient(60% 70% at 0% 0%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%), radial-gradient(50% 60% at 100% 100%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%); }
+.ph { display: flex; align-items: center; gap: 2.4cqw; padding: 1.6cqw 2.4cqw; border-bottom: 1px solid var(--border); background: color-mix(in oklab, var(--surface) 88%, transparent); }
+.pg { flex: 1; display: flex; flex-direction: column; gap: .3cqw; }
+.pg .lbl { font-size: 1.15cqw; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.pg .name { font-family: var(--font-display); font-weight: 800; font-size: 2.9cqw; line-height: 1; }
+.pchip { align-self: flex-start; font-size: 1.25cqw; font-weight: 700; padding: .25cqw .9cqw; border-radius: 999px; background: var(--accent); color: var(--accent-fg); }
+.bigclock { display: flex; flex-direction: column; align-items: flex-end; gap: .2cqw; }
+.bigclock .k { font-size: 1.15cqw; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.bigclock .v { font-family: var(--font-mono); font-weight: 700; font-size: 4cqw; line-height: 1; color: var(--accent); text-shadow: 0 0 1.6cqw color-mix(in oklab, var(--accent) 60%, transparent); }
+.pgrid { flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 1.4cqw; padding: 1.6cqw 2.4cqw 2cqw; min-height: 0; }
+.gcard { display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden; background: color-mix(in oklab, var(--team) 14%, var(--surface));
+  border: 1px solid color-mix(in oklab, var(--team) 60%, var(--border)); box-shadow: 0 0 2cqw -0.6cqw color-mix(in oklab, var(--team) 60%, transparent); min-height: 0; }
+.gh { display: flex; align-items: center; gap: .8cqw; padding: .7cqw 1.1cqw; background: var(--team); color: var(--team-fg); }
+.gh .gname { font-family: var(--font-display); font-weight: 800; font-size: 1.9cqw; }
+.gh .gstate { margin-left: auto; font-family: var(--font-display); font-weight: 700; font-size: 1.3cqw; padding: .15cqw .9cqw; border-radius: .6cqw; background: var(--surface); color: var(--ink); }
+.gh .gtime { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 1.9cqw; padding: .1cqw .9cqw; border-radius: .6cqw; background: var(--surface); color: var(--ink); }
+.gb { flex: 1; display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: .35cqw 1cqw; padding: .9cqw 1.1cqw; }
+.mem { font-size: 1.45cqw; font-weight: 600; padding: .2cqw .6cqw; border-radius: .5cqw; }
+.mem.speaking { background: var(--accent); color: var(--accent-fg); font-weight: 800; }
+.mem.out { opacity: .4; text-decoration: line-through; }
+.mem.voted::after { content: " ✓"; color: var(--success); }
+.gf { padding: .5cqw 1.1cqw .8cqw; font-size: 1.2cqw; color: var(--muted); }
+.gf b { color: var(--ink); }
+.gcard.won-v .gf b { color: var(--success); }
+.gcard.won-s .gf b { color: var(--danger); }
+
+.choice { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; max-width: 80ch; font-size: 15px; }
+.choice b { color: var(--warning); font-family: var(--font-display); }
+</style></head>
+<body><div class="wrap">
+
+<header>
+  <span class="eyebrow">Who's the Spy · Arcade Night</span>
+  <h1>Chỉ những màn còn thiếu</h1>
+  <p class="lead">Mấy màn đã có trong "ClubPlay Style Preview" thì giữ nguyên: nhận nhóm, thẻ bí mật giữ để lật (dân thấy topic + gợi ý từ vựng, spy thấy "You are the SPY" + category), YOUR TURN với timer tròn, tab Secrets của host. Dưới đây là các màn mới. Chữ trong app vẫn là tiếng Anh như phần còn lại.</p>
+</header>
+
+<section class="sec">
+  <div class="sec-head"><span class="eyebrow">Điện thoại học viên</span><h2>Vote → kết quả → hết game</h2>
+    <p>Đồng hồ tổng của game nằm nhỏ ở góc trên mọi màn trong lúc chơi.</p></div>
+  <div class="phones">
+
+    <figure class="device">
+      <div class="phone"><div class="screen team" style="--team:#2563EB;--team-fg:#FFFFFF">
+        <div class="sb"><span>14:15</span><span class="notch"></span><span>5G</span></div>
+        <div class="pbar"><span class="me">Lan</span><span class="gclock">⏱ 06:12</span></div>
+        <div class="pbody">
+          <div class="gtitle"><span class="h">Who's the spy?</span><span class="s">Vote 1 · Pick one player</span></div>
+          <div class="vlist">
+            <div class="vopt"><span class="r"></span>Huy</div>
+            <div class="vopt"><span class="r"></span>Thảo</div>
+            <div class="vopt sel"><span class="r"></span>Khoa</div>
+            <div class="vopt"><span class="r"></span>Vy</div>
+            <div class="vopt"><span class="r"></span>Bảo</div>
+          </div>
+          <div class="meter">4 of 6 voted<div class="bar"><i style="width:66%"></i></div></div>
+        </div>
+        <div class="pfoot"><button class="btn primary lg">Lock my vote</button></div>
+      </div></div>
+      <figcaption><b>Vote.</b> Không có tên mình trong danh sách. Bấm khóa xong thì không đổi được. <i>(mình đoán)</i></figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen team" style="--team:#2563EB;--team-fg:#FFFFFF">
+        <div class="sb"><span>14:16</span><span class="notch"></span><span>5G</span></div>
+        <div class="pbar"><span class="me">Lan</span><span class="gclock">⏱ 05:40</span></div>
+        <div class="pbody">
+          <div class="verdict safe"><span class="k">Voted out</span><span class="who">Bảo</span><span class="what">was NOT the spy</span></div>
+          <div class="tally"><div class="top">Bảo <b>3</b></div><div>Khoa <b>2</b></div><div>Vy <b>1</b></div></div>
+          <div class="next" style="margin-top:auto">The spy is still here.<br>2 more rounds, then vote again.</div>
+        </div>
+        <div class="pfoot"><div class="next" style="background:transparent;color:var(--muted);padding:0">Wait for your teacher…</div></div>
+      </div></div>
+      <figcaption><b>Vote nhầm.</b> Công khai người bị loại không phải spy, hiện số phiếu, rồi chờ giáo viên cho nói tiếp.</figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen team" style="--team:#2563EB;--team-fg:#FFFFFF">
+        <div class="sb"><span>14:16</span><span class="notch"></span><span>5G</span></div>
+        <div class="pbar"><span class="me">Lan</span><span class="gclock">⏱ 05:40</span></div>
+        <div class="pbody">
+          <div class="verdict caught"><span class="k">Voted out</span><span class="who">Khoa</span><span class="what">was a SPY!</span></div>
+          <div class="tally"><div class="top">Khoa <b>4</b></div><div>Vy <b>2</b></div></div>
+          <div class="next" style="margin-top:auto">1 spy left.<br>2 more rounds, then vote again.</div>
+        </div>
+        <div class="pfoot"><div class="next" style="background:transparent;color:var(--muted);padding:0">Wait for your teacher…</div></div>
+      </div></div>
+      <figcaption><b>Bắt được 1 spy (nhóm có 2 spy).</b> Còn spy thì chơi tiếp. Bắt hết thì sang màn thắng.</figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen ghost-screen">
+        <div class="sb"><span>14:17</span><span class="notch"></span><span>5G</span></div>
+        <div class="pbar"><span class="me" style="color:var(--muted)">Bảo</span><span class="gclock">⏱ 05:02</span></div>
+        <div class="pbody">
+          <div class="ghost-hero">You're out</div>
+          <div style="text-align:center;color:var(--muted);font-weight:600">Stay quiet and watch.<br>No talking, no voting.</div>
+          <div class="watch"><span class="lbl">Now speaking</span><span class="v">Thảo · <span class="mono" style="color:var(--accent)">0:41</span></span></div>
+          <div class="watch"><span class="lbl">Still in</span><span class="v" style="font-size:15px">Lan, Huy, Thảo, Khoa, Vy</span></div>
+        </div>
+      </div></div>
+      <figcaption><b>Đã bị loại.</b> Vẫn xem được trận đấu nhưng không nói, không vote. Bị bỏ qua khi tới lượt. Vẫn giữ thẻ bí mật? <i>(mình đoán: ẩn thẻ)</i></figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen win-v">
+        <div class="sb"><span>14:20</span><span class="notch"></span><span>5G</span></div>
+        <div class="win">
+          <div class="crown">🎉</div>
+          <div class="t">Team wins!</div>
+          <div style="font-weight:600;color:var(--muted)">You found every spy.</div>
+          <div class="reveal"><span class="lbl">The place was</span><span class="word">Airport</span>
+            <span class="spies">Spies: <span>Khoa</span>, <span>Vy</span></span></div>
+        </div>
+        <div class="pfoot"><div class="next">Wait for your teacher…</div></div>
+      </div></div>
+      <figcaption><b>Dân thắng.</b> Lộ topic và tên spy cho cả nhóm.</figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen win-s">
+        <div class="sb"><span>14:30</span><span class="notch"></span><span>5G</span></div>
+        <div class="win">
+          <div class="crown">🕵️</div>
+          <div class="t">Spy wins!</div>
+          <div style="font-weight:600;color:var(--muted)">Time's up. A spy is still in the game.</div>
+          <div class="reveal"><span class="lbl">The place was</span><span class="word">Airport</span>
+            <span class="spies">Spy: <span>Khoa</span></span></div>
+        </div>
+        <div class="pfoot"><div class="next">Wait for your teacher…</div></div>
+      </div></div>
+      <figcaption><b>Spy thắng.</b> Hết đồng hồ tổng mà vẫn còn spy.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head"><span class="eyebrow">Host Console · tab Game</span><h2>Giáo viên cài game</h2>
+    <p>Form này dùng các ô cấu hình chung đã có của app, chỉ thêm loại ô chọn topic.</p></div>
+  <div class="phones">
+    <figure class="device">
+      <div class="phone"><div class="screen">
+        <div class="sb"><span>14:02</span><span class="notch"></span><span>5G</span></div>
+        <div class="hc-head"><div><div class="role">Host</div><div class="code">K7PQ2M</div></div><span class="online"><i></i>24 online</span></div>
+        <div class="pbody" style="gap:12px;overflow:hidden">
+          <div class="gtitle"><span class="h">Who's the Spy</span><span class="s">3+ per group</span></div>
+          <div class="field"><label>Category</label><div class="seg"><span class="on">Location</span><span>Food</span></div></div>
+          <div class="field"><label>Topic</label><div class="topics">
+            <span class="rnd">🎲 Random</span><span class="on">Airport</span><span>Police station</span><span>Hospital</span><span>School</span><span>Beach</span><span>Supermarket</span><span>+12</span>
+          </div></div>
+          <div class="field"><label>Spies per group</label><div class="step"><span>Spies</span><span class="ctl"><b>−</b><span class="v">1</span><b>+</b></span></div>
+            <span class="hint">Max 1 for a group of 3. Always fewer spies than others.</span></div>
+          <div class="row2">
+            <div class="field"><label>Game time</label><div class="step" style="padding-left:8px"><span class="ctl"><b>−</b><span class="v">12m</span><b>+</b></span></div></div>
+            <div class="field"><label>Each turn</label><div class="step" style="padding-left:8px"><span class="ctl"><b>−</b><span class="v">60s</span><b>+</b></span></div></div>
+          </div>
+        </div>
+        <div class="pfoot"><button class="btn primary lg">▶ Start game</button></div>
+      </div></div>
+      <figcaption><b>Cài đặt.</b> Chọn category, rồi chọn topic, hoặc để random. <i>(mình đoán)</i> Cả lớp dùng chung một topic.</figcaption>
+    </figure>
+
+    <figure class="device">
+      <div class="phone"><div class="screen">
+        <div class="sb"><span>14:15</span><span class="notch"></span><span>5G</span></div>
+        <div class="hc-head"><div><div class="role">Host</div><div class="code">K7PQ2M</div></div><span class="gclock">⏱ 06:12</span></div>
+        <div class="pbody" style="gap:10px">
+          <div class="gtitle"><span class="h">Groups</span><span class="s">Round 2 of 2 done in 2 groups</span></div>
+          <div class="watch"><span class="lbl"><span class="badge" style="--team:#E5383B;--team-fg:#FFF">Red</span></span><span class="v" style="font-size:15px">Voting · 5/6 voted</span></div>
+          <div class="watch"><span class="lbl"><span class="badge" style="--team:#2563EB;--team-fg:#FFF">Blue</span></span><span class="v" style="font-size:15px">Voting · 4/6 voted</span></div>
+          <div class="watch"><span class="lbl"><span class="badge" style="--team:#FACC15;--team-fg:#1B1A2E">Yellow</span></span><span class="v" style="font-size:15px">Round 2 · Trang speaking</span></div>
+          <div class="watch"><span class="lbl"><span class="badge" style="--team:#16A34A;--team-fg:#FFF">Green</span></span><span class="v" style="font-size:15px;color:var(--success)">Team won · 2 votes</span></div>
+        </div>
+        <div class="pfoot"><button class="btn lg">Close votes for Red</button></div>
+      </div></div>
+      <figcaption><b>Theo dõi.</b> Mỗi nhóm chạy theo nhịp riêng. Giáo viên đóng vote khi có bạn không chịu vote. <i>(mình đoán)</i></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head"><span class="eyebrow">Laptop · máy chiếu</span><h2>Projector — thêm đồng hồ tổng và trạng thái nhóm</h2>
+    <p>Giống preview, thêm đồng hồ game lớn góc phải, người bị loại bị gạch, nhóm đang vote hiện ai đã vote (không hiện vote cho ai).</p></div>
+  <div class="proj-scroll"><div class="projector">
+    <div class="ph">
+      <div class="pg"><span class="lbl">Now playing</span><span class="name">Who's the Spy</span><span class="pchip">Category: Location</span></div>
+      <div class="bigclock"><span class="k">Game time left</span><span class="v">06:12</span></div>
+    </div>
+    <div class="pgrid">
+      <div class="gcard" style="--team:#E5383B;--team-fg:#FFF">
+        <div class="gh"><span class="gname">Team Red</span><span class="gstate">Voting 5/6</span></div>
+        <div class="gb"><span class="mem voted">Minh</span><span class="mem voted">An</span><span class="mem voted">Chi</span><span class="mem">Duy</span><span class="mem voted">Hà</span><span class="mem voted">Long</span></div>
+        <div class="gf">Vote 1 · <b>Who's the spy?</b></div>
+      </div>
+      <div class="gcard" style="--team:#2563EB;--team-fg:#FFF">
+        <div class="gh"><span class="gname">Team Blue</span><span class="gtime">0:41</span></div>
+        <div class="gb"><span class="mem">Lan</span><span class="mem">Huy</span><span class="mem speaking">🎤 Thảo</span><span class="mem">Khoa</span><span class="mem">Vy</span><span class="mem out">Bảo</span></div>
+        <div class="gf">Round 1 of 2 · Next: <b>Khoa</b></div>
+      </div>
+      <div class="gcard" style="--team:#FACC15;--team-fg:#1B1A2E">
+        <div class="gh"><span class="gname">Team Yellow</span><span class="gtime">0:12</span></div>
+        <div class="gb"><span class="mem">My</span><span class="mem">Nam</span><span class="mem">Phúc</span><span class="mem">Quân</span><span class="mem speaking">🎤 Trang</span><span class="mem">Tú</span></div>
+        <div class="gf">Round 2 of 2 · Next: <b>Tú</b></div>
+      </div>
+      <div class="gcard won-v" style="--team:#16A34A;--team-fg:#FFF">
+        <div class="gh"><span class="gname">Team Green</span><span class="gstate">Done</span></div>
+        <div class="gb"><span class="mem">Uyên</span><span class="mem">Việt</span><span class="mem out">Linh</span><span class="mem">Sơn</span><span class="mem">Ngọc</span><span class="mem">Tâm</span></div>
+        <div class="gf"><b>Team wins!</b> Spy caught in 1 vote</div>
+      </div>
+    </div>
+  </div></div>
+  <div class="choice">ℹ️ <span>Trên máy chiếu <b>không lộ</b> topic hay tên spy, kể cả khi nhóm đã xong. <i>(mình đoán)</i> Chỉ hiện “Team wins / Spy wins”.</span></div>
+</section>
+
+</div></body></html>
