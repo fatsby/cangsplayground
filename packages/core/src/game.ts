@@ -34,6 +34,7 @@ export interface GroupRuntime<Data = unknown> {
   phase: GamePhase;
   round: number;
   turnOrder: PlayerId[];
+  eliminated: PlayerId[];
   turnIndex: number;
   timer: TimerState;
   revealed: boolean;
@@ -49,6 +50,17 @@ export interface ActionResult<Data> {
   data?: Data;
   /** Ask core to advance to the next speaker. */
   endTurn?: boolean;
+  closeVote?: boolean;
+}
+
+export interface VoteOutcome<Data> {
+  data: Data;
+  eliminate?: PlayerId[];
+  finished?: boolean;
+}
+
+export function activePlayers(state: Pick<GroupRuntime, "turnOrder">): PlayerId[] {
+  return [...new Set(state.turnOrder)];
 }
 
 export interface GameModule<Config = any, Data = any> {
@@ -73,6 +85,8 @@ export interface GameModule<Config = any, Data = any> {
   turnDurationMs(config: Config): number | null;
   /** How many times each member speaks per round (default 1). */
   turnsPerPlayer?(config: Config): number;
+  voteDurationMs?(config: Config): number | null;
+  onVoteEnd?(args: { config: Config; state: GroupRuntime<Data> }): VoteOutcome<Data>;
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */
   prepare(args: { config: Config; group: GroupContext; rng: Rng }): Data;

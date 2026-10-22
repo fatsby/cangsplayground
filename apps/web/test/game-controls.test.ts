@@ -5,6 +5,7 @@ import { secretWord } from "@cangsplayground/game-secret-word";
 import { canControl, mainControl, supportsControl } from "../src/components/game-controls";
 const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   groupId: "g1",
+  eliminated: [],
   phase,
   round: 1,
   currentSpeakerId: "p1",

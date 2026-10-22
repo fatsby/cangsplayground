@@ -120,6 +120,7 @@ export function fixture(
             .filter((g) => kind !== "player" || g.id === "g0")
             .map((g) => ({
               groupId: g.id,
+              eliminated: [],
               phase: "RUNNING",
               round: 1,
               currentSpeakerId: g.playerIds[phase === "turn" ? 0 : 1]!,

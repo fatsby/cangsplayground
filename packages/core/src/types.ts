@@ -21,7 +21,7 @@ export type Viewer =
 export type ViewerKind = Viewer["kind"];
 
 /** GAME-03 lifecycle of one group's game. */
-export type GamePhase = "PREPARED" | "RUNNING" | "PAUSED" | "ROUND_END";
+export type GamePhase = "PREPARED" | "RUNNING" | "PAUSED" | "ROUND_END" | "VOTING" | "FINISHED";
 
 /**
  * Server-authoritative timer (TMR-01). Exactly one of these holds:
@@ -79,6 +79,7 @@ export interface GameCatalogEntry {
 }
 
 export interface GroupGameView {
+  eliminated: PlayerId[];
   groupId: GroupId;
   phase: GamePhase;
   round: number; // 1-based

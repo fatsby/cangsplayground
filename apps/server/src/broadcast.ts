@@ -57,12 +57,15 @@ export function buildView(lobby: Lobby, viewer: Viewer): LobbyView {
             .filter((g) => viewer.kind !== "player" || g.groupId === own?.groupId)
             .map((group) => ({
               groupId: group.groupId,
+              eliminated: [...group.eliminated],
               phase: group.phase,
               round: group.round,
-              currentSpeakerId:
-                group.phase === "ROUND_END" ? null : (group.turnOrder[group.turnIndex] ?? null),
-              nextSpeakerId:
-                group.phase === "ROUND_END" ? null : (group.turnOrder[group.turnIndex + 1] ?? null),
+              currentSpeakerId: ["PREPARED", "RUNNING", "PAUSED"].includes(group.phase)
+                ? (group.turnOrder[group.turnIndex] ?? null)
+                : null,
+              nextSpeakerId: ["PREPARED", "RUNNING", "PAUSED"].includes(group.phase)
+                ? (group.turnOrder[group.turnIndex + 1] ?? null)
+                : null,
               turnOrder:
                 host || (viewer.kind === "player" && own?.groupId === group.groupId)
                   ? [...group.turnOrder]

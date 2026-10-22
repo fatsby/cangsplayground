@@ -6,7 +6,8 @@ export class TimerService {
     const wanted = new Set<string>();
     if (lobby.status === "open")
       for (const group of lobby.game?.groups ?? []) {
-        if (group.phase !== "RUNNING" || group.timer.endsAt === null) continue;
+        if ((group.phase !== "RUNNING" && group.phase !== "VOTING") || group.timer.endsAt === null)
+          continue;
         const key = `${lobby.code}:${group.groupId}`;
         wanted.add(key);
         const endsAt = group.timer.endsAt;

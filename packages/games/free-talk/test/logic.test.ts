@@ -24,6 +24,7 @@ describe("Free Talk Timer", () => {
       groupId: "g1",
       phase: "RUNNING",
       round: 1,
+      eliminated: [],
       turnOrder: ["a", "b"],
       turnIndex: 0,
       timer: { endsAt: 1, pausedRemainingMs: null, durationMs: 1 },

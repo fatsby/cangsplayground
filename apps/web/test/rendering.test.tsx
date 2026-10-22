@@ -33,6 +33,7 @@ function hostView(module: GameModule, phase: GroupGameView["phase"]): LobbyView 
       groups: [
         {
           groupId: "g1",
+          eliminated: [],
           phase,
           round: 1,
           currentSpeakerId: "p1",

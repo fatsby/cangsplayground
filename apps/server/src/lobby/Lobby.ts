@@ -218,6 +218,7 @@ export class Lobby {
       phase: "PREPARED",
       round,
       turnOrder,
+      eliminated: [],
       turnIndex: 0,
       timer: { endsAt: null, pausedRemainingMs: null, durationMs: this.duration() },
       revealed: false,
@@ -263,6 +264,7 @@ export class Lobby {
     }
     let accepted = false;
     for (const group of groups) {
+      if (group.phase === "FINISHED") continue;
       switch (cmd) {
         case "start":
           if (group.phase !== "PREPARED") continue;
@@ -270,33 +272,45 @@ export class Lobby {
           this.freshTurn(group);
           break;
         case "pause":
-          if (group.phase !== "RUNNING") continue;
-          group.phase = "PAUSED";
+          if (
+            group.phase !== "RUNNING" &&
+            !(group.phase === "VOTING" && group.timer.endsAt !== null)
+          )
+            continue;
+          if (group.phase === "RUNNING") group.phase = "PAUSED";
           group.timer.pausedRemainingMs =
             group.timer.endsAt === null ? 0 : Math.max(0, group.timer.endsAt - this.now());
           group.timer.endsAt = null;
           break;
         case "resume":
-          if (group.phase !== "PAUSED") continue;
-          group.phase = "RUNNING";
+          if (
+            group.phase !== "PAUSED" &&
+            !(group.phase === "VOTING" && group.timer.pausedRemainingMs !== null)
+          )
+            continue;
+          if (group.phase === "PAUSED") group.phase = "RUNNING";
           group.timer.endsAt =
             group.timer.durationMs > 0 ? this.now() + (group.timer.pausedRemainingMs ?? 0) : null;
           group.timer.pausedRemainingMs = null;
           break;
         case "skip":
-          if (group.phase !== "RUNNING" && group.phase !== "PAUSED") continue;
-          this.advance(group, false);
+          if (group.phase !== "RUNNING" && group.phase !== "PAUSED" && group.phase !== "VOTING")
+            continue;
+          if (group.phase === "VOTING") this.closeVote(group);
+          else this.advance(group, false);
           break;
         case "extend":
-          if (group.phase !== "RUNNING" && group.phase !== "PAUSED") continue;
+          if (group.phase !== "RUNNING" && group.phase !== "PAUSED" && group.phase !== "VOTING")
+            continue;
           group.timer.durationMs += EXTEND_MS;
           if (group.timer.endsAt !== null) group.timer.endsAt += EXTEND_MS;
           if (group.timer.pausedRemainingMs !== null) group.timer.pausedRemainingMs += EXTEND_MS;
           break;
         case "endRound":
-          if (group.phase === "ROUND_END") continue;
-          group.phase = "ROUND_END";
-          this.idle(group);
+          if (group.phase === "ROUND_END" || group.phase === "VOTING") continue;
+          if (game.module.voteDurationMs && group.phase !== "RUNNING" && group.phase !== "PAUSED")
+            continue;
+          this.endTurns(group);
           break;
         case "reveal":
           if (group.phase !== "ROUND_END" || group.revealed) continue;
@@ -319,20 +333,55 @@ export class Lobby {
     if (!accepted) fail("INVALID_STATE", "This action is not ready.");
     this.changed();
   }
+  private endTurns(group: GroupRuntime) {
+    const duration = this.game!.module.voteDurationMs?.(this.game!.config);
+    if (typeof duration === "number") this.startVote(group, duration);
+    else {
+      group.phase = "ROUND_END";
+      this.idle(group);
+    }
+  }
+  private startVote(
+    group: GroupRuntime,
+    duration = this.game!.module.voteDurationMs!(this.game!.config)!,
+  ) {
+    group.phase = "VOTING";
+    group.turnIndex = group.turnOrder.length;
+    group.timer = { endsAt: this.now() + duration, pausedRemainingMs: null, durationMs: duration };
+  }
+  private closeVote(group: GroupRuntime) {
+    const game = this.game!;
+    const outcome = game.module.onVoteEnd?.({ config: game.config, state: group });
+    if (outcome) {
+      group.data = outcome.data;
+      for (const id of outcome.eliminate ?? []) {
+        if (!group.eliminated.includes(id)) group.eliminated.push(id);
+        group.turnOrder = group.turnOrder.filter((p) => p !== id);
+      }
+    }
+    group.turnIndex = group.turnOrder.length;
+    group.phase = outcome?.finished ? "FINISHED" : "ROUND_END";
+    this.idle(group);
+  }
   advance(group: GroupRuntime, expired: boolean) {
     if (expired && this.game?.module.onTimerEnd)
       group.data = this.game.module.onTimerEnd({ config: this.game.config, state: group });
     group.turnIndex++;
     if (group.turnIndex >= group.turnOrder.length) {
-      group.phase = "ROUND_END";
-      this.idle(group);
+      this.endTurns(group);
     } else this.freshTurn(group);
   }
   expire(groupId: string, endsAt: number) {
     const group = this.game?.groups.find((g) => g.groupId === groupId);
-    if (!group || group.phase !== "RUNNING" || group.timer.endsAt !== endsAt || this.now() < endsAt)
+    if (
+      !group ||
+      (group.phase !== "RUNNING" && group.phase !== "VOTING") ||
+      group.timer.endsAt !== endsAt ||
+      this.now() < endsAt
+    )
       return;
-    this.advance(group, true);
+    if (group.phase === "VOTING") this.closeVote(group);
+    else this.advance(group, true);
     this.changed();
   }
   private removeTurns(group: GroupRuntime, playerId: string) {
@@ -340,10 +389,9 @@ export class Lobby {
     const before = group.turnOrder.slice(0, group.turnIndex).filter((id) => id === playerId).length;
     group.turnOrder = group.turnOrder.filter((id) => id !== playerId);
     group.turnIndex -= before;
-    if (group.turnIndex >= group.turnOrder.length) {
-      group.phase = "ROUND_END";
-      this.idle(group);
-    } else if (current) this.freshTurn(group);
+    if (group.phase !== "RUNNING" && group.phase !== "PAUSED") return;
+    if (group.turnIndex >= group.turnOrder.length) this.endTurns(group);
+    else if (current) this.freshTurn(group);
   }
   action(playerId: string, action: C2SPayload<"game:action">) {
     const game = this.game;
@@ -366,6 +414,7 @@ export class Lobby {
       if (!result) fail("INVALID_STATE", "This action is not ready.");
       if (result.data !== undefined) group.data = result.data;
       if (result.endTurn) this.advance(group, false);
+      if (result.closeVote && group.phase === "VOTING") this.closeVote(group);
     }
     this.changed();
   }
