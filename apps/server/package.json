@@ -17,7 +17,8 @@
     "@fastify/static": "^10.1.6",
     "fastify": "^5.12.7",
     "socket.io": "^4.8.4",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "@cangsplayground/game-whos-the-spy": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
