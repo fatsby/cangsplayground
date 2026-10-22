@@ -53,6 +53,12 @@ export interface ActionResult<Data> {
   closeVote?: boolean;
 }
 
+export interface LeaveOutcome<Data> {
+  data: Data;
+  finished?: boolean;
+  closeVote?: boolean;
+}
+
 export interface VoteOutcome<Data> {
   data: Data;
   eliminate?: PlayerId[];
@@ -90,6 +96,13 @@ export interface GameModule<Config = any, Data = any> {
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */
   prepare(args: { config: Config; group: GroupContext; rng: Rng }): Data;
+
+  onContinue?(args: { config: Config; state: GroupRuntime<Data>; rng: Rng }): Data;
+  onPlayerLeft?(args: {
+    config: Config;
+    state: GroupRuntime<Data>;
+    playerId: PlayerId;
+  }): LeaveOutcome<Data>;
 
   /** Player action (game:action). Return null to reject it. `turn:done` is handled by core. */
   onAction?(args: {

@@ -106,3 +106,57 @@ describe("vote phase", () => {
     expect(() => lobby.action(players[0]!.id, { type: "turn:done" })).toThrow();
   });
 });
+describe("continue and leaving", () => {
+  it("Continue keeps data, drops eliminated players, keeps order and starts RUNNING", () => {
+    const prepare = vi.fn(() => ({ closes: 0 }));
+    registry.set(voteGame.id, {
+      ...voteGame,
+      prepare,
+      onContinue: ({ state }) => ({ closes: state.data.closes + 10 }),
+    });
+    const { lobby, group } = setupVote(4);
+    lobby.control("start");
+    const order = activePlayers(group());
+    lobby.control("endRound");
+    lobby.control("skip"); // close vote → eliminates order[0]
+    lobby.control("nextRound", group().groupId);
+    expect(prepare).toHaveBeenCalledTimes(1);
+    expect(group()).toMatchObject({
+      phase: "RUNNING",
+      round: 2,
+      turnIndex: 0,
+      data: { closes: 11 },
+    });
+    expect(group().turnOrder).toEqual([...order.slice(1), ...order.slice(1)]);
+  });
+  it("onPlayerLeft can finish the group or close the vote", () => {
+    registry.set(voteGame.id, {
+      ...voteGame,
+      onPlayerLeft: ({ state }) => ({ data: state.data, finished: true }),
+    });
+    const { lobby, players, group } = setupVote(3);
+    lobby.control("start");
+    lobby.removePlayer(players[2]!.id);
+    expect(group().phase).toBe("FINISHED");
+    expect(() => lobby.control("start")).toThrow("not ready");
+    expect(() => lobby.control("nextRound")).toThrow("not ready");
+  });
+  it("closeVote from onPlayerLeft while VOTING", () => {
+    registry.set(voteGame.id, {
+      ...voteGame,
+      onPlayerLeft: ({ state }) => ({ data: state.data, closeVote: true }),
+    });
+    const { lobby, players, group } = setupVote(4);
+    lobby.control("start");
+    lobby.control("endRound");
+    lobby.removePlayer(players[3]!.id);
+    expect(group().phase).toBe("ROUND_END");
+  });
+  it("leaving while VOTING does not end the vote by itself", () => {
+    const { lobby, players, group } = setupVote(4);
+    lobby.control("start");
+    lobby.control("endRound");
+    lobby.removePlayer(players[3]!.id);
+    expect(group().phase).toBe("VOTING");
+  });
+});

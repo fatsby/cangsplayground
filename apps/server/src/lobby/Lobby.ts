@@ -1,5 +1,6 @@
 import {
   assignGroups,
+  activePlayers,
   createRng,
   EXTEND_MS,
   MAX_PLAYERS_PER_LOBBY,
@@ -126,7 +127,23 @@ export class Lobby {
         playerId,
         ...(player.groupId ? { groupId: player.groupId } : {}),
       });
-      for (const group of this.game.groups) this.removeTurns(group, playerId);
+      for (const group of this.game.groups) {
+        if (group.groupId !== player.groupId) continue;
+        this.removeTurns(group, playerId);
+        if (group.phase === "FINISHED") continue;
+        const outcome = this.game.module.onPlayerLeft?.({
+          config: this.game.config,
+          state: group,
+          playerId,
+        });
+        if (outcome) {
+          group.data = outcome.data;
+          if (outcome.finished) {
+            group.phase = "FINISHED";
+            this.idle(group);
+          } else if (outcome.closeVote && group.phase === "VOTING") this.closeVote(group);
+        }
+      }
     }
     for (const group of this.groups)
       group.playerIds = group.playerIds.filter((id) => id !== playerId);
@@ -255,7 +272,7 @@ export class Lobby {
     }
     if (game.stage !== "ACTIVE") fail("INVALID_STATE", "Prepare the game first.");
     const groups = game.groups.filter((g) => !groupId || g.groupId === groupId);
-    if (cmd === "nextRound") {
+    if (cmd === "nextRound" && !game.module.onContinue) {
       const ended = this.groups.filter((g) =>
         groups.some((r) => r.groupId === g.id && r.phase === "ROUND_END"),
       );
@@ -318,13 +335,29 @@ export class Lobby {
           break;
         case "nextRound":
           if (group.phase !== "ROUND_END") continue;
-          Object.assign(
-            group,
-            this.prepareGroup(
-              this.groups.find((g) => g.id === group.groupId)!,
-              group.round + 1,
-            ),
-          );
+          if (game.module.onContinue) {
+            const order = activePlayers(group);
+            group.data = game.module.onContinue({
+              config: game.config,
+              state: group,
+              rng: this.rng,
+            });
+            group.round++;
+            group.turnOrder = Array.from(
+              { length: game.module.turnsPerPlayer?.(game.config) ?? 1 },
+              () => order,
+            ).flat();
+            group.turnIndex = 0;
+            group.phase = "RUNNING";
+            this.freshTurn(group);
+          } else
+            Object.assign(
+              group,
+              this.prepareGroup(
+                this.groups.find((g) => g.id === group.groupId)!,
+                group.round + 1,
+              ),
+            );
           this.warnings = [];
           break;
       }
