@@ -53,9 +53,11 @@ export function SecretFace({ data }: { data: WhosTheSpyGroupView }) {
 function PlayerTurnTip({ group }: GameViewProps) {
   return (
     <p>
-      {dataOf(group).category === "food"
-        ? "Describe the food. Don't say its name."
-        : "Describe the place. Don't say its name."}
+      {dataOf(group).role === "spy"
+        ? "Talk about the topic. Don't get caught."
+        : dataOf(group).category === "food"
+          ? "Describe the food. Don't say its name."
+          : "Describe the place. Don't say its name."}
     </p>
   );
 }
@@ -79,9 +81,13 @@ function VoteScreen(props: PlayerProps) {
   };
   return (
     <Panel className="cp-stack wts-voting">
-      <h1>Who's the spy?</h1>
-      <p className="cp-muted">Vote {data.voteNumber + 1} · Pick one player</p>
-      <Timer timer={group.timer} serverNow={serverNow} />
+      <div className="wts-vote-heading">
+        <div>
+          <h1>Who's the spy?</h1>
+          <p className="cp-muted">Vote {data.voteNumber + 1} · Pick one player</p>
+        </div>
+        <Timer timer={group.timer} serverNow={serverNow} />
+      </div>
       {paused && <p className="cp-muted">Game paused. Wait for your teacher…</p>}
       <div className="wts-vote-options" aria-label="Pick one player">
         {active
@@ -98,17 +104,30 @@ function VoteScreen(props: PlayerProps) {
             </Button>
           ))}
       </div>
-      <p>
-        {data.voted.length} of {active.length} voted
-      </p>
-      <progress aria-label="Players who voted" max={active.length} value={data.voted.length} />
-      <Button
-        variant="primary"
-        disabled={!!locked || !targetId || submitting || paused || !act}
-        onClick={() => void lock()}
-      >
-        {locked ? "Vote locked" : "Lock my vote"}
-      </Button>
+      <div className="cp-sticky-action wts-vote-action">
+        <p>
+          {data.voted.length} of {active.length} voted
+        </p>
+        <div
+          className="wts-vote-progress"
+          role="progressbar"
+          aria-label="Players who voted"
+          aria-valuemin={0}
+          aria-valuemax={active.length}
+          aria-valuenow={data.voted.length}
+        >
+          <span
+            style={{ width: `${active.length ? (data.voted.length / active.length) * 100 : 0}%` }}
+          />
+        </div>
+        <Button
+          variant="primary"
+          disabled={!!locked || !targetId || submitting || paused || !act}
+          onClick={() => void lock()}
+        >
+          {locked ? "Vote locked" : "Lock my vote"}
+        </Button>
+      </div>
     </Panel>
   );
 }
@@ -117,21 +136,30 @@ function PlayerScreen(props: PlayerProps) {
     data = dataOf(group);
   if (!data) return <Panel>Wait for your teacher…</Panel>;
   if (data.result) {
+    const isSpy = data.role === "spy",
+      won = isSpy ? data.result.winner === "spies" : data.result.winner === "team";
     const lines = {
-      caught: "You found every spy.",
+      caught: isSpy ? "The team found you." : "You found every spy.",
       left: "The last spy left the game.",
       outnumbered: "The spies outnumber the team.",
       time: "Time's up. A spy is still in the game.",
     };
     return (
       <Panel
-        className={`cp-stack wts-result ${data.result.winner === "team" ? "wts-team-wins" : "wts-spy-wins"}`}
+        className={`cp-stack wts-result ${won ? "wts-win" : "wts-loss"}`}
       >
         <span className="wts-result-symbol" aria-hidden="true">
-          {data.result.winner === "team" ? "🎉" : "🕵️"}
+          {won ? "🎉" : "🕵️"}
         </span>
-        <h1>{data.result.winner === "team" ? "Team wins!" : "Spy wins!"}</h1>
+        <h1>{won ? "You win!" : "You lose"}</h1>
+        <p>{data.result.winner === "team" ? "Team wins!" : "Spy wins!"}</p>
         <p className="cp-muted">{lines[data.result.reason]}</p>
+        {data.lastVote?.out && (
+          <p className="wts-final-verdict">
+            {nameOf(lobby, data.lastVote.out)} was voted out:{" "}
+            <strong>{data.lastVote.wasSpy ? "was a SPY!" : "was NOT the spy"}</strong>
+          </p>
+        )}
         <div className="wts-reveal">
           <span className="cp-muted">The topic was</span>
           <strong className="wts-secret-title">{data.topic?.name}</strong>
@@ -144,21 +172,23 @@ function PlayerScreen(props: PlayerProps) {
       </Panel>
     );
   }
-  if (group.eliminated.includes(me.playerId))
+  if (
+    group.eliminated.includes(me.playerId) &&
+    !(group.phase === "ROUND_END" && data.lastVote)
+  )
     return (
       <Panel className="cp-stack wts-out">
         <h1>You're out</h1>
         <p>Stay quiet and watch. No talking, no voting.</p>
         <div className="wts-reveal">
-          <span className="cp-muted">Now speaking</span>
-          <strong className="cp-person">
-            {group.currentSpeakerId
-              ? nameOf(lobby, group.currentSpeakerId)
-              : group.phase === "VOTING"
-                ? "Voting"
-                : "Wait for your teacher…"}
-          </strong>
-          <Timer timer={group.timer} serverNow={serverNow} />
+          {group.phase === "RUNNING" && group.currentSpeakerId ? (
+            <>
+              <p>Now speaking: <strong className="cp-person">{nameOf(lobby, group.currentSpeakerId)}</strong></p>
+              <Timer timer={group.timer} serverNow={serverNow} />
+            </>
+          ) : (
+            <p>Waiting for your teacher…</p>
+          )}
         </div>
         <div className="wts-reveal">
           <span className="cp-muted">Still in</span>
@@ -175,14 +205,19 @@ function PlayerScreen(props: PlayerProps) {
   if (group.phase === "ROUND_END" && data.lastVote) {
     const last = data.lastVote,
       tally = last.tally ?? {},
-      spies = data.spiesLeft ?? 0;
+      spies = data.spiesLeft ?? 0,
+      votedOut = last.out === me.playerId;
     return (
       <Panel className="cp-stack">
         {last.out ? (
           <div className={`wts-verdict ${last.wasSpy ? "wts-caught" : ""}`}>
             <span className="cp-muted">Voted out</span>
-            <h1 className="cp-person">{nameOf(lobby, last.out)}</h1>
-            <strong>{last.wasSpy ? "was a SPY!" : "was NOT the spy"}</strong>
+            <h1 className="cp-person">{votedOut ? "You" : nameOf(lobby, last.out)}</h1>
+            <strong>
+              {votedOut
+                ? last.wasSpy ? "were a SPY!" : "were NOT the spy"
+                : last.wasSpy ? "was a SPY!" : "was NOT the spy"}
+            </strong>
           </div>
         ) : (
           <>
@@ -200,6 +235,7 @@ function PlayerScreen(props: PlayerProps) {
               </li>
             ))}
         </ul>
+        {votedOut && <p>You're out now. Stay and watch.</p>}
         <p>
           {spies === 1 && last.wasSpy === false
             ? "The spy is still here."
@@ -220,11 +256,14 @@ function PlayerScreen(props: PlayerProps) {
         <SecretFace data={data} />
       </SecretCard>
       <p className="cp-muted wts-wait">Keep your screen away from others.</p>
-      <TurnIndicator
-        current={group.currentSpeakerId ? nameOf(lobby, group.currentSpeakerId) : undefined}
-        next={group.nextSpeakerId ? nameOf(lobby, group.nextSpeakerId) : undefined}
-      />
-      {group.phase === "PREPARED" && wait}
+      {group.phase === "PREPARED" ? (
+        <p className="cp-muted wts-wait">Get ready. Hold your card to check it.</p>
+      ) : (
+        <TurnIndicator
+          current={group.currentSpeakerId ? nameOf(lobby, group.currentSpeakerId) : undefined}
+          next={group.nextSpeakerId ? nameOf(lobby, group.nextSpeakerId) : undefined}
+        />
+      )}
     </div>
   );
 }
