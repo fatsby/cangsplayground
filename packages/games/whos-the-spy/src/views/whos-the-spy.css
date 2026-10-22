@@ -41,17 +41,35 @@
   accent-color: var(--cp-accent);
 }
 .wts-result {
+  flex: 1;
+  justify-content: center;
   align-items: center;
   text-align: center;
+  background: transparent;
+  box-shadow: none;
+}
+body:has(.player-screen .wts-result) {
+  --wts-result-color: var(--cp-danger);
+  background-image: radial-gradient(
+    120% 80% at 50% 30%,
+    color-mix(in oklab, var(--wts-result-color) 40%, var(--cp-bg)),
+    var(--cp-bg)
+  );
+}
+body:has(.player-screen .wts-win) {
+  --wts-result-color: var(--cp-success);
+}
+.player-screen:has(.wts-result) {
+  background: transparent;
 }
 .wts-result-symbol {
   font-size: 56px;
 }
-.wts-team-wins h1,
+.wts-win h1,
 .wts-caught {
   color: var(--cp-success);
 }
-.wts-spy-wins h1,
+.wts-loss h1,
 .wts-danger {
   color: var(--cp-danger);
 }
