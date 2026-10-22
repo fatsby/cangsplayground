@@ -1,6 +1,14 @@
 import type { z } from "zod";
 import type { Rng } from "./rng.js";
-import type { ConfigField, GamePhase, GroupId, PlayerId, TimerState, Viewer } from "./types.js";
+import type {
+  ConfigField,
+  GamePhase,
+  GameSessionView,
+  GroupId,
+  PlayerId,
+  TimerState,
+  Viewer,
+} from "./types.js";
 
 /**
  * Game Module Contract (PRD §7) — server-side half.
@@ -52,6 +60,8 @@ export interface GameModule<Config = any, Data = any> {
   maxPlayersPerGroup?: number;
   /** Shown on the game card, e.g. "3–6 per group". */
   recommended: string;
+  /** Controls with no effect for this game; omitted means all are supported. */
+  unsupportedControls?: GameSessionView["unsupportedControls"];
 
   /** Zod schema for the config; core parses game:configure payloads with it. */
   configSchema: z.ZodType<Config>;

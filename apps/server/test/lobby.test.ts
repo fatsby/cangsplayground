@@ -119,6 +119,17 @@ describe("Lifecycle and timer", () => {
   });
 });
 describe("filtered views", () => {
+  it("exposes module control capabilities while configuring and playing", () => {
+    const { lobby } = setup();
+    lobby.assign("count", 1);
+    lobby.selectGame("free-talk");
+    expect(buildView(lobby, { kind: "host" }).game!.unsupportedControls).toEqual(["reveal"]);
+    lobby.control("prepare");
+    expect(buildView(lobby, { kind: "host" }).game!.unsupportedControls).toEqual(["reveal"]);
+    lobby.control("exit");
+    lobby.selectGame("secret-word");
+    expect(buildView(lobby, { kind: "host" }).game!.unsupportedControls).toEqual([]);
+  });
   it("contains no tokens, host config, or another group order in public/player views", () => {
     const { lobby, players } = setup(8);
     lobby.assign("count", 2);

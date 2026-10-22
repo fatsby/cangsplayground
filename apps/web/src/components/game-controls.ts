@@ -1,6 +1,10 @@
 import type { C2SPayload, GameSessionView, GroupGameView } from "@cangsplayground/core";
 export type Control = C2SPayload<"game:control">["cmd"];
+export function supportsControl(cmd: Control, session: GameSessionView): boolean {
+  return !session.unsupportedControls?.some((unsupported) => unsupported === cmd);
+}
 export function canControl(cmd: Control, session: GameSessionView, group?: GroupGameView): boolean {
+  if (!supportsControl(cmd, session)) return false;
   if (cmd === "exit") return true;
   if (cmd === "prepare") return session.stage === "CONFIGURING";
   const groups = group ? [group] : session.groups;

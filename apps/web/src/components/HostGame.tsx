@@ -1,7 +1,7 @@
 import type { GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
 import { Button, Chip, EmptyState, Panel, TeamBadge, Timer } from "@cangsplayground/ui";
 import { ConfigForm } from "./ConfigForm";
-import { canControl, mainControl, type Control } from "./game-controls";
+import { canControl, mainControl, supportsControl, type Control } from "./game-controls";
 export function HostGame({
   view,
   busy,
@@ -132,15 +132,17 @@ function SecondaryControls({
           ["pause", "Pause"],
           ["resume", "Resume"],
         ] as const
-      ).map(([cmd, label]) => (
-        <Button
-          key={cmd}
-          disabled={disabled || !canControl(cmd, game, group)}
-          onClick={() => control(cmd, group?.groupId)}
-        >
-          {label}
-        </Button>
-      ))}
+      )
+        .filter(([cmd]) => supportsControl(cmd, game))
+        .map(([cmd, label]) => (
+          <Button
+            key={cmd}
+            disabled={disabled || !canControl(cmd, game, group)}
+            onClick={() => control(cmd, group?.groupId)}
+          >
+            {label}
+          </Button>
+        ))}
     </div>
   );
 }

@@ -2,7 +2,86 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { SecretCard, HostSecretRow } from "@cangsplayground/ui";
 import { ConfigForm } from "../src/components/ConfigForm";
-import type { ConfigField } from "@cangsplayground/core";
+import type { ConfigField, GameModule, GroupGameView, LobbyView } from "@cangsplayground/core";
+import { freeTalk } from "@cangsplayground/game-free-talk";
+import { secretWord } from "@cangsplayground/game-secret-word";
+import { HostGame } from "../src/components/HostGame";
+
+function hostView(module: GameModule, phase: GroupGameView["phase"]): LobbyView {
+  return {
+    viewer: { kind: "host" },
+    code: "ABC234",
+    status: "open",
+    locked: false,
+    hostConnected: true,
+    createdAt: 0,
+    maxPlayers: 60,
+    players: [],
+    groups: [{ id: "g1", index: 0, name: "Team Red", playerIds: ["p1", "p2", "p3"] }],
+    groupsVersion: 1,
+    catalog: [],
+    me: null,
+    warnings: [],
+    version: 1,
+    game: {
+      gameId: module.id,
+      name: module.name,
+      stage: "ACTIVE",
+      config: null,
+      publicInfo: null,
+      unsupportedControls: module.unsupportedControls,
+      groups: [
+        {
+          groupId: "g1",
+          phase,
+          round: 1,
+          currentSpeakerId: "p1",
+          nextSpeakerId: "p2",
+          turnOrder: ["p1", "p2", "p3"],
+          turnIndex: 0,
+          turnCount: 3,
+          timer: { endsAt: null, pausedRemainingMs: null, durationMs: 60000 },
+          revealed: false,
+          data: null,
+        },
+      ],
+    },
+  };
+}
+
+describe("host game controls", () => {
+  it.each(["RUNNING", "ROUND_END"] as const)(
+    "hides Free Talk reveal in %s for all and individual groups",
+    (phase) => {
+      const html = renderToStaticMarkup(
+        <HostGame
+          view={hostView(freeTalk, phase)}
+          busy={false}
+          serverNow={() => 0}
+          select={() => {}}
+          configure={async () => true}
+          control={() => {}}
+        />,
+      );
+      expect(html).not.toContain(">Reveal</button>");
+      expect(html.match(/>Skip turn<\/button>/g)).toHaveLength(2);
+      expect(html.match(/>\+30s<\/button>/g)).toHaveLength(2);
+    },
+  );
+  it("keeps Secret Word reveal visible but disabled before the round ends", () => {
+    const html = renderToStaticMarkup(
+      <HostGame
+        view={hostView(secretWord, "RUNNING")}
+        busy={false}
+        serverNow={() => 0}
+        select={() => {}}
+        configure={async () => true}
+        control={() => {}}
+      />,
+    );
+    expect(html.match(/<button[^>]*disabled=""[^>]*>Reveal<\/button>/g)).toHaveLength(2);
+  });
+});
 
 describe("catalog config form rendering", () => {
   it("renders all field kinds with accessible labels and catalog bounds/options", () => {

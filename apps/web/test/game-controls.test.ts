@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { GameSessionView, GroupGameView } from "@cangsplayground/core";
-import { canControl, mainControl } from "../src/components/game-controls";
+import { freeTalk } from "@cangsplayground/game-free-talk";
+import { secretWord } from "@cangsplayground/game-secret-word";
+import { canControl, mainControl, supportsControl } from "../src/components/game-controls";
 const group = (phase: GroupGameView["phase"]): GroupGameView => ({
   groupId: "g1",
   phase,
@@ -20,6 +22,7 @@ const session = (...phases: GroupGameView["phase"][]): GameSessionView => ({
   stage: "ACTIVE",
   config: null,
   publicInfo: null,
+  unsupportedControls: freeTalk.unsupportedControls,
   groups: phases.map(group),
 });
 describe("host lifecycle availability", () => {
@@ -29,7 +32,7 @@ describe("host lifecycle availability", () => {
     expect(canControl("extend", session("PAUSED"))).toBe(true);
     expect(canControl("skip", session("ROUND_END"))).toBe(false);
     expect(canControl("nextRound", session("ROUND_END"))).toBe(true);
-    expect(canControl("reveal", session("ROUND_END"))).toBe(true);
+    expect(canControl("reveal", session("ROUND_END"))).toBe(false);
   });
   it("enables all-group commands if any group can accept them, with per-group checks", () => {
     const mixed = session("RUNNING", "PAUSED");
@@ -42,5 +45,36 @@ describe("host lifecycle availability", () => {
   it("offers Prepare while configuring and Next round at the end", () => {
     expect(mainControl({ ...session(), stage: "CONFIGURING" }).cmd).toBe("prepare");
     expect(mainControl(session("ROUND_END")).cmd).toBe("nextRound");
+  });
+  it("filters unsupported controls without hiding supported controls in other phases", () => {
+    const free = session("RUNNING");
+    const secret = {
+      ...free,
+      gameId: secretWord.id,
+      unsupportedControls: secretWord.unsupportedControls,
+    };
+    expect(supportsControl("reveal", free)).toBe(false);
+    expect(supportsControl("reveal", secret)).toBe(true);
+    expect(canControl("reveal", secret)).toBe(false);
+    expect(canControl("reveal", { ...secret, groups: [group("ROUND_END")] })).toBe(true);
+    for (const cmd of ["skip", "extend", "endRound", "nextRound", "pause", "resume"] as const) {
+      expect(supportsControl(cmd, free)).toBe(true);
+      expect(supportsControl(cmd, secret)).toBe(true);
+    }
+  });
+  it("uses module capabilities rather than game ids, including for the main control", () => {
+    const game = {
+      ...session("RUNNING"),
+      gameId: "another-game",
+      unsupportedControls: ["pause"] as const,
+    };
+    expect(canControl("pause", game)).toBe(false);
+    expect(mainControl(game).cmd).toBe("start");
+    expect(mainControl({ ...game, groups: [group("PAUSED")] }).cmd).toBe("resume");
+  });
+  it("keeps existing controls when capability metadata is absent", () => {
+    const game = { ...session("ROUND_END"), unsupportedControls: undefined };
+    expect(supportsControl("reveal", game)).toBe(true);
+    expect(canControl("reveal", game)).toBe(true);
   });
 });

@@ -4,6 +4,8 @@
  * (tokens, other players' secrets) never appears in these types.
  */
 
+import type { C2SPayload } from "./events.js";
+
 export type PlayerId = string;
 export type GroupId = string;
 
@@ -96,6 +98,11 @@ export interface GroupGameView {
 export interface GameSessionView {
   gameId: string;
   name: string;
+  /** Omitted means all controls are supported. Core lifecycle controls are always supported. */
+  unsupportedControls?: readonly Exclude<
+    C2SPayload<"game:control">["cmd"],
+    "prepare" | "start" | "exit"
+  >[];
   /** "CONFIGURING" until the host presses Prepare; then per-group phases apply. */
   stage: "CONFIGURING" | "ACTIVE";
   /** Full config — host only. null for projector/player. */

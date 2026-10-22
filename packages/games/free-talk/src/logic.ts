@@ -7,6 +7,7 @@ export const freeTalk: GameModule<FreeTalkConfig, FreeTalkData> = {
   description: "Talk about a topic. Take turns in your group.",
   minPlayersPerGroup: 2,
   recommended: "3–8 per group",
+  unsupportedControls: ["reveal"],
   configSchema,
   defaultConfig: configSchema.parse({}),
   configFields: [
