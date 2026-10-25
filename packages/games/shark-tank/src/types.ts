@@ -41,6 +41,8 @@ export interface Company {
   /** Has ever moved past step 1. */
   rerollLocked: boolean;
   price: number | null;
+  /** Set only when the company gives its one discount. */
+  originalPrice?: number;
   discounted: boolean;
   /** Current members, in part order. */
   members: PlayerId[];
@@ -95,6 +97,7 @@ export interface CompanyView {
   startMembers: number | null;
   idea: Idea | IdeaPublic | null;
   price: number | null;
+  originalPrice: number | null;
   parts: Record<PlayerId, PartId[]> | null;
   help: boolean | null;
   scripts: Partial<Record<PartId, string[]>> | null;
@@ -108,6 +111,8 @@ export interface CompanyView {
 
 export interface SharkTankView {
   stage: Stage;
+  /** Host-only guard for stage changes. */
+  presenterIndex: number | null;
   minPrice: number;
   maxPrice: number;
   timer: TimerState;

@@ -215,6 +215,7 @@ export const ACTIONS: Record<string, Reducer> = {
       parsed.data.price >= company.price
     )
       return null;
+    company.originalPrice = company.price;
     company.price = parsed.data.price;
     company.discounted = true;
     return shared;

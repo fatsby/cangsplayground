@@ -11,6 +11,18 @@ const config = configSchema.parse({});
 const roles = ["host", "own", "other", "projector"] as const;
 type Role = (typeof roles)[number];
 
+it.each(roles)("filters original prices and host transition guards for %s", (role) => {
+  const f = fixture("PREP");
+  f.shared.companies[1]!.originalPrice = 50;
+  const privileged = role === "host" || role === "own";
+  expect(f.target(role).originalPrice).toBe(privileged ? 50 : null);
+  expect(f.view(role).presenterIndex).toBe(role === "host" ? 0 : null);
+  f.shared.stage = "QA";
+  f.shared.presenterIndex = 1;
+  expect(f.target(role).originalPrice).toBe(50);
+  expect(f.view(role).presenterIndex).toBe(role === "host" ? 1 : null);
+});
+
 it.each(roles)(
   "exposes public price bounds but keeps preparation controls private for %s",
   (role) => {

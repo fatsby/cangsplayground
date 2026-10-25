@@ -81,3 +81,136 @@
   color: var(--cp-accent);
   font-weight: 700;
 }
+.st-stage {
+  font-family: var(--cp-font-display);
+  font-size: clamp(2rem, 4vw, 4rem);
+  margin: 0;
+}
+.st-stage-timer {
+  min-width: 220px;
+  font-size: 3rem;
+}
+.st-projector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+}
+.st-product {
+  text-align: center;
+}
+.st-projector .st-product-emoji {
+  font-size: clamp(5rem, 10vw, 10rem);
+}
+.st-product h2 {
+  font-family: var(--cp-font-display);
+  font-size: clamp(2rem, 5vw, 5rem);
+}
+.st-product > p {
+  font-size: clamp(1.5rem, 2.5vw, 3rem);
+}
+.st-projector-price s {
+  color: var(--cp-ink-muted);
+  font-size: 0.7em;
+  margin-right: 16px;
+}
+.st-projector-price strong {
+  color: var(--cp-accent);
+}
+.st-discount {
+  display: inline-block;
+  animation: st-discount-pop 0.5s ease-out;
+}
+.st-presenters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px;
+  list-style: none;
+  padding: 0;
+}
+.st-presenters li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 1.5rem;
+}
+.st-presenters span {
+  color: var(--cp-ink-muted);
+}
+.st-announcer {
+  font-family: var(--cp-font-display);
+  font-size: clamp(3rem, 7vw, 7rem);
+}
+.st-closing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  list-style-position: inside;
+  padding: 0;
+}
+.st-closing-list li {
+  padding: 20px;
+  border-radius: var(--cp-r);
+  background: var(--cp-surface);
+  font-size: 1.75rem;
+}
+.st-closing-list [aria-current="step"] {
+  outline: 3px solid var(--cp-accent);
+  background: var(--cp-surface-2);
+}
+.st-time-up {
+  color: var(--cp-danger);
+  font-family: var(--cp-font-display);
+  font-size: 2rem;
+  margin: 0;
+}
+.st-time-flash {
+  animation: st-expiry-flash 2s ease-out;
+}
+.st-status-scroll {
+  overflow-x: auto;
+}
+.st-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.st-status-table th,
+.st-status-table td {
+  border-bottom: 1px solid var(--cp-border);
+  padding: 12px;
+  vertical-align: top;
+}
+.st-status-table ul {
+  padding-left: 20px;
+}
+.st-awards h2 {
+  color: var(--cp-accent);
+  font-family: var(--cp-font-display);
+}
+@keyframes st-expiry-flash {
+  from {
+    box-shadow:
+      inset 0 0 0 12px var(--cp-warning),
+      0 0 48px var(--cp-warning);
+  }
+  to {
+    box-shadow:
+      inset 0 0 0 0 transparent,
+      0 0 0 transparent;
+  }
+}
+@keyframes st-discount-pop {
+  from {
+    transform: scale(1.3);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st-time-flash,
+  .st-discount {
+    animation: none;
+  }
+}

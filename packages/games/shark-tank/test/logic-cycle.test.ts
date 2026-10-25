@@ -62,7 +62,7 @@ describe("pitch stages", () => {
     expect(h.act("host", "st:discount", { price: 10 })).toBeNull();
     expect(h.act(buyers(h)[0]!.members[0]!, "st:discount", { price: 10 })).toBeNull();
     expect(h.act(actor, "st:discount", { price: 10 })).not.toBeNull();
-    expect(presenter(h)).toMatchObject({ price: 10, discounted: true });
+    expect(presenter(h)).toMatchObject({ price: 10, discounted: true, originalPrice: 35 });
     expect(h.act(actor, "st:discount", { price: 9 })).toBeNull();
     expect(h.act(actor, "st:discount", { price: 20 })).toBeNull();
     advance(h);

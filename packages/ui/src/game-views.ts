@@ -26,6 +26,7 @@ export interface SessionViewProps {
 export type GameControl = C2SPayload<"game:control">["cmd"];
 export interface GameViews {
   ProjectorScreen?: React.ComponentType<SessionViewProps>;
+  ProjectorTools?: React.ComponentType<SessionViewProps>;
   HostSessionPanel?: React.ComponentType<SessionViewProps>;
   PlayerSessionScreen?: React.ComponentType<
     SessionViewProps & { me: NonNullable<LobbyView["me"]> }

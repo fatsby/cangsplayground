@@ -50,6 +50,7 @@ export default function Display() {
     session = view?.game,
     views = session ? gameViews[session.gameId] : undefined,
     ProjectorScreen = projectorBody(session, views),
+    ProjectorTools = session?.stage === "ACTIVE" ? views?.ProjectorTools : undefined,
     Header = views?.ProjectorHeader,
     Extra = views?.ProjectorGroupCard,
     Status = views?.ProjectorGroupStatus,
@@ -376,6 +377,9 @@ export default function Display() {
           </span>
           <div className="projector-tools">
             <Switch label="Projector Boost" checked={boost} onCheckedChange={setBoost} />
+            {view && session && ProjectorTools && (
+              <ProjectorTools lobby={view} session={session} serverNow={serverNow} />
+            )}
             <Button
               variant="ghost"
               aria-label="Enter fullscreen"

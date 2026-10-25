@@ -29,6 +29,7 @@ function fixture(stage: Stage = "PREP") {
     startMembers: 3,
     idea: ideas()[0]!,
     price: 30,
+    originalPrice: null,
     parts: { p1: ["problem", "product"] as const, p2: ["price", "ask"] as const },
     help: false,
     scripts: {
@@ -46,6 +47,7 @@ function fixture(stage: Stage = "PREP") {
   };
   const shared: SharkTankView = {
     stage,
+    presenterIndex: null,
     timer: { endsAt: 60000, pausedRemainingMs: null, durationMs: 60000 },
     minPrice: 10,
     maxPrice: 60,

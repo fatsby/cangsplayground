@@ -1,9 +1,15 @@
 import type { GameViews } from "@cangsplayground/ui";
 import { PlayerSessionScreen } from "./player.js";
+import { HostConfigNote, HostSessionPanel } from "./host.js";
+import { ProjectorScreen, ProjectorTools } from "./projector.js";
 import "./shark-tank.css";
 
 const sharkTankViews: GameViews = {
   PlayerScreen: () => null,
   PlayerSessionScreen,
+  ProjectorScreen,
+  ProjectorTools,
+  HostSessionPanel,
+  HostConfigNote,
 };
 export default sharkTankViews;
