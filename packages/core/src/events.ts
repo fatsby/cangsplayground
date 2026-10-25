@@ -84,6 +84,11 @@ export const schemas = {
   }),
   /** Player action; core handles type "turn:done" (TMR-05), the rest go to the module. */
   "game:action": z.object({ type: z.string().min(1).max(64), payload: z.unknown().optional() }),
+  "game:hostAction": z.object({
+    type: z.string().min(1).max(64),
+    payload: z.unknown().optional(),
+    commandId,
+  }),
   /** Clock-offset probe (TMR-01). */
   "time:sync": z.object({ clientNow: z.number() }),
 } as const;
@@ -110,6 +115,7 @@ export interface C2SResults {
   "game:configure": undefined;
   "game:control": undefined;
   "game:action": undefined;
+  "game:hostAction": undefined;
   "time:sync": { clientNow: number; serverNow: number };
 }
 

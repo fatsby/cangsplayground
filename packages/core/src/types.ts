@@ -119,6 +119,8 @@ export interface GameSessionView {
   config: Record<string, unknown> | null;
   /** Public-tier session info from module.publicInfo(config), e.g. the Free Talk prompt. */
   publicInfo: unknown;
+  /** Game module's sharedViewFor() output for this viewer; null without a shared filter. */
+  shared?: unknown;
   /** Projector + host: every group. Player: only their own group (or empty). */
   groups: GroupGameView[];
 }
