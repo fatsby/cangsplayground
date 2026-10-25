@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
+import type { GameAction, GameSessionView, GroupGameView, LobbyView } from "@cangsplayground/core";
 import {
   Button,
   Chip,
@@ -21,6 +21,7 @@ export function HostGame({
   select,
   configure,
   control,
+  hostAct,
 }: {
   view: LobbyView;
   busy: boolean;
@@ -28,6 +29,7 @@ export function HostGame({
   select: (id: string) => void;
   configure: (config: Record<string, unknown>) => Promise<boolean>;
   control: (cmd: Control, groupId?: string) => void;
+  hostAct?: (action: GameAction) => Promise<boolean>;
 }) {
   const [draft, setDraft] = useState<{ gameId: string; config: Record<string, unknown> } | null>(
     null,
@@ -56,6 +58,7 @@ export function HostGame({
   const labels = views?.controlLabels;
   const Status = views?.HostGroupStatus;
   const Note = views?.HostConfigNote;
+  const SessionPanel = views?.HostSessionPanel;
   const finished = allGroupsFinished(game.groups);
   const allowed =
     view.groups.length > 0 &&
@@ -95,77 +98,88 @@ export function HostGame({
           {(entry?.minPlayersPerGroup ?? 1) === 1 ? "player" : "players"}. Make groups first.
         </p>
       )}
-      {game.stage === "ACTIVE" && (
-        <>
-          {!finished && (
-            <Panel className="cp-stack">
-              <h2>All groups</h2>
-              <SecondaryControls game={game} disabled={busy} control={control} />
-            </Panel>
-          )}
-          {game.groups.map((runtime) => {
-            const group = view.groups.find((g) => g.id === runtime.groupId);
-            return (
-              group && (
-                <Panel key={runtime.groupId} className="cp-stack">
-                  <div className="cp-row cp-spread">
-                    <TeamBadge teamIndex={group.index} />
-                    {Status ? (
-                      <Status lobby={view} session={game} group={runtime} serverNow={serverNow} />
-                    ) : (
-                      <Chip>
-                        {runtime.phase === "RUNNING"
-                          ? "Speaking"
-                          : runtime.phase === "VOTING"
-                            ? "Voting"
-                            : runtime.phase === "ROUND_END"
-                              ? "Waiting"
-                              : runtime.phase === "FINISHED"
-                                ? "Finished"
-                                : runtime.phase === "PAUSED"
-                                  ? "Paused"
-                                  : "Get ready"}
-                      </Chip>
-                    )}
-                  </div>
-                  <p className="cp-muted">
-                    {views?.roundLabel?.(runtime, group) ?? `Round ${runtime.round}`}
-                  </p>
-                  {showTurnTimer(runtime) && <Timer timer={runtime.timer} serverNow={serverNow} />}
-                  {(runtime.phase === "RUNNING" || runtime.phase === "PAUSED") && !Status && (
-                    <p className="cp-person">
-                      Now:{" "}
-                      {view.players.find((p) => p.id === runtime.currentSpeakerId)?.name ?? "—"}
+      {game.stage === "ACTIVE" &&
+        (SessionPanel ? (
+          <SessionPanel
+            lobby={view}
+            session={game}
+            serverNow={serverNow}
+            busy={busy}
+            hostAct={hostAct}
+          />
+        ) : (
+          <>
+            {!finished && (
+              <Panel className="cp-stack">
+                <h2>All groups</h2>
+                <SecondaryControls game={game} disabled={busy} control={control} />
+              </Panel>
+            )}
+            {game.groups.map((runtime) => {
+              const group = view.groups.find((g) => g.id === runtime.groupId);
+              return (
+                group && (
+                  <Panel key={runtime.groupId} className="cp-stack">
+                    <div className="cp-row cp-spread">
+                      <TeamBadge teamIndex={group.index} />
+                      {Status ? (
+                        <Status lobby={view} session={game} group={runtime} serverNow={serverNow} />
+                      ) : (
+                        <Chip>
+                          {runtime.phase === "RUNNING"
+                            ? "Speaking"
+                            : runtime.phase === "VOTING"
+                              ? "Voting"
+                              : runtime.phase === "ROUND_END"
+                                ? "Waiting"
+                                : runtime.phase === "FINISHED"
+                                  ? "Finished"
+                                  : runtime.phase === "PAUSED"
+                                    ? "Paused"
+                                    : "Get ready"}
+                        </Chip>
+                      )}
+                    </div>
+                    <p className="cp-muted">
+                      {views?.roundLabel?.(runtime, group) ?? `Round ${runtime.round}`}
                     </p>
-                  )}
-                  {runtime.phase !== "FINISHED" && (
-                    <>
-                      <div className="cp-row">
-                        <Button
-                          hidden={labels?.[mainControl(game, runtime).cmd] === null}
-                          disabled={
-                            busy || !canControl(mainControl(game, runtime).cmd, game, runtime)
-                          }
-                          onClick={() => control(mainControl(game, runtime).cmd, runtime.groupId)}
-                        >
-                          {labels?.[mainControl(game, runtime).cmd] ??
-                            mainControl(game, runtime).label}
-                        </Button>
-                      </div>
-                      <SecondaryControls
-                        game={game}
-                        group={runtime}
-                        disabled={busy}
-                        control={control}
-                      />
-                    </>
-                  )}
-                </Panel>
-              )
-            );
-          })}
-        </>
-      )}
+                    {showTurnTimer(runtime) && (
+                      <Timer timer={runtime.timer} serverNow={serverNow} />
+                    )}
+                    {(runtime.phase === "RUNNING" || runtime.phase === "PAUSED") && !Status && (
+                      <p className="cp-person">
+                        Now:{" "}
+                        {view.players.find((p) => p.id === runtime.currentSpeakerId)?.name ?? "—"}
+                      </p>
+                    )}
+                    {runtime.phase !== "FINISHED" && (
+                      <>
+                        <div className="cp-row">
+                          <Button
+                            hidden={labels?.[mainControl(game, runtime).cmd] === null}
+                            disabled={
+                              busy || !canControl(mainControl(game, runtime).cmd, game, runtime)
+                            }
+                            onClick={() => control(mainControl(game, runtime).cmd, runtime.groupId)}
+                          >
+                            {labels?.[mainControl(game, runtime).cmd] ??
+                              mainControl(game, runtime).label}
+                          </Button>
+                        </div>
+                        <SecondaryControls
+                          game={game}
+                          group={runtime}
+                          disabled={busy}
+                          control={control}
+                        />
+                      </>
+                    )}
+                  </Panel>
+                )
+              );
+            })}
+          </>
+        ))}
       <Button disabled={busy} onClick={() => control("exit")}>
         Exit game
       </Button>

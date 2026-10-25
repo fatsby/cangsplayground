@@ -291,6 +291,7 @@ export default function Host() {
                   select={(gameId) => void execute(() => hostCommand("game:select", { gameId }))}
                   configure={(config) => execute(() => hostCommand("game:configure", { config }))}
                   control={control}
+                  hostAct={(a) => execute(() => hostCommand("game:hostAction", a))}
                 />
               )}
               {tab === "secrets" && (
@@ -347,64 +348,66 @@ export default function Host() {
                 </>
               )}
             </div>
-            {game && !allGroupsFinished(game.groups) && (
-              <div className="host-fixed-controls">
-                <Button
-                  variant="primary"
-                  disabled={
-                    busy ||
-                    connection !== "online" ||
-                    !action ||
-                    !canControl(action.cmd, game) ||
-                    (action.cmd === "prepare" && !canPrepare)
-                  }
-                  onClick={() => action && control(action.cmd)}
-                >
-                  {action?.cmd === "pause" ? (
-                    <Pause size={20} strokeWidth={2.25} />
-                  ) : (
-                    <Play size={20} strokeWidth={2.25} />
-                  )}
-                  {action
-                    ? (gameViews[game.gameId]?.controlLabels?.[action.cmd] ??
-                      (
-                        {
-                          prepare: "Prepare",
-                          start: "Start",
-                          pause: "Pause",
-                          resume: "Resume",
-                          nextRound: "Next",
-                        } as Partial<Record<Control, string>>
-                      )[action.cmd] ??
-                      action.label)
-                    : "Start"}
-                </Button>
-                <Button
-                  aria-label="Skip turn for all groups"
-                  disabled={busy || !canControl("skip", game)}
-                  onClick={() => control("skip")}
-                >
-                  <SkipForward strokeWidth={2.25} />
-                </Button>
-                <Button
-                  aria-label="Add 30 seconds to all groups"
-                  disabled={busy || !canControl("extend", game)}
-                  onClick={() => control("extend")}
-                >
-                  <Plus size={18} strokeWidth={2.25} />
-                  30s
-                </Button>
-                <Button
-                  hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
-                  aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
-                  disabled={busy || !canControl("endRound", game)}
-                  onClick={() => control("endRound")}
-                >
-                  <Square size={18} strokeWidth={2.25} />
-                  {gameViews[game.gameId]?.controlLabels?.endRound}
-                </Button>
-              </div>
-            )}
+            {game &&
+              !allGroupsFinished(game.groups) &&
+              !(game.stage === "ACTIVE" && gameViews[game.gameId]?.HostSessionPanel) && (
+                <div className="host-fixed-controls">
+                  <Button
+                    variant="primary"
+                    disabled={
+                      busy ||
+                      connection !== "online" ||
+                      !action ||
+                      !canControl(action.cmd, game) ||
+                      (action.cmd === "prepare" && !canPrepare)
+                    }
+                    onClick={() => action && control(action.cmd)}
+                  >
+                    {action?.cmd === "pause" ? (
+                      <Pause size={20} strokeWidth={2.25} />
+                    ) : (
+                      <Play size={20} strokeWidth={2.25} />
+                    )}
+                    {action
+                      ? (gameViews[game.gameId]?.controlLabels?.[action.cmd] ??
+                        (
+                          {
+                            prepare: "Prepare",
+                            start: "Start",
+                            pause: "Pause",
+                            resume: "Resume",
+                            nextRound: "Next",
+                          } as Partial<Record<Control, string>>
+                        )[action.cmd] ??
+                        action.label)
+                      : "Start"}
+                  </Button>
+                  <Button
+                    aria-label="Skip turn for all groups"
+                    disabled={busy || !canControl("skip", game)}
+                    onClick={() => control("skip")}
+                  >
+                    <SkipForward strokeWidth={2.25} />
+                  </Button>
+                  <Button
+                    aria-label="Add 30 seconds to all groups"
+                    disabled={busy || !canControl("extend", game)}
+                    onClick={() => control("extend")}
+                  >
+                    <Plus size={18} strokeWidth={2.25} />
+                    30s
+                  </Button>
+                  <Button
+                    hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
+                    aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
+                    disabled={busy || !canControl("endRound", game)}
+                    onClick={() => control("endRound")}
+                  >
+                    <Square size={18} strokeWidth={2.25} />
+                    {gameViews[game.gameId]?.controlLabels?.endRound}
+                  </Button>
+                </div>
+              )}
           </>
         )}
         <Tabs

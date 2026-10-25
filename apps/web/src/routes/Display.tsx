@@ -4,7 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Maximize, ScanLine } from "lucide-react";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 import confetti from "canvas-confetti";
-import { teamStyle } from "@cangsplayground/core";
+import { teamStyle, type GameSessionView } from "@cangsplayground/core";
 import {
   Button,
   GameClock,
@@ -12,11 +12,18 @@ import {
   LobbyCodeDisplay,
   Switch,
   Waiting,
+  type GameViews,
 } from "@cangsplayground/ui";
 import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
 import { gameViews } from "../games/registry";
+export function projectorBody(
+  session: GameSessionView | null | undefined,
+  views: GameViews | undefined,
+) {
+  return session?.stage === "ACTIVE" ? (views?.ProjectorScreen ?? null) : null;
+}
 function QR({ value, label, size = 112 }: { value: string; label: string; size?: number }) {
   return (
     <div className="qr-frame">
@@ -42,6 +49,7 @@ export default function Display() {
   const hostToken = readToken("host", code),
     session = view?.game,
     views = session ? gameViews[session.gameId] : undefined,
+    ProjectorScreen = projectorBody(session, views),
     Header = views?.ProjectorHeader,
     Extra = views?.ProjectorGroupCard,
     Status = views?.ProjectorGroupStatus,
@@ -177,6 +185,8 @@ export default function Display() {
             )}
             {!view ? (
               <Waiting message="Opening your lobby" />
+            ) : session && ProjectorScreen ? (
+              <ProjectorScreen lobby={view} session={session} serverNow={serverNow} />
             ) : !view.groups.length ? (
               <section className="projector-lobby">
                 <div className="lobby-welcome">

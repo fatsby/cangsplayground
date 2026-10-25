@@ -28,8 +28,11 @@ export default function Player() {
   const [busy, setBusy] = useState(false);
   const session = view?.game,
     group = view?.groups.find((g) => g.id === view.me?.groupId),
-    runtime = session?.groups.find((g) => g.groupId === group?.id);
-  useWakeLock(runtime?.phase === "RUNNING");
+    runtime = session?.groups.find((g) => g.groupId === group?.id),
+    SessionScreen = session ? gameViews[session.gameId]?.PlayerSessionScreen : undefined;
+  useWakeLock(
+    runtime?.phase === "RUNNING" || !!(group && session?.stage === "ACTIVE" && SessionScreen),
+  );
   if (!token && !terminal)
     return (
       <main className="mobile-screen">
@@ -115,6 +118,16 @@ export default function Player() {
                   <span>{view.players.length === 1 ? "player" : "players"} in the lobby</span>
                 </Panel>
               </>
+            ) : session?.stage === "ACTIVE" && SessionScreen ? (
+              <section className="player-game cp-stack">
+                <SessionScreen
+                  lobby={view}
+                  session={session}
+                  me={view.me}
+                  serverNow={serverNow}
+                  act={act}
+                />
+              </section>
             ) : !runtime || !session || session.stage === "CONFIGURING" ? (
               <section className="team-stage cp-stack">
                 <div className="team-symbol">
