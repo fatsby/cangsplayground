@@ -10,6 +10,7 @@ import {
 import { ideas } from "./ideas.js";
 import { PART_FRAMES, blankCount } from "./phrases.js";
 import { assignParts, maxQuantity, medianFloor, reassignParts } from "./rules.js";
+import { viewFor } from "./view.js";
 import {
   GAME_ID,
   PART_ORDER,
@@ -472,6 +473,7 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
   prepare: () => null,
   publicInfo: () => ({}),
   viewFor: () => null,
+  sharedViewFor: viewFor,
   validateGroup: ({ group }) =>
     group.playerIds.length > 5 ? "Shark Tank needs 2–5 players in each group." : null,
   validateGroups: ({ groups }) =>

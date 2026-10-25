@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { GroupId, PlayerId, TimerState } from "@cangsplayground/core";
+import type { Results } from "./rules.js";
 
 export const GAME_ID = "shark-tank";
 export const configSchema = z
@@ -80,4 +81,36 @@ export interface SharkTankShared {
   announcers: Record<GroupId, PlayerId>;
   closing: { order: PlayerId[]; index: number } | null;
   left: PlayerId[];
+}
+
+export interface CompanyView {
+  groupId: GroupId;
+  prepStep: 1 | 2 | 3 | 4;
+  members: PlayerId[];
+  discounted: boolean;
+  voted: boolean;
+  idea: Idea | IdeaPublic | null;
+  price: number | null;
+  parts: Record<PlayerId, PartId[]> | null;
+  help: boolean | null;
+  scripts: Partial<Record<PartId, string[]>> | null;
+  wallet: number | null;
+  minSpendLeft: number | null;
+  votes: Record<PlayerId, number> | null;
+  eligible: boolean | null;
+  purchases: Purchase[] | null;
+  revenue: number | null;
+}
+
+export interface SharkTankView {
+  stage: Stage;
+  timer: TimerState;
+  order: GroupId[] | null;
+  presenter: GroupId | null;
+  companies: CompanyView[];
+  asked: PlayerId[] | null;
+  announcers: Record<GroupId, PlayerId> | null;
+  myDecision: boolean | null;
+  results: Results | null;
+  closing: { order: PlayerId[]; index: number } | null;
 }
