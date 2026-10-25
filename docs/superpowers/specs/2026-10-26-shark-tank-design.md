@@ -102,6 +102,7 @@ Mỗi nhóm lần lượt đi qua 4 bước, giáo viên bấm chuyển giữa c
 **b. Hỏi đáp và mặc cả (3').**
 - Các nhóm khác hỏi bằng tiếng Anh, có ngân hàng câu hỏi trên điện thoại (§6.2).
 - Giáo viên chạm vào tên em vừa hỏi trên Host Console để **đánh dấu đã hỏi**. Một em có thể được đánh dấu ở nhiều lượt.
+- Giáo viên vẫn đánh dấu được trong lúc họp nhóm, phòng khi quên. Nhóm vừa được đánh dấu thì được vote ngay **(Claude quyết)**.
 - Nhóm thuyết trình được **giảm giá một lần**, chỉ trong bước này. Bất kỳ thành viên nào nhập giá mới, giá mới phải thấp hơn giá cũ và không dưới giá tối thiểu. Không được tăng giá lại. Máy chiếu hiện giá mới ngay.
 
 **c. Họp nhóm và vote (90").**
@@ -216,9 +217,11 @@ Còn lại là các phần cố định của game: `configSchema` và `configFi
 
 ## 8. Các trường hợp đặc biệt
 
-- **Học viên rời game hoặc mất kết nối:**
+- **Học viên rời game (hoặc bị kick):**
   - Phần nói của em được giao cho thành viên còn lại có ít phần nhất. Điện thoại của thành viên đó hiện thêm phần mới.
+  - Câu hỏi em đã hỏi vẫn tính cho nhóm.
   - Vote chỉ cần đủ phiếu của thành viên đang kết nối.
+- **Học viên chỉ mất kết nối:** phần nói **không** bị chuyển, vì điện thoại hay rớt mạng vài giây rồi vào lại **(Claude quyết)**. Vote vẫn chỉ cần phiếu của những em đang kết nối. Nếu em vừa rớt mạng là người cuối chưa vote thì vote của nhóm tự chốt.
   - Ví nhóm giữ nguyên như lúc Prepare.
   - Phạt không hỏi không tính em đã rời game **(Claude quyết)**.
 - **Kết nối lại:** em quay về đúng nhóm, đúng bước, thấy lại phần đã soạn.
