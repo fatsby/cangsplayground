@@ -51,6 +51,8 @@ Thiết kế này xử lý hai lý do đó bằng luật chơi (§3) và bằng 
 | Tỉ lệ tiêu tối thiểu | 60% | §3.6 |
 | Phạt mỗi em không hỏi câu nào | $20 | **(Claude quyết)** |
 
+Mọi ô trong bảng là `configFields` mà giáo viên chỉnh được trên Host Console trước khi bấm Prepare, kể cả tiền và từng mốc thời gian. Cạnh ô "Tiền mỗi thành viên", Host Console hiện luôn ví mà từng nhóm sẽ nhận theo sĩ số hiện tại, ví dụ "Group 1 (4): $400 · Group 2 (3): $300".
+
 Mọi mốc thời gian đều bấm **Extend** được khi đang chạy. Hết giờ thì app báo (âm thanh hoặc nháy màn hình) nhưng **không tự chuyển bước**. Giáo viên bấm chuyển. Riêng bước vote thì tự chốt khi mọi người đã vote (§3.5).
 
 ### 3.2 Điều kiện nhóm
