@@ -89,6 +89,10 @@ export interface CompanyView {
   members: PlayerId[];
   discounted: boolean;
   voted: boolean;
+  /** Host and own group only. */
+  rerollAllowed: boolean | null;
+  /** Fixed at Prepare; host and own group only. */
+  startMembers: number | null;
   idea: Idea | IdeaPublic | null;
   price: number | null;
   parts: Record<PlayerId, PartId[]> | null;
@@ -104,6 +108,8 @@ export interface CompanyView {
 
 export interface SharkTankView {
   stage: Stage;
+  minPrice: number;
+  maxPrice: number;
   timer: TimerState;
   order: GroupId[] | null;
   presenter: GroupId | null;

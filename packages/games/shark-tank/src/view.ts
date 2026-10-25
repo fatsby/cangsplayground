@@ -31,6 +31,8 @@ export function viewFor({
 
   return structuredClone({
     stage: shared.stage,
+    minPrice: config.minPrice,
+    maxPrice: config.maxPrice,
     timer: shared.timer,
     order: preparing ? null : shared.order,
     presenter,
@@ -44,6 +46,8 @@ export function viewFor({
         members: company.members,
         discounted: company.discounted,
         voted: shared.locked.includes(company.groupId),
+        rerollAllowed: privateInfo ? preparing && !company.rerolled && !company.rerollLocked : null,
+        startMembers: privateInfo ? company.startMembers : null,
         idea: privateInfo ? idea : preparing ? null : publicIdea,
         price: privateInfo || !preparing ? company.price : null,
         parts: privateInfo || !preparing ? company.parts : null,

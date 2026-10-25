@@ -10,6 +10,31 @@ import { start } from "./helpers.js";
 const config = configSchema.parse({});
 const roles = ["host", "own", "other", "projector"] as const;
 type Role = (typeof roles)[number];
+
+it.each(roles)(
+  "exposes public price bounds but keeps preparation controls private for %s",
+  (role) => {
+    const f = fixture("PREP");
+    const privileged = role === "host" || role === "own";
+    expect(f.view(role)).toMatchObject({ minPrice: 10, maxPrice: 60 });
+    expect(f.target(role)).toMatchObject({
+      rerollAllowed: privileged ? true : null,
+      startMembers: privileged ? 3 : null,
+    });
+    f.shared.companies[1]!.rerollLocked = true;
+    expect(f.target(role).rerollAllowed).toBe(privileged ? false : null);
+    f.shared.companies[1]!.rerollLocked = false;
+    f.shared.companies[1]!.rerolled = true;
+    expect(f.target(role).rerollAllowed).toBe(privileged ? false : null);
+    f.shared.companies[1]!.rerolled = false;
+    f.shared.stage = "PITCH";
+    f.shared.companies[1]!.members.pop();
+    expect(f.target(role)).toMatchObject({
+      rerollAllowed: privileged ? false : null,
+      startMembers: privileged ? 3 : null,
+    });
+  },
+);
 function fixture(stage: Stage = "HUDDLE") {
   const shared = start([3, 3, 3]).shared;
   shared.stage = stage;
