@@ -18,6 +18,7 @@ let root: ReturnType<typeof createRoot>;
 beforeEach(() => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   hostCommand.mockClear();
+  sessionStorage.clear();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -29,7 +30,7 @@ afterEach(async () => {
   Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
 });
 async function renderHost(lobby = spyLobby("ROUND_END")) {
-  lobby.game!.clock!.timer.endsAt = 120000;
+  if (lobby.game) lobby.game.clock!.timer.endsAt = 120000;
   useLobbyStore.getState().sync(lobby);
   await act(async () =>
     root.render(
@@ -41,6 +42,45 @@ async function renderHost(lobby = spyLobby("ROUND_END")) {
     ),
   );
 }
+it("opens the Game tab when an active game has no saved tab", async () => {
+  await renderHost();
+  expect(container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain("Game");
+});
+it("restores a valid saved tab for the current lobby", async () => {
+  sessionStorage.setItem("host-tab:ABC234", "groups");
+  const lobby = spyLobby();
+  lobby.game = null;
+  await renderHost(lobby);
+  expect(container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain("Groups");
+});
+it("opens Game instead of a saved Groups tab when a game is active", async () => {
+  sessionStorage.setItem("host-tab:ABC234", "groups");
+  await renderHost();
+  expect(container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain("Game");
+});
+it("saves the selected tab under the current lobby code", async () => {
+  await renderHost();
+  const playersTab = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((tab) =>
+    tab.textContent?.includes("Players"),
+  )!;
+  await act(async () =>
+    playersTab.dispatchEvent(new MouseEvent("mousedown", { button: 0, bubbles: true })),
+  );
+  expect(sessionStorage.getItem("host-tab:ABC234")).toBe("players");
+});
+it("opens Players when the saved tab is invalid and no game is active", async () => {
+  sessionStorage.setItem("host-tab:ABC234", "unknown");
+  const lobby = spyLobby();
+  lobby.game = null;
+  await renderHost(lobby);
+  expect(container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain("Players");
+});
+it("opens Players before a game is active", async () => {
+  const lobby = spyLobby();
+  lobby.game = null;
+  await renderHost(lobby);
+  expect(container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain("Players");
+});
 it("uses Continue in the fixed bar while a team waits, and sends its command", async () => {
   await renderHost();
   const main = container.querySelector<HTMLButtonElement>(".host-fixed-controls button")!;

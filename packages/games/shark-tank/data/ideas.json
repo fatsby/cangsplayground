@@ -1,0 +1,452 @@
+[
+  {
+    "id": "cat-umbrella",
+    "name": "Cat Umbrella",
+    "emoji": "🐱",
+    "pitch": "This tiny umbrella keeps your cat dry in the rain.",
+    "keywords": [
+      { "en": "cat", "vi": "con mèo" },
+      { "en": "umbrella", "vi": "ô, dù" },
+      { "en": "rain", "vi": "mưa" },
+      { "en": "dry", "vi": "khô ráo" },
+      { "en": "tiny", "vi": "rất nhỏ" },
+      { "en": "carry", "vi": "mang theo" }
+    ],
+    "sellingPoints": ["Your cat can enjoy rainy walks.", "It is small and easy to carry."]
+  },
+  {
+    "id": "singing-shoes",
+    "name": "Singing Shoes",
+    "emoji": "👟",
+    "pitch": "These shoes tie themselves and sing when you walk.",
+    "keywords": [
+      { "en": "shoes", "vi": "giày" },
+      { "en": "tie", "vi": "buộc" },
+      { "en": "sing", "vi": "hát" },
+      { "en": "walk", "vi": "đi bộ" },
+      { "en": "song", "vi": "bài hát" },
+      { "en": "comfortable", "vi": "thoải mái" }
+    ],
+    "sellingPoints": ["You never need to tie your shoes.", "Every walk becomes a music show."]
+  },
+  {
+    "id": "flying-backpack",
+    "name": "Flying Backpack",
+    "emoji": "🎒",
+    "pitch": "This backpack flies beside you and carries your books.",
+    "keywords": [
+      { "en": "backpack", "vi": "ba lô" },
+      { "en": "fly", "vi": "bay" },
+      { "en": "beside", "vi": "bên cạnh" },
+      { "en": "books", "vi": "sách" },
+      { "en": "heavy", "vi": "nặng" },
+      { "en": "follow", "vi": "đi theo" }
+    ],
+    "sellingPoints": ["You do not have to carry heavy books.", "It follows you to school."]
+  },
+  {
+    "id": "snack-pillow",
+    "name": "Snack Pillow",
+    "emoji": "🍿",
+    "pitch": "This soft pillow has a secret pocket for your snacks.",
+    "keywords": [
+      { "en": "pillow", "vi": "gối" },
+      { "en": "soft", "vi": "mềm" },
+      { "en": "secret", "vi": "bí mật" },
+      { "en": "pocket", "vi": "túi nhỏ" },
+      { "en": "snack", "vi": "đồ ăn vặt" },
+      { "en": "rest", "vi": "nghỉ ngơi" }
+    ],
+    "sellingPoints": [
+      "Your favorite snacks are always near you.",
+      "It is perfect for watching movies."
+    ]
+  },
+  {
+    "id": "homework-robot",
+    "name": "Homework Cheer Robot",
+    "emoji": "🤖",
+    "pitch": "This little robot cheers for you when you finish your homework.",
+    "keywords": [
+      { "en": "robot", "vi": "rô bốt" },
+      { "en": "homework", "vi": "bài tập về nhà" },
+      { "en": "cheer", "vi": "cổ vũ" },
+      { "en": "finish", "vi": "hoàn thành" },
+      { "en": "clap", "vi": "vỗ tay" },
+      { "en": "study", "vi": "học" }
+    ],
+    "sellingPoints": ["Studying feels more fun.", "You have a little friend at your desk."]
+  },
+  {
+    "id": "dancing-toothbrush",
+    "name": "Dancing Toothbrush",
+    "emoji": "🪥",
+    "pitch": "This toothbrush dances while you brush your teeth.",
+    "keywords": [
+      { "en": "toothbrush", "vi": "bàn chải đánh răng" },
+      { "en": "dance", "vi": "nhảy múa" },
+      { "en": "brush", "vi": "chải" },
+      { "en": "teeth", "vi": "răng" },
+      { "en": "clean", "vi": "sạch" },
+      { "en": "morning", "vi": "buổi sáng" }
+    ],
+    "sellingPoints": [
+      "Brushing your teeth is a fun dance break.",
+      "It plays music for two minutes."
+    ]
+  },
+  {
+    "id": "ice-cream-fan",
+    "name": "Ice Cream Fan",
+    "emoji": "🍦",
+    "pitch": "This small fan blows cold air to stop your ice cream from melting.",
+    "keywords": [
+      { "en": "ice cream", "vi": "kem" },
+      { "en": "fan", "vi": "quạt" },
+      { "en": "cold", "vi": "lạnh" },
+      { "en": "air", "vi": "không khí" },
+      { "en": "melt", "vi": "tan chảy" },
+      { "en": "summer", "vi": "mùa hè" }
+    ],
+    "sellingPoints": ["You can enjoy your ice cream slowly.", "It fits in your bag on hot days."]
+  },
+  {
+    "id": "rainbow-raincoat",
+    "name": "Rainbow Raincoat",
+    "emoji": "🌈",
+    "pitch": "This raincoat changes color every time a raindrop touches it.",
+    "keywords": [
+      { "en": "raincoat", "vi": "áo mưa" },
+      { "en": "rainbow", "vi": "cầu vồng" },
+      { "en": "color", "vi": "màu sắc" },
+      { "en": "change", "vi": "thay đổi" },
+      { "en": "raindrop", "vi": "giọt mưa" },
+      { "en": "bright", "vi": "rực rỡ" }
+    ],
+    "sellingPoints": ["Rainy days become colorful.", "Every raincoat looks different in the rain."]
+  },
+  {
+    "id": "bedtime-clock",
+    "name": "Bedtime Story Clock",
+    "emoji": "⏰",
+    "pitch": "This clock tells you a short story when it is time for bed.",
+    "keywords": [
+      { "en": "clock", "vi": "đồng hồ" },
+      { "en": "story", "vi": "câu chuyện" },
+      { "en": "bedtime", "vi": "giờ đi ngủ" },
+      { "en": "sleep", "vi": "ngủ" },
+      { "en": "listen", "vi": "lắng nghe" },
+      { "en": "quiet", "vi": "yên tĩnh" }
+    ],
+    "sellingPoints": ["You hear a new story every night.", "It helps you remember your bedtime."]
+  },
+  {
+    "id": "pocket-garden",
+    "name": "Pocket Garden",
+    "emoji": "🌱",
+    "pitch": "This tiny garden lets you grow flowers in your jacket pocket.",
+    "keywords": [
+      { "en": "garden", "vi": "khu vườn" },
+      { "en": "grow", "vi": "trồng, phát triển" },
+      { "en": "flowers", "vi": "hoa" },
+      { "en": "jacket", "vi": "áo khoác" },
+      { "en": "seeds", "vi": "hạt giống" },
+      { "en": "water", "vi": "nước" }
+    ],
+    "sellingPoints": ["You can take your garden everywhere.", "It needs only a little water."]
+  },
+  {
+    "id": "pizza-scissors",
+    "name": "Pizza Scissors",
+    "emoji": "🍕",
+    "pitch": "These scissors cut pizza and put each slice on your plate.",
+    "keywords": [
+      { "en": "pizza", "vi": "bánh pizza" },
+      { "en": "scissors", "vi": "kéo" },
+      { "en": "cut", "vi": "cắt" },
+      { "en": "slice", "vi": "miếng cắt" },
+      { "en": "plate", "vi": "đĩa" },
+      { "en": "share", "vi": "chia sẻ" }
+    ],
+    "sellingPoints": ["Sharing pizza is quick and easy.", "Your hands stay clean."]
+  },
+  {
+    "id": "happy-glasses",
+    "name": "Happy Glasses",
+    "emoji": "😎",
+    "pitch": "These glasses make every face look like a smiling cartoon.",
+    "keywords": [
+      { "en": "glasses", "vi": "kính mắt" },
+      { "en": "face", "vi": "khuôn mặt" },
+      { "en": "smile", "vi": "mỉm cười" },
+      { "en": "cartoon", "vi": "hoạt hình" },
+      { "en": "funny", "vi": "buồn cười" },
+      { "en": "wear", "vi": "đeo, mặc" }
+    ],
+    "sellingPoints": [
+      "A boring bus ride becomes funny.",
+      "You can choose different cartoon styles."
+    ]
+  },
+  {
+    "id": "fish-taxi",
+    "name": "Fish Taxi",
+    "emoji": "🐟",
+    "pitch": "This fish bowl has wheels so your fish can travel around your home.",
+    "keywords": [
+      { "en": "fish", "vi": "cá" },
+      { "en": "bowl", "vi": "bát, tô" },
+      { "en": "wheels", "vi": "bánh xe" },
+      { "en": "travel", "vi": "di chuyển, du lịch" },
+      { "en": "home", "vi": "nhà" },
+      { "en": "move", "vi": "di chuyển" }
+    ],
+    "sellingPoints": [
+      "Your fish can join you in every room.",
+      "The water stays inside when it moves."
+    ]
+  },
+  {
+    "id": "talking-plant-pot",
+    "name": "Talking Plant Pot",
+    "emoji": "🪴",
+    "pitch": "This plant pot says please when your plant needs water.",
+    "keywords": [
+      { "en": "plant", "vi": "cây" },
+      { "en": "pot", "vi": "chậu" },
+      { "en": "thirsty", "vi": "khát" },
+      { "en": "need", "vi": "cần" },
+      { "en": "talk", "vi": "nói chuyện" },
+      { "en": "remember", "vi": "nhớ" }
+    ],
+    "sellingPoints": ["You remember to water your plants.", "Your plant can ask for help."]
+  },
+  {
+    "id": "stirring-mug",
+    "name": "Lazy Soup Mug",
+    "emoji": "🥣",
+    "pitch": "This mug stirs your soup when you press a button.",
+    "keywords": [
+      { "en": "mug", "vi": "cốc có quai" },
+      { "en": "soup", "vi": "súp" },
+      { "en": "stir", "vi": "khuấy" },
+      { "en": "press", "vi": "nhấn" },
+      { "en": "button", "vi": "nút bấm" },
+      { "en": "spoon", "vi": "thìa" }
+    ],
+    "sellingPoints": ["You do not need a spoon to stir.", "Making a quick lunch is easier."]
+  },
+  {
+    "id": "umbrella-hat",
+    "name": "Umbrella Hat",
+    "emoji": "☂️",
+    "pitch": "This hat opens into an umbrella when it starts to rain.",
+    "keywords": [
+      { "en": "hat", "vi": "mũ" },
+      { "en": "open", "vi": "mở" },
+      { "en": "rain", "vi": "mưa" },
+      { "en": "hands", "vi": "bàn tay" },
+      { "en": "head", "vi": "đầu" },
+      { "en": "cover", "vi": "che phủ" }
+    ],
+    "sellingPoints": [
+      "Both hands are free to carry things.",
+      "You always have an umbrella with you."
+    ]
+  },
+  {
+    "id": "music-socks",
+    "name": "Music Socks",
+    "emoji": "🧦",
+    "pitch": "These socks play a different drum sound with every step.",
+    "keywords": [
+      { "en": "socks", "vi": "tất, vớ" },
+      { "en": "drum", "vi": "trống" },
+      { "en": "sound", "vi": "âm thanh" },
+      { "en": "step", "vi": "bước chân" },
+      { "en": "music", "vi": "âm nhạc" },
+      { "en": "floor", "vi": "sàn nhà" }
+    ],
+    "sellingPoints": ["You can make music without an instrument.", "Dancing at home is more fun."]
+  },
+  {
+    "id": "kind-mirror",
+    "name": "Kind Mirror",
+    "emoji": "🪞",
+    "pitch": "This mirror says something kind to you every morning.",
+    "keywords": [
+      { "en": "mirror", "vi": "gương" },
+      { "en": "kind", "vi": "tử tế" },
+      { "en": "morning", "vi": "buổi sáng" },
+      { "en": "happy", "vi": "vui vẻ" },
+      { "en": "message", "vi": "lời nhắn" },
+      { "en": "confident", "vi": "tự tin" }
+    ],
+    "sellingPoints": [
+      "You start your day with a smile.",
+      "You can record kind messages for a friend."
+    ]
+  },
+  {
+    "id": "floating-desk",
+    "name": "Floating Desk",
+    "emoji": "🏊",
+    "pitch": "This desk floats on water so you can study in a pool.",
+    "keywords": [
+      { "en": "desk", "vi": "bàn học" },
+      { "en": "float", "vi": "nổi" },
+      { "en": "pool", "vi": "hồ bơi" },
+      { "en": "study", "vi": "học" },
+      { "en": "water", "vi": "nước" },
+      { "en": "relax", "vi": "thư giãn" }
+    ],
+    "sellingPoints": ["You can study somewhere new.", "There is space for a book and a drink."]
+  },
+  {
+    "id": "magnet-gloves",
+    "name": "Magnet Gloves",
+    "emoji": "🧤",
+    "pitch": "These gloves pick up your keys without you bending down.",
+    "keywords": [
+      { "en": "gloves", "vi": "găng tay" },
+      { "en": "magnet", "vi": "nam châm" },
+      { "en": "keys", "vi": "chìa khóa" },
+      { "en": "pick up", "vi": "nhặt lên" },
+      { "en": "bend down", "vi": "cúi xuống" },
+      { "en": "drop", "vi": "làm rơi" }
+    ],
+    "sellingPoints": ["Dropped keys are easy to pick up.", "The gloves also keep your hands warm."]
+  },
+  {
+    "id": "cooling-cap",
+    "name": "Cool Head Cap",
+    "emoji": "🧢",
+    "pitch": "This cap has a tiny fan to keep your head cool.",
+    "keywords": [
+      { "en": "cap", "vi": "mũ lưỡi trai" },
+      { "en": "fan", "vi": "quạt" },
+      { "en": "cool", "vi": "mát mẻ" },
+      { "en": "hot", "vi": "nóng" },
+      { "en": "sun", "vi": "mặt trời" },
+      { "en": "outside", "vi": "bên ngoài" }
+    ],
+    "sellingPoints": ["You stay cool on sunny days.", "It is light enough to wear all day."]
+  },
+  {
+    "id": "banana-phone",
+    "name": "Banana Phone",
+    "emoji": "🍌",
+    "pitch": "This phone looks like a banana and rings with monkey sounds.",
+    "keywords": [
+      { "en": "banana", "vi": "quả chuối" },
+      { "en": "phone", "vi": "điện thoại" },
+      { "en": "ring", "vi": "đổ chuông" },
+      { "en": "monkey", "vi": "con khỉ" },
+      { "en": "call", "vi": "gọi điện" },
+      { "en": "yellow", "vi": "màu vàng" }
+    ],
+    "sellingPoints": [
+      "You can find its bright yellow shape easily.",
+      "Every call makes your friends laugh."
+    ]
+  },
+  {
+    "id": "pet-translator",
+    "name": "Pet Translator",
+    "emoji": "🐶",
+    "pitch": "This collar turns your dog's sounds into simple words.",
+    "keywords": [
+      { "en": "pet", "vi": "thú cưng" },
+      { "en": "collar", "vi": "vòng cổ" },
+      { "en": "dog", "vi": "con chó" },
+      { "en": "words", "vi": "từ ngữ" },
+      { "en": "hungry", "vi": "đói" },
+      { "en": "understand", "vi": "hiểu" }
+    ],
+    "sellingPoints": [
+      "Your dog can tell you what it wants.",
+      "You can have funny talks with your pet."
+    ]
+  },
+  {
+    "id": "bubble-bike",
+    "name": "Bubble Bike",
+    "emoji": "🚲",
+    "pitch": "This bike makes colorful bubbles when you ride it.",
+    "keywords": [
+      { "en": "bike", "vi": "xe đạp" },
+      { "en": "bubbles", "vi": "bong bóng" },
+      { "en": "ride", "vi": "đạp xe" },
+      { "en": "colorful", "vi": "nhiều màu sắc" },
+      { "en": "pedal", "vi": "bàn đạp" },
+      { "en": "park", "vi": "công viên" }
+    ],
+    "sellingPoints": ["Every bike ride feels like a party.", "You make bubbles just by pedaling."]
+  },
+  {
+    "id": "pancake-printer",
+    "name": "Pancake Printer",
+    "emoji": "🥞",
+    "pitch": "This machine makes pancakes in the shape of your favorite animal.",
+    "keywords": [
+      { "en": "pancake", "vi": "bánh kếp" },
+      { "en": "machine", "vi": "máy móc" },
+      { "en": "shape", "vi": "hình dạng" },
+      { "en": "animal", "vi": "động vật" },
+      { "en": "breakfast", "vi": "bữa sáng" },
+      { "en": "choose", "vi": "chọn" }
+    ],
+    "sellingPoints": [
+      "Breakfast can look like a cat or a dinosaur.",
+      "Everyone can choose their own shape."
+    ]
+  },
+  {
+    "id": "blanket-jacket",
+    "name": "Blanket Jacket",
+    "emoji": "🧥",
+    "pitch": "This jacket opens into a big blanket for you and a friend.",
+    "keywords": [
+      { "en": "blanket", "vi": "chăn" },
+      { "en": "jacket", "vi": "áo khoác" },
+      { "en": "warm", "vi": "ấm áp" },
+      { "en": "friend", "vi": "bạn bè" },
+      { "en": "fold", "vi": "gấp" },
+      { "en": "picnic", "vi": "buổi dã ngoại" }
+    ],
+    "sellingPoints": [
+      "One jacket keeps two people warm.",
+      "You always have a blanket for a picnic."
+    ]
+  },
+  {
+    "id": "walking-suitcase",
+    "name": "Walking Suitcase",
+    "emoji": "🧳",
+    "pitch": "This suitcase has little legs and walks behind you.",
+    "keywords": [
+      { "en": "suitcase", "vi": "va li" },
+      { "en": "legs", "vi": "chân" },
+      { "en": "walk", "vi": "đi bộ" },
+      { "en": "behind", "vi": "phía sau" },
+      { "en": "airport", "vi": "sân bay" },
+      { "en": "holiday", "vi": "kỳ nghỉ" }
+    ],
+    "sellingPoints": ["You do not need to pull a heavy suitcase.", "It can climb small steps."]
+  },
+  {
+    "id": "star-lamp",
+    "name": "Pocket Sky Lamp",
+    "emoji": "🌟",
+    "pitch": "This little lamp puts moving stars on your bedroom ceiling.",
+    "keywords": [
+      { "en": "lamp", "vi": "đèn" },
+      { "en": "stars", "vi": "những ngôi sao" },
+      { "en": "sky", "vi": "bầu trời" },
+      { "en": "bedroom", "vi": "phòng ngủ" },
+      { "en": "ceiling", "vi": "trần nhà" },
+      { "en": "night", "vi": "ban đêm" }
+    ],
+    "sellingPoints": ["You can enjoy the night sky inside.", "You can take it on a holiday."]
+  }
+]

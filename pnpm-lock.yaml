@@ -208,6 +208,9 @@ importers:
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
+      '@cangsplayground/game-shark-tank':
+        specifier: workspace:*
+        version: link:../../packages/games/shark-tank
       '@cangsplayground/game-whos-the-spy':
         specifier: workspace:*
         version: link:../../packages/games/whos-the-spy
@@ -245,6 +248,9 @@ importers:
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
+      '@cangsplayground/game-shark-tank':
+        specifier: workspace:*
+        version: link:../../packages/games/shark-tank
       '@cangsplayground/game-whos-the-spy':
         specifier: workspace:*
         version: link:../../packages/games/whos-the-spy
@@ -374,6 +380,34 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
     devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/games/shark-tank:
+    dependencies:
+      '@cangsplayground/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@cangsplayground/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      canvas-confetti:
+        specifier: ^1.9.4
+        version: 1.9.4
+      motion:
+        specifier: ^14.4.0
+        version: 14.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/canvas-confetti':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0

@@ -23,7 +23,7 @@ export default function Join() {
       return;
     }
     if (name.trim().length < 1 || name.trim().length > PLAYER_NAME_MAX) {
-      setError("Use a name with 1 to 20 letters.");
+      setError(`Use a name with 1 to ${PLAYER_NAME_MAX} letters.`);
       return;
     }
     setBusy(true);
@@ -73,7 +73,7 @@ export default function Join() {
             autoComplete="given-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            maxLength={20}
+            maxLength={PLAYER_NAME_MAX}
             required
             error={error}
           />

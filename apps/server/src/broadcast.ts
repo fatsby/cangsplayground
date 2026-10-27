@@ -55,6 +55,17 @@ export function buildView(lobby: Lobby, viewer: Viewer): LobbyView {
           stage: game.stage,
           config: host ? structuredClone(game.config) : null,
           publicInfo: structuredClone(game.module.publicInfo(game.config)),
+          shared:
+            game.stage === "ACTIVE" && game.shared !== null && game.module.sharedViewFor
+              ? structuredClone(
+                  game.module.sharedViewFor({
+                    config: game.config,
+                    shared: game.shared,
+                    viewer,
+                    viewerGroupId: own?.groupId ?? null,
+                  }),
+                )
+              : null,
           groups: game.groups
             .filter((g) => viewer.kind !== "player" || g.groupId === own?.groupId)
             .map((group) => ({

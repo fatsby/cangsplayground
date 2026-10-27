@@ -14,8 +14,23 @@ export interface GameViewProps {
   group: GroupGameView;
   serverNow: () => number;
 }
+export interface SessionViewProps {
+  lobby: LobbyView;
+  session: GameSessionView;
+  serverNow: () => number;
+  /** Host: a command is in flight. */
+  busy?: boolean;
+  act?: (action: GameAction) => Promise<boolean>;
+  hostAct?: (action: GameAction) => Promise<boolean>;
+}
 export type GameControl = C2SPayload<"game:control">["cmd"];
 export interface GameViews {
+  ProjectorScreen?: React.ComponentType<SessionViewProps>;
+  ProjectorTools?: React.ComponentType<SessionViewProps>;
+  HostSessionPanel?: React.ComponentType<SessionViewProps>;
+  PlayerSessionScreen?: React.ComponentType<
+    SessionViewProps & { me: NonNullable<LobbyView["me"]> }
+  >;
   roundLabel?: (group: GroupGameView, summary: GroupSummary) => string;
   HostGroupStatus?: React.ComponentType<GameViewProps>;
   ProjectorGroupStatus?: React.ComponentType<GameViewProps>;

@@ -17,6 +17,8 @@ import {
   type Rng,
   type GameModule,
   type GameClockView,
+  type GameAction,
+  type RosterEntry,
 } from "@cangsplayground/core";
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
@@ -36,6 +38,7 @@ export interface Session {
   config: Record<string, any>;
   stage: "CONFIGURING" | "ACTIVE";
   groups: GroupRuntime[];
+  shared: unknown;
 }
 type Control = C2SPayload<"game:control">["cmd"];
 export class Lobby {
@@ -72,6 +75,25 @@ export class Lobby {
     this.version++;
     this.onChange();
   }
+  private roster(): RosterEntry[] {
+    return [...this.players.values()].map((p) => ({
+      playerId: p.id,
+      groupId: p.groupId,
+      connected: p.sockets.size > 0,
+    }));
+  }
+  connectionChanged(): void {
+    const game = this.game;
+    if (game?.stage !== "ACTIVE" || !game.module.onSharedRosterChange) return;
+    game.shared = game.module.onSharedRosterChange({
+      config: game.config,
+      shared: game.shared,
+      roster: this.roster(),
+      now: this.now(),
+      rng: this.rng,
+    });
+    this.changed();
+  }
   command<T>(id: string, run: () => T): Ack<T> {
     const previous = this.commands.get(id);
     if (previous) return previous;
@@ -93,7 +115,7 @@ export class Lobby {
     if (this.players.size >= MAX_PLAYERS_PER_LOBBY) fail("LOBBY_FULL", "This lobby is full.");
     const name = input.trim();
     if (!name || name.length > PLAYER_NAME_MAX)
-      fail("NAME_INVALID", "Use a name with 1 to 20 letters.");
+      fail("NAME_INVALID", `Use a name with 1 to ${PLAYER_NAME_MAX} letters.`);
     const names = new Set([...this.players.values()].map((p) => p.name.toLowerCase()));
     if (names.has(name.toLowerCase())) {
       let i = 2;
@@ -119,7 +141,18 @@ export class Lobby {
   removePlayer(playerId: string) {
     const player = this.players.get(playerId);
     if (!player) fail("NOT_FOUND", "Player not found.");
-    if (
+    if (this.game?.module.onSharedAction) {
+      if (this.game.stage === "ACTIVE" && this.game.module.onSharedPlayerLeft)
+        this.game.shared = this.game.module.onSharedPlayerLeft({
+          config: this.game.config,
+          shared: this.game.shared,
+          roster: this.roster().filter((p) => p.playerId !== playerId),
+          now: this.now(),
+          rng: this.rng,
+          playerId,
+          groupId: player.groupId,
+        });
+    } else if (
       this.game?.stage === "ACTIVE" &&
       this.game.groups.some((g) => g.turnOrder.includes(playerId))
     ) {
@@ -177,7 +210,10 @@ export class Lobby {
     return { sizes };
   }
   move(playerId: string, toGroupId: string | null) {
-    if (this.game?.stage === "ACTIVE" && this.game.module.voteDurationMs)
+    if (
+      this.game?.stage === "ACTIVE" &&
+      (this.game.module.voteDurationMs || this.game.module.onSharedAction)
+    )
       fail("INVALID_STATE", "Exit the game to move players.");
     const player = this.players.get(playerId);
     if (!player) fail("NOT_FOUND", "Player not found.");
@@ -205,11 +241,14 @@ export class Lobby {
       config: structuredClone(module.defaultConfig),
       stage: "CONFIGURING",
       groups: [],
+      shared: null,
     };
     this.changed();
   }
   configure(config: Record<string, unknown>) {
     if (!this.game) fail("INVALID_STATE", "Choose a game first.");
+    if (this.game.stage === "ACTIVE" && this.game.module.onSharedAction)
+      fail("INVALID_STATE", "Exit the game to change settings.");
     const parsed = this.game.module.configSchema.safeParse({ ...this.game.config, ...config });
     if (!parsed.success) fail("INVALID_PAYLOAD", "Check the game settings.");
     this.game.config = parsed.data;
@@ -288,8 +327,21 @@ export class Lobby {
         game.module.resolveConfig?.({ config: structuredClone(game.config), rng: this.rng }) ??
         game.config;
       this.validateGroups(this.groups, config);
+      const message = game.module.validateGroups?.({ config, groups: this.groups });
+      if (message !== null && message !== undefined) fail("GROUPS_TOO_SMALL", message);
       game.config = config;
       game.groups = this.groups.map((g) => this.prepareGroup(g, 1));
+      game.shared =
+        game.module.prepareShared?.({
+          config,
+          groups: game.groups.map((g) => ({
+            groupId: g.groupId,
+            playerIds: activePlayers(g),
+            round: 1,
+          })),
+          rng: this.rng,
+          now: this.now(),
+        }) ?? null;
       game.stage = "ACTIVE";
       const durationMs = game.module.gameDurationMs?.(game.config);
       game.clock =
@@ -299,6 +351,7 @@ export class Lobby {
       this.changed();
       return;
     }
+    if (game.module.onSharedAction) fail("INVALID_STATE", "This game uses its own controls.");
     if (game.stage !== "ACTIVE") fail("INVALID_STATE", "Prepare the game first.");
     const groups = game.groups.filter((g) => !groupId || g.groupId === groupId);
     if (cmd === "nextRound" && !game.module.onContinue) {
@@ -514,6 +567,18 @@ export class Lobby {
       if (group.phase !== "RUNNING" || group.turnOrder[group.turnIndex] !== playerId)
         fail("UNAUTHORIZED", "Wait for your turn.");
       this.advance(group, "done");
+    } else if (game.module.onSharedAction) {
+      const shared = game.module.onSharedAction({
+        config: game.config,
+        shared: game.shared,
+        roster: this.roster(),
+        now: this.now(),
+        rng: this.rng,
+        action,
+        actor: { kind: "player", playerId },
+      });
+      if (shared === null) fail("INVALID_STATE", "This action is not ready.");
+      game.shared = shared;
     } else {
       const result = game.module.onAction?.({
         config: game.config,
@@ -527,6 +592,23 @@ export class Lobby {
       if (result.endTurn) this.advance(group, "done");
       if (result.closeVote && group.phase === "VOTING") this.closeVote(group);
     }
+    this.changed();
+  }
+  hostAction(action: GameAction): void {
+    const game = this.game;
+    if (game?.stage !== "ACTIVE" || !game.module.onSharedAction)
+      fail("INVALID_STATE", "This action is not ready.");
+    const shared = game.module.onSharedAction({
+      config: game.config,
+      shared: game.shared,
+      roster: this.roster(),
+      now: this.now(),
+      rng: this.rng,
+      action,
+      actor: { kind: "host" },
+    });
+    if (shared === null) fail("INVALID_STATE", "This action is not ready.");
+    game.shared = shared;
     this.changed();
   }
 }

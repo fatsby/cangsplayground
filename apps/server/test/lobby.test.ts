@@ -32,6 +32,27 @@ describe("Lobby and groups", () => {
     expect(lobby.players.has(players[0]!.id)).toBe(false);
     expect(lobby.join("Player0").groupId).toBeNull();
   });
+  it("joins with a full Vietnamese name and supports names up to 32 characters", () => {
+    const { lobby } = setup(0);
+    expect(lobby.join("Nguyễn Thị Phương Thảo").name).toBe("Nguyễn Thị Phương Thảo");
+    expect(lobby.join("a".repeat(32)).name).toHaveLength(32);
+    expect(() => lobby.join("a".repeat(33))).toThrow("name");
+  });
+  it("suggests unique duplicate-name suffixes within 32 characters, including two-digit suffixes", () => {
+    const { lobby } = setup(0);
+    const name = "a".repeat(32);
+    lobby.join(name);
+    for (let i = 2; i <= 10; i++) {
+      const suggestion = "a".repeat(i < 10 ? 31 : 30) + i;
+      expect(() => lobby.join(name)).toThrow(
+        expect.objectContaining({
+          code: "NAME_TAKEN",
+          suggestion,
+        }),
+      );
+      expect(lobby.join(suggestion).name).toHaveLength(32);
+    }
+  });
   it("assigns balanced groups, validates minimums, moves members and requires confirmation", () => {
     const { lobby, players } = setup(8);
     lobby.selectGame("free-talk");

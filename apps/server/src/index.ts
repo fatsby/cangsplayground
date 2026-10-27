@@ -69,6 +69,7 @@ export async function createServer(
       if (p) {
         p.sockets.delete(socket.id);
         p.lastSeenAt = manager.now();
+        a.lobby.connectionChanged();
       }
     }
     if (a.lobby.status === "open") {
@@ -116,6 +117,7 @@ export async function createServer(
           const p = lobby.players.get(viewer.playerId)!;
           p.sockets.add(socket.id);
           p.lastSeenAt = manager.now();
+          lobby.connectionChanged();
         }
         updateRooms(socket, { lobby, viewer });
         lobby.changed();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import {
   Users,
@@ -40,6 +40,23 @@ import { HostGame } from "../components/HostGame";
 import { canControl, mainControl, type Control } from "../components/game-controls";
 import { gameViews } from "../games/registry";
 const claims = new Map<string, ReturnType<typeof request<"host:claim">>>();
+const hostTabs = ["players", "groups", "game", "secrets"] as const;
+type HostTab = (typeof hostTabs)[number];
+function readHostTab(code: string): HostTab | null {
+  try {
+    const value = sessionStorage.getItem(`host-tab:${code}`);
+    return hostTabs.find((tab) => tab === value) ?? null;
+  } catch {
+    return null;
+  }
+}
+function saveHostTab(code: string, tab: HostTab): void {
+  try {
+    sessionStorage.setItem(`host-tab:${code}`, tab);
+  } catch {
+    // The console still works when session storage is unavailable.
+  }
+}
 export default function Host() {
   const code = useParams().code!.toUpperCase();
   const [token, setToken] = useState(() => readToken("host", code)),
@@ -47,12 +64,18 @@ export default function Host() {
     [claiming, setClaiming] = useState(false);
   const error = useRole("host", code, token ?? undefined),
     { view, serverNow, connection } = useLobbyStore();
-  const [tab, setTab] = useState("players"),
+  const [tab, setTab] = useState<HostTab>("players"),
+    restoredCode = useRef<string | null>(null),
     [busy, setBusy] = useState(false),
     [mode, setMode] = useState<"count" | "maxSize">("count"),
     [value, setValue] = useState(4),
     [player, setPlayer] = useState<PlayerSummary | null>(null),
     [showSecrets, setShowSecrets] = useState(false);
+  useEffect(() => {
+    if (!view || view.code !== code || restoredCode.current === code) return;
+    restoredCode.current = code;
+    setTab(view.game?.stage === "ACTIVE" ? "game" : (readHostTab(code) ?? "players"));
+  }, [code, view]);
   const [confirm, setConfirm] = useState<{
     title: string;
     description: string;
@@ -291,6 +314,7 @@ export default function Host() {
                   select={(gameId) => void execute(() => hostCommand("game:select", { gameId }))}
                   configure={(config) => execute(() => hostCommand("game:configure", { config }))}
                   control={control}
+                  hostAct={(a) => execute(() => hostCommand("game:hostAction", a))}
                 />
               )}
               {tab === "secrets" && (
@@ -347,70 +371,77 @@ export default function Host() {
                 </>
               )}
             </div>
-            {game && !allGroupsFinished(game.groups) && (
-              <div className="host-fixed-controls">
-                <Button
-                  variant="primary"
-                  disabled={
-                    busy ||
-                    connection !== "online" ||
-                    !action ||
-                    !canControl(action.cmd, game) ||
-                    (action.cmd === "prepare" && !canPrepare)
-                  }
-                  onClick={() => action && control(action.cmd)}
-                >
-                  {action?.cmd === "pause" ? (
-                    <Pause size={20} strokeWidth={2.25} />
-                  ) : (
-                    <Play size={20} strokeWidth={2.25} />
-                  )}
-                  {action
-                    ? (gameViews[game.gameId]?.controlLabels?.[action.cmd] ??
-                      (
-                        {
-                          prepare: "Prepare",
-                          start: "Start",
-                          pause: "Pause",
-                          resume: "Resume",
-                          nextRound: "Next",
-                        } as Partial<Record<Control, string>>
-                      )[action.cmd] ??
-                      action.label)
-                    : "Start"}
-                </Button>
-                <Button
-                  aria-label="Skip turn for all groups"
-                  disabled={busy || !canControl("skip", game)}
-                  onClick={() => control("skip")}
-                >
-                  <SkipForward strokeWidth={2.25} />
-                </Button>
-                <Button
-                  aria-label="Add 30 seconds to all groups"
-                  disabled={busy || !canControl("extend", game)}
-                  onClick={() => control("extend")}
-                >
-                  <Plus size={18} strokeWidth={2.25} />
-                  30s
-                </Button>
-                <Button
-                  hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
-                  aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
-                  disabled={busy || !canControl("endRound", game)}
-                  onClick={() => control("endRound")}
-                >
-                  <Square size={18} strokeWidth={2.25} />
-                  {gameViews[game.gameId]?.controlLabels?.endRound}
-                </Button>
-              </div>
-            )}
+            {game &&
+              !allGroupsFinished(game.groups) &&
+              !(game.stage === "ACTIVE" && gameViews[game.gameId]?.HostSessionPanel) && (
+                <div className="host-fixed-controls">
+                  <Button
+                    variant="primary"
+                    disabled={
+                      busy ||
+                      connection !== "online" ||
+                      !action ||
+                      !canControl(action.cmd, game) ||
+                      (action.cmd === "prepare" && !canPrepare)
+                    }
+                    onClick={() => action && control(action.cmd)}
+                  >
+                    {action?.cmd === "pause" ? (
+                      <Pause size={20} strokeWidth={2.25} />
+                    ) : (
+                      <Play size={20} strokeWidth={2.25} />
+                    )}
+                    {action
+                      ? (gameViews[game.gameId]?.controlLabels?.[action.cmd] ??
+                        (
+                          {
+                            prepare: "Prepare",
+                            start: "Start",
+                            pause: "Pause",
+                            resume: "Resume",
+                            nextRound: "Next",
+                          } as Partial<Record<Control, string>>
+                        )[action.cmd] ??
+                        action.label)
+                      : "Start"}
+                  </Button>
+                  <Button
+                    aria-label="Skip turn for all groups"
+                    disabled={busy || !canControl("skip", game)}
+                    onClick={() => control("skip")}
+                  >
+                    <SkipForward strokeWidth={2.25} />
+                  </Button>
+                  <Button
+                    aria-label="Add 30 seconds to all groups"
+                    disabled={busy || !canControl("extend", game)}
+                    onClick={() => control("extend")}
+                  >
+                    <Plus size={18} strokeWidth={2.25} />
+                    30s
+                  </Button>
+                  <Button
+                    hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
+                    aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
+                    disabled={busy || !canControl("endRound", game)}
+                    onClick={() => control("endRound")}
+                  >
+                    <Square size={18} strokeWidth={2.25} />
+                    {gameViews[game.gameId]?.controlLabels?.endRound}
+                  </Button>
+                </div>
+              )}
           </>
         )}
         <Tabs
           className="host-tabs"
           value={tab}
-          onValueChange={setTab}
+          onValueChange={(value) => {
+            if (!hostTabs.includes(value as HostTab)) return;
+            const nextTab = value as HostTab;
+            setTab(nextTab);
+            saveHostTab(code, nextTab);
+          }}
           items={[
             { value: "players", label: "Players", icon: <Users strokeWidth={2.25} /> },
             { value: "groups", label: "Groups", icon: <Shuffle strokeWidth={2.25} /> },

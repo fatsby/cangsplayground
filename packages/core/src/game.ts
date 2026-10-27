@@ -15,8 +15,9 @@ import type {
  * Game Module Contract (PRD §7) — server-side half.
  *
  * Core owns lobby, groups, the shared turn rotation and the server timer (PRD §6.5).
- * A module owns only its rules and its per-group `data`, and MUST filter that data
- * per viewer in viewFor(). Core never sends `data` to a client without viewFor().
+ * A module owns its rules, its per-group `data`, and optional session-wide shared state.
+ * It MUST filter data per viewer in viewFor() and sharedViewFor(). Core never sends
+ * module state to a client without its corresponding view filter.
  *
  * The client-side half (React components) lives in the package's `./views` entry and
  * is typed in @cangsplayground/ui (GameViews).
@@ -47,6 +48,20 @@ export interface GameAction {
   payload?: unknown;
 }
 
+export interface RosterEntry {
+  playerId: PlayerId;
+  groupId: GroupId | null;
+  connected: boolean;
+}
+
+export interface SharedArgs<Config, Shared> {
+  config: Config;
+  shared: Shared;
+  roster: RosterEntry[];
+  now: number;
+  rng: Rng;
+}
+
 export interface ActionResult<Data> {
   data?: Data;
   /** Ask core to advance to the next speaker. */
@@ -70,7 +85,7 @@ export function activePlayers(state: Pick<GroupRuntime, "turnOrder">): PlayerId[
   return [...new Set(state.turnOrder)];
 }
 
-export interface GameModule<Config = any, Data = any> {
+export interface GameModule<Config = any, Data = any, Shared = any> {
   id: string;
   name: string;
   description: string;
@@ -99,9 +114,38 @@ export interface GameModule<Config = any, Data = any> {
 
   resolveConfig?(args: { config: Config; rng: Rng }): Config;
   validateGroup?(args: { config: Config; group: GroupSummary }): string | null;
+  validateGroups?(args: { config: Config; groups: GroupSummary[] }): string | null;
 
   /** Deal roles / info for one group. Called on "prepare" and on every "nextRound". */
   prepare(args: { config: Config; group: GroupContext; rng: Rng }): Data;
+
+  prepareShared?(args: { config: Config; groups: GroupContext[]; rng: Rng; now: number }): Shared;
+
+  /** Player game:action (except turn:done) and host game:hostAction. Return null to reject. */
+  onSharedAction?(
+    args: SharedArgs<Config, Shared> & {
+      action: GameAction;
+      actor: Viewer;
+    },
+  ): Shared | null;
+  onSharedPlayerLeft?(
+    args: SharedArgs<Config, Shared> & {
+      playerId: PlayerId;
+      groupId: GroupId | null;
+    },
+  ): Shared;
+  /** A player connected or disconnected (roster.connected changed). */
+  onSharedRosterChange?(args: SharedArgs<Config, Shared>): Shared;
+  /**
+   * REQUIRED when prepareShared is declared: filter shared state for this viewer (PRD §7).
+   * Called only while ACTIVE with non-null prepared shared state.
+   */
+  sharedViewFor?(args: {
+    config: Config;
+    shared: Shared;
+    viewer: Viewer;
+    viewerGroupId: GroupId | null;
+  }): unknown;
 
   onContinue?(args: { config: Config; state: GroupRuntime<Data>; rng: Rng }): Data;
   onPlayerLeft?(args: {
