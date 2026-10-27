@@ -16,7 +16,7 @@ services:
   # Cloudflare Tunnel (profile "tunnel"): publishes the app at TUNNEL_PUBLIC_URL without opening ports.
   # The tunnel's public hostname must point to http://cangsplayground:3000 (set in the Cloudflare dashboard).
   cloudflared:
-    image: cloudflare/cloudflared:2026.9.3
+    image: cloudflare/cloudflared:2026.10.3
     container_name: cangsplayground-tunnel
     profiles: [tunnel]
     restart: unless-stopped

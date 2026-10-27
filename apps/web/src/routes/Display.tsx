@@ -24,9 +24,19 @@ export function projectorBody(
 ) {
   return session?.stage === "ACTIVE" ? (views?.ProjectorScreen ?? null) : null;
 }
-function QR({ value, label, size = 112 }: { value: string; label: string; size?: number }) {
+function QR({
+  value,
+  label,
+  size = 112,
+  className,
+}: {
+  value: string;
+  label: string;
+  size?: number;
+  className?: string;
+}) {
   return (
-    <div className="qr-frame">
+    <div className={className ? `qr-frame ${className}` : "qr-frame"}>
       <QRCodeSVG value={value} size={size} marginSize={1} title={label} />
     </div>
   );
@@ -137,6 +147,8 @@ export default function Display() {
     if (result.ok) setPair(result.data);
     else setPairError(result.error.message);
   };
+  const joinUrl = `${publicUrl}/join/${code}`,
+    welcome = !!view && !ProjectorScreen && !view.groups.length;
   const columns = !view?.groups.length
     ? 2
     : view.groups.length <= 4
@@ -150,7 +162,15 @@ export default function Display() {
         <header className="projector-header">
           <LobbyCodeDisplay
             code={code}
-            qr={<QR value={`${publicUrl}/join/${code}`} label={`Join lobby ${code}`} />}
+            qr={
+              welcome ? undefined : (
+                <QR
+                  value={joinUrl}
+                  label={`Join lobby ${code}`}
+                  size={session?.stage === "ACTIVE" ? 112 : 160}
+                />
+              )
+            }
           />
           <div className="projector-title">
             <h1>{session?.name ?? "CangsPlayground"}</h1>
@@ -198,6 +218,7 @@ export default function Display() {
                     <br />
                     <span className="cp-accent">Your turn.</span>
                   </h2>
+                  <QR className="join-qr" value={joinUrl} label={`Join lobby ${code}`} size={320} />
                   <p className="cp-muted">Scan the code to join</p>
                   <p className="projector-join-url">
                     {publicUrl.replace(/^https?:\/\//, "")}/join/{code}
