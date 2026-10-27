@@ -250,6 +250,7 @@ export const ACTIONS: Record<string, Reducer> = {
       parsed = votePayload.safeParse(payload);
     if (
       shared.stage !== "HUDDLE" ||
+      (shared.timer.endsAt !== null && ctx.now >= shared.timer.endsAt) ||
       ctx.actor.kind !== "player" ||
       !company ||
       !seller ||

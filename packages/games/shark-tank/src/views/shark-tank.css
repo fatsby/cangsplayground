@@ -345,15 +345,24 @@
   align-content: center;
   min-height: 0;
   margin: 0;
-  gap: 16px;
+  gap: 10px 14px;
 }
 .st-projector .st-presenters li {
   min-width: 0;
-  gap: 4px;
-  font-size: 24px;
+  gap: 2px;
+  font-size: clamp(21px, 1.65vw, 28px);
+  line-height: 1.15;
 }
 .st-projector .st-presenters span {
-  font-size: 20px;
+  font-size: clamp(17px, 1.4vw, 22px);
+}
+.st-projector .st-presenter-name,
+.st-projector .st-closing-name {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 .st-projector .st-announcer {
   font-size: clamp(28px, 3vw, 48px);
@@ -398,6 +407,9 @@
   max-width: 100%;
   padding: 12px 16px;
   font-size: 26px;
+}
+.st-projector .st-closing-list [aria-current="step"] .st-closing-name {
+  font-weight: 700;
 }
 .st-closing-progress {
   display: block;
@@ -449,6 +461,44 @@
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result {
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 1px 10px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .cp-team-badge {
+  align-self: center;
+  padding: 3px 6px;
+  font-size: 11px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score {
+  font-size: 18px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score dd {
+  line-height: 1.05;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) dt {
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.st-projector .st-award-tie {
+  align-self: center;
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards {
+  gap: 6px 10px;
+  padding: 6px 10px;
+}
+.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards h2 {
+  font-size: clamp(18px, 1.5vw, 24px);
+}
+.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards .cp-team-badge {
+  padding: 3px 6px;
+  font-size: 11px;
 }
 .st-host-controls {
   position: sticky;
@@ -537,6 +587,18 @@
   display: block;
   margin-top: 4px;
   font-size: 0.9rem;
+}
+.st-player .st-price-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+.st-player .st-price-form-row .cp-field {
+  min-width: 0;
+}
+.st-player .st-price-form-row button {
+  white-space: nowrap;
 }
 .st-player .st-player-name {
   display: block;

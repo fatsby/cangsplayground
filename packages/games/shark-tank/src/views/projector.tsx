@@ -134,6 +134,12 @@ function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: 
   const badge = (id: string) => (
     <TeamBadge key={id} teamIndex={lobby.groups.find((g) => g.id === id)?.index ?? 0} />
   );
+  const award = (ids: string[]) =>
+    ids.length > 3 ? (
+      <span className="st-award-tie">{ids.length} teams tie</span>
+    ) : (
+      ids.map(badge)
+    );
   return (
     <>
       <p className="st-next">
@@ -160,7 +166,7 @@ function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: 
               </div>
               <div>
                 <dt>Final total</dt>
-                <dd>${score.total}</dd>
+                <dd>{score.total < 0 ? `−$${Math.abs(score.total)}` : `$${score.total}`}</dd>
               </div>
             </dl>
           </Panel>
@@ -169,11 +175,11 @@ function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: 
       {(complete || reduced) && results && (
         <Panel className="st-awards">
           <h2>Best Startup</h2>
-          <div className="cp-row">{results.bestStartup.map(badge)}</div>
+          <div className="cp-row">{award(results.bestStartup)}</div>
           {results.bestShark.length > 0 && (
             <>
               <h2>Best Buyer</h2>
-              <div className="cp-row">{results.bestShark.map(badge)}</div>
+              <div className="cp-row">{award(results.bestShark)}</div>
             </>
           )}
         </Panel>
@@ -271,7 +277,7 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
           <ul className="st-presenters">
             {presenter.members.map((id) => (
               <li key={id}>
-                <strong className="cp-person st-name" title={name(id)}>
+                <strong className="cp-person st-presenter-name" title={name(id)}>
                   {name(id)}
                 </strong>
                 <span>{presenter.parts?.[id]?.map((part) => partLabels[part]).join(" · ")}</span>
@@ -327,7 +333,7 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
                 key={id}
                 aria-current={closingStart + i === shared.closing?.index ? "step" : undefined}
               >
-                <span className="cp-person st-name" title={name(id)}>
+                <span className="cp-person st-closing-name" title={name(id)}>
                   {name(id)}
                 </span>
                 {closingStart + i === shared.closing?.index && <Chip active>Your turn</Chip>}

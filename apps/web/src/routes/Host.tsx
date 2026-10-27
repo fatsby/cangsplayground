@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import {
   Users,
@@ -40,6 +40,23 @@ import { HostGame } from "../components/HostGame";
 import { canControl, mainControl, type Control } from "../components/game-controls";
 import { gameViews } from "../games/registry";
 const claims = new Map<string, ReturnType<typeof request<"host:claim">>>();
+const hostTabs = ["players", "groups", "game", "secrets"] as const;
+type HostTab = (typeof hostTabs)[number];
+function readHostTab(code: string): HostTab | null {
+  try {
+    const value = sessionStorage.getItem(`host-tab:${code}`);
+    return hostTabs.find((tab) => tab === value) ?? null;
+  } catch {
+    return null;
+  }
+}
+function saveHostTab(code: string, tab: HostTab): void {
+  try {
+    sessionStorage.setItem(`host-tab:${code}`, tab);
+  } catch {
+    // The console still works when session storage is unavailable.
+  }
+}
 export default function Host() {
   const code = useParams().code!.toUpperCase();
   const [token, setToken] = useState(() => readToken("host", code)),
@@ -47,12 +64,18 @@ export default function Host() {
     [claiming, setClaiming] = useState(false);
   const error = useRole("host", code, token ?? undefined),
     { view, serverNow, connection } = useLobbyStore();
-  const [tab, setTab] = useState("players"),
+  const [tab, setTab] = useState<HostTab>("players"),
+    restoredCode = useRef<string | null>(null),
     [busy, setBusy] = useState(false),
     [mode, setMode] = useState<"count" | "maxSize">("count"),
     [value, setValue] = useState(4),
     [player, setPlayer] = useState<PlayerSummary | null>(null),
     [showSecrets, setShowSecrets] = useState(false);
+  useEffect(() => {
+    if (!view || view.code !== code || restoredCode.current === code) return;
+    restoredCode.current = code;
+    setTab(view.game?.stage === "ACTIVE" ? "game" : (readHostTab(code) ?? "players"));
+  }, [code, view]);
   const [confirm, setConfirm] = useState<{
     title: string;
     description: string;
@@ -413,7 +436,12 @@ export default function Host() {
         <Tabs
           className="host-tabs"
           value={tab}
-          onValueChange={setTab}
+          onValueChange={(value) => {
+            if (!hostTabs.includes(value as HostTab)) return;
+            const nextTab = value as HostTab;
+            setTab(nextTab);
+            saveHostTab(code, nextTab);
+          }}
           items={[
             { value: "players", label: "Players", icon: <Users strokeWidth={2.25} /> },
             { value: "groups", label: "Groups", icon: <Shuffle strokeWidth={2.25} /> },

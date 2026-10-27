@@ -50,6 +50,8 @@ const stageNames = {
   RESULTS: "Results",
   CLOSING: "Closing circle",
 };
+const formatMoney = (amount: number) =>
+  amount < 0 ? `−$${Math.abs(amount)}` : `$${amount}`;
 
 function Vocabulary({ idea }: { idea: Idea | IdeaPublic | null }) {
   if (!idea || !("keywords" in idea)) return null;
@@ -188,6 +190,7 @@ function PartEditor({
             value={value}
             disabled={disabled}
             autoComplete="off"
+            onFocus={(e) => e.currentTarget.scrollIntoView?.({ block: "center" })}
             onChange={(e) => setDraft(blanks.map((v, i) => (i === index ? e.target.value : v)))}
             onBlur={() => {
               const trimmed = blanks.map((v) => v.trim());
@@ -224,32 +227,35 @@ function PriceForm({
   return (
     <Panel>
       <form
-        className="cp-stack"
+        className="cp-stack st-price-form"
         onSubmit={(e) => {
           e.preventDefault();
           if (valid && !disabled)
             void send({ type: discount ? "st:discount" : "st:price", payload: { price: value } });
         }}
       >
-        <Input
-          label={discount ? "Discount price" : "Product price"}
-          type="number"
-          inputMode="numeric"
-          min={min}
-          max={max}
-          step={1}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          disabled={disabled || max < min}
-        />
+        <div className="st-price-form-row">
+          <Input
+            label={discount ? "Discount price" : "Product price"}
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={max}
+            step={1}
+            value={draft}
+            onFocus={(e) => e.currentTarget.scrollIntoView?.({ block: "center" })}
+            onChange={(e) => setDraft(e.target.value)}
+            disabled={disabled || max < min}
+          />
+          <Button type="submit" variant="primary" disabled={disabled || !valid}>
+            {label}
+          </Button>
+        </div>
         <p className="cp-muted">
           {max < min
             ? "The price is already at the minimum."
             : `Choose a whole dollar price from $${min} to $${max}.`}
         </p>
-        <Button type="submit" variant="primary" disabled={disabled || !valid}>
-          {label}
-        </Button>
       </form>
     </Panel>
   );
@@ -262,6 +268,7 @@ function Vote({
   name,
   send,
   disabled,
+  timeExpired,
 }: {
   own: CompanyView;
   presenter: CompanyView;
@@ -270,6 +277,7 @@ function Vote({
   name: (id: string) => string;
   send: Send;
   disabled: boolean;
+  timeExpired: boolean;
 }) {
   const cap = presenter.price
     ? maxQuantity(own.members.length, own.wallet ?? 0, presenter.price)
@@ -277,12 +285,17 @@ function Vote({
   const initial = own.votes?.[me] ?? 0;
   const [draft, setDraft] = useState(initial);
   const quantity = own.voted ? initial : own.eligible ? Math.max(0, Math.min(draft, cap)) : 0;
-  const locked = disabled || !own.eligible || own.voted;
+  const locked = disabled || timeExpired || !own.eligible || own.voted;
   return (
     <>
       <Frames title="Discuss with your group" frames={HUDDLE_FRAMES} hidden={hidden} />
       <Panel className="cp-stack">
         <h2>How many should your group buy?</h2>
+        {timeExpired && (
+          <p role="status">
+            Time's up. Your vote is closed. {own.voted ? "Your saved vote counts." : "You did not vote in time."}
+          </p>
+        )}
         <p>
           Wallet: <strong>${own.wallet ?? 0}</strong>
         </p>
@@ -342,17 +355,8 @@ function Vote({
   );
 }
 
-function PhoneTimeUp({
-  timer,
-  serverNow,
-  stageKey,
-}: {
-  timer: SharkTankView["timer"];
-  serverNow: () => number;
-  stageKey: string;
-}) {
+function usePhoneTimerExpired(timer: SharkTankView["timer"], serverNow: () => number) {
   const [, tick] = useState(0);
-  const announced = useRef(new Set<string>());
   const expired =
     timer.durationMs > 0 &&
     timer.pausedRemainingMs === null &&
@@ -363,6 +367,17 @@ function PhoneTimeUp({
     const interval = setInterval(() => tick((value) => value + 1), 250);
     return () => clearInterval(interval);
   }, [timer.endsAt, timer.pausedRemainingMs]);
+  return expired;
+}
+
+function PhoneTimeUp({
+  expired,
+  stageKey,
+}: {
+  expired: boolean;
+  stageKey: string;
+}) {
+  const announced = useRef(new Set<string>());
   useEffect(() => {
     if (expired && !announced.current.has(stageKey)) {
       announced.current.add(stageKey);
@@ -409,6 +424,7 @@ export function PlayerSessionScreen({
   const myParts = own?.parts?.[me.playerId] ?? [];
   const presenting = own?.groupId === shared.presenter;
   const stage = shared.stage;
+  const timeExpired = usePhoneTimerExpired(shared.timer, serverNow);
   const next = !own
     ? "Wait for your teacher to place you in a group."
     : stage === "PREP"
@@ -429,7 +445,7 @@ export function PlayerSessionScreen({
             : "Ask a question aloud so your group can buy. Your teacher marks questions."
         : stage === "HUDDLE"
           ? presenting
-            ? "Wait. The buyers are deciding."
+            ? "Other teams are choosing how many to buy. (Nhóm khác đang chọn số lượng mua.)"
             : own.voted
               ? "Your vote is locked. Wait for your teacher to open decisions."
               : own.eligible
@@ -458,8 +474,7 @@ export function PlayerSessionScreen({
         <>
           <Timer timer={shared.timer} serverNow={serverNow} />
           <PhoneTimeUp
-            timer={shared.timer}
-            serverNow={serverNow}
+            expired={timeExpired}
             stageKey={`${stage}:${shared.presenterIndex ?? shared.presenter ?? "prep"}`}
           />
         </>
@@ -611,25 +626,19 @@ export function PlayerSessionScreen({
                 <Frames title="Questions to ask" frames={QUESTION_BANK} hidden={hidden} />
               </>
             ))}
-          {stage === "HUDDLE" &&
-            (presenting ? (
-              <Panel>
-                <h2>Wait. The buyers are deciding.</h2>
-              </Panel>
-            ) : (
-              presenter && (
-                <Vote
-                  key={`${presenter.groupId}:${own.voted}:${own.votes?.[me.playerId] ?? "none"}`}
-                  own={own}
-                  presenter={presenter}
-                  hidden={hidden}
-                  me={me.playerId}
-                  name={name}
-                  send={send}
-                  disabled={disabled}
-                />
-              )
-            ))}
+          {stage === "HUDDLE" && !presenting && presenter && (
+            <Vote
+              key={`${presenter.groupId}:${own.voted}:${own.votes?.[me.playerId] ?? "none"}`}
+              own={own}
+              presenter={presenter}
+              hidden={hidden}
+              me={me.playerId}
+              name={name}
+              send={send}
+              disabled={disabled}
+              timeExpired={timeExpired}
+            />
+          )}
           {stage === "DECISION" && (
             <Panel>
               {shared.myDecision !== null ? (
@@ -670,23 +679,23 @@ export function PlayerSessionScreen({
                   <dl className="st-score" key={s.groupId}>
                     <div>
                       <dt>Money earned</dt>
-                      <dd>${s.revenue}</dd>
+                      <dd>{formatMoney(s.revenue)}</dd>
                     </div>
                     <div>
                       <dt>Spent</dt>
-                      <dd>${s.spent}</dd>
+                      <dd>{formatMoney(s.spent)}</dd>
                     </div>
                     <div>
                       <dt>Not spent (penalty)</dt>
-                      <dd>${s.shortfall}</dd>
+                      <dd>{formatMoney(s.shortfall)}</dd>
                     </div>
                     <div>
                       <dt>No-question penalty</dt>
-                      <dd>${s.noQuestion}</dd>
+                      <dd>{formatMoney(s.noQuestion)}</dd>
                     </div>
                     <div>
                       <dt>Total</dt>
-                      <dd>${s.total}</dd>
+                      <dd>{formatMoney(s.total)}</dd>
                     </div>
                   </dl>
                 ))}

@@ -246,6 +246,27 @@ it("RESULTS shows all results and Best Startup immediately under reduced motion"
   expect(screen.querySelectorAll(".st-result")).toHaveLength(3);
   expect(screen.textContent).toContain("Best Startup");
 });
+it("RESULTS puts the minus sign before the dollar sign for negative totals", () => {
+  effects.reduced = true;
+  const props = fixture("projector", "RESULTS");
+  const shared = props.session.shared as SharkTankView;
+  shared.results!.scores[0]!.total = -380;
+  const totals = [...markup(props).querySelectorAll(".st-score > div:last-child dd")].map(
+    (node) => node.textContent,
+  );
+  expect(totals).toContain("−$380");
+  expect(totals).not.toContain("$−380");
+});
+it("RESULTS summarizes an all-team tie instead of rendering one badge per team", () => {
+  effects.reduced = true;
+  const props = fixture("projector", "RESULTS");
+  const shared = props.session.shared as SharkTankView;
+  shared.results!.bestStartup = Array.from({ length: 8 }, (_, i) => `g${i + 1}`);
+  const screen = markup(props);
+  expect(screen.querySelector(".st-awards")?.textContent).toContain("8 teams tie");
+  expect(screen.querySelectorAll(".st-award-tie")).toHaveLength(1);
+  expect(screen.querySelector(".st-award-tie")?.parentElement?.querySelector(".cp-team-badge")).toBeNull();
+});
 it("omits Best Buyer when the award is empty", () => {
   effects.reduced = true;
   const props = fixture("projector", "RESULTS");
@@ -256,6 +277,24 @@ it("CLOSING highlights the current speaker", () => {
   const screen = markup(fixture("projector", "CLOSING"));
   expect(screen.querySelector('[aria-current="step"]')?.textContent).toContain("Bo");
   expect(screen.textContent).toContain("I bought…");
+});
+it("projector shows full long names on PITCH and CLOSING without truncation classes", () => {
+  const name = "Nguyễn Thị Phương Thảo Nguyễn Tr";
+  const pitch = fixture("projector", "PITCH");
+  pitch.lobby.players[0]!.name = name;
+  const pitchScreen = markup(pitch);
+  const pitchName = pitchScreen.querySelector(".st-presenters strong");
+  expect(pitchName?.textContent).toBe(name);
+  expect(pitchName?.classList.contains("st-name")).toBe(false);
+  expect(pitchScreen.querySelector(".st-presenters .st-name")).toBeNull();
+
+  const closing = fixture("projector", "CLOSING");
+  closing.lobby.players[1]!.name = name;
+  const closingScreen = markup(closing);
+  const closingName = closingScreen.querySelector(".st-closing-list [aria-current='step'] span");
+  expect(closingName?.textContent).toBe(name);
+  expect(closingName?.classList.contains("st-name")).toBe(false);
+  expect(closingScreen.querySelector(".st-closing-list .st-name")).toBeNull();
 });
 it("host QA chips contain each non-presenter member, with asked marks", async () => {
   const props = fixture("host", "QA");

@@ -263,6 +263,27 @@ it("PREP 2 validates prices against the public bounds", async () => {
   await click(button("Save price"));
   expect(props.act).toHaveBeenCalledWith({ type: "st:price", payload: { price: 25 } });
 });
+it("keeps the price Save action beside the input and scrolls it into view on focus", async () => {
+  const props = fixture();
+  props.own.prepStep = 2;
+  await mount(props);
+  const input = container.querySelector<HTMLInputElement>('input[type="number"]')!;
+  const save = button("Save price");
+  expect(input.closest(".st-price-form-row")).toBe(save.closest(".st-price-form-row"));
+  const scrollIntoView = vi.fn();
+  input.scrollIntoView = scrollIntoView;
+  await act(async () => input.focus());
+  expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" });
+});
+it("scrolls a PREP script blank into view when focused", async () => {
+  const props = fixture();
+  await mount(props);
+  const input = container.querySelector<HTMLInputElement>('input[type="text"]')!;
+  const scrollIntoView = vi.fn();
+  input.scrollIntoView = scrollIntoView;
+  await act(async () => input.focus());
+  expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" });
+});
 it("PREP 4 orders the filled group script and names each speaker", () => {
   const props = fixture();
   props.own.prepStep = 4;
@@ -386,7 +407,11 @@ it("HUDDLE presenters wait without a buying control", () => {
   const props = fixture("HUDDLE");
   props.shared.presenter = "g1";
   const screen = markup(props);
-  expect(screen.textContent).toContain("Wait. The buyers are deciding.");
+  expect(screen.textContent).toContain(
+    "Other teams are choosing how many to buy. (Nhóm khác đang chọn số lượng mua.)",
+  );
+  expect(screen.textContent).not.toContain("Wait. The buyers are deciding.");
+  expect(screen.textContent?.match(/Other teams are choosing how many to buy/g)).toHaveLength(1);
   expect(screen.querySelector("output")).toBeNull();
 });
 it("RESULTS shows the own group's score breakdown", () => {
@@ -406,6 +431,17 @@ it("RESULTS shows the own group's score breakdown", () => {
   ])
     expect(text).toContain(label);
   for (const value of [120, 60, 10, 20, 90]) expect(text).toContain(`$${value}`);
+});
+it("shows a negative player score with the minus before the dollar sign", () => {
+  const props = fixture("RESULTS");
+  props.shared.results = {
+    scores: [{ groupId: "g1", revenue: 0, spent: 380, shortfall: 0, noQuestion: 0, total: -380 }],
+    bestStartup: [],
+    bestShark: [],
+  };
+  const text = markup(props).textContent!;
+  expect(text).toContain("−$380");
+  expect(text).not.toContain("$-380");
 });
 it.each([0, 1])("CLOSING distinguishes speaking and listening (%s)", (index) => {
   const props = fixture("CLOSING");
@@ -541,3 +577,31 @@ it.each(["PREP", "PITCH", "QA", "HUDDLE"] as const)(
     vi.useRealTimers();
   },
 );
+it.each([false, true])("locks HUDDLE voting at expiry and unlocks after an extension (saved %s)", async (saved) => {
+  vi.useFakeTimers();
+  const props = fixture("HUDDLE");
+  props.own.eligible = true;
+  props.own.voted = saved;
+  props.own.votes = saved ? { p1: 1 } : {};
+  let now = 0;
+  props.serverNow = () => now;
+  props.shared.timer = { endsAt: 1000, pausedRemainingMs: null, durationMs: 1000 };
+  await mount(props);
+  now = 1000;
+  await act(async () => vi.advanceTimersByTime(1000));
+  expect(container.querySelector<HTMLButtonElement>('[aria-label="Decrease quantity"]')!.disabled).toBe(true);
+  expect(container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled).toBe(true);
+  expect(button("Save my vote").disabled).toBe(true);
+  expect(container.textContent).toContain("Time's up. Your vote is closed.");
+  expect(container.textContent).toContain(saved ? "Your saved vote counts." : "You did not vote in time.");
+
+  props.shared.timer = { endsAt: 5000, pausedRemainingMs: null, durationMs: 5000 };
+  await mount(props);
+  expect(container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled).toBe(saved);
+  expect(button("Save my vote").disabled).toBe(saved);
+  if (!saved) {
+    await click(button("Save my vote"));
+    expect(props.act).toHaveBeenCalledWith({ type: "st:vote", payload: { quantity: 0 } });
+  }
+  vi.useRealTimers();
+});

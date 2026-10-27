@@ -112,6 +112,50 @@ describe("pitch stages", () => {
     expect(h.shared.purchases.filter((p) => p.buyer === other!.groupId)).toEqual([]);
     expect(company(h, other!.groupId).wallet).toBe(400);
   });
+  it("accepts a vote one millisecond before the huddle deadline", () => {
+    const h = huddle([2, 2]),
+      buyer = buyers(h)[0]!;
+    h.tick(h.shared.timer.endsAt! - 1001);
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).not.toBeNull();
+  });
+  it("keeps voting open while the huddle timer is paused with time remaining", () => {
+    const h = huddle([2, 2]),
+      buyer = buyers(h)[0]!;
+    h.tick(5000);
+    expect(h.act("host", "st:pause")).not.toBeNull();
+    expect(h.shared.timer.pausedRemainingMs).toBeGreaterThan(0);
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).not.toBeNull();
+  });
+  it.each([0, 1])("rejects a vote at and after the huddle deadline (+%i ms)", (lateMs) => {
+    const h = huddle([2, 2]),
+      buyer = buyers(h)[0]!;
+    h.tick(h.shared.timer.endsAt! - 1000 + lateMs);
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).toBeNull();
+  });
+  it("reopens voting when the host extends an expired huddle timer", () => {
+    const h = huddle([2, 2]),
+      buyer = buyers(h)[0]!;
+    h.tick(h.shared.timer.endsAt! - 1000);
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).toBeNull();
+    expect(h.act("host", "st:extend")).not.toBeNull();
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).not.toBeNull();
+  });
+  it("locks only votes saved before expiry", () => {
+    const h = huddle([2, 2]),
+      buyer = buyers(h)[0]!;
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 2 })).not.toBeNull();
+    h.tick(h.shared.timer.endsAt! - 1000);
+    expect(h.act(buyer.members[1]!, "st:vote", { quantity: 0 })).toBeNull();
+    advance(h);
+    expect(h.shared.purchases).toContainEqual({
+      buyer: buyer.groupId,
+      seller: presenter(h).groupId,
+      quantity: 2,
+      price: presenter(h).price,
+    });
+    expect(company(h, buyer.groupId).wallet).toBe(130);
+    expect(h.shared.purchases.filter((purchase) => purchase.buyer === buyer.groupId)).toHaveLength(1);
+  });
   it("QA to HUDDLE locks only empty buyers automatically", () => {
     const h = qa();
     const [empty, active] = buyers(h);
