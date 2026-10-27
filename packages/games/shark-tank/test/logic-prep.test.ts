@@ -219,6 +219,7 @@ describe("Shark Tank preparation", () => {
     });
     expect([...h.shared.order].sort()).toEqual(["g1", "g2", "g3"]);
     expect(h.shared.companies.map((c) => c.price)).toEqual([20, 36, 36]);
+    expect(h.shared.companies.map((c) => c.priceAuto)).toEqual([false, true, true]);
     expect(h.shared.timer).toEqual({ durationMs: 45000, endsAt: 51000, pausedRemainingMs: null });
     expect(h.shared.asked[h.shared.order[0]!]).toEqual([]);
   });
@@ -237,6 +238,14 @@ describe("Shark Tank preparation", () => {
     h.shared.companies[0]!.members = [];
     next(h);
     expect(h.shared.order).toEqual(["g2"]);
+  });
+  it("enters RESULTS when no company has members at the end of PREP", () => {
+    const h = start([2, 2]);
+    for (const company of h.shared.companies) for (const id of company.members) h.leave(id);
+    expect(next(h)).not.toBeNull();
+    expect(h.shared.stage).toBe("RESULTS");
+    expect(h.shared.presented).toEqual([]);
+    expect(h.shared.timer.endsAt).toBeNull();
   });
   it("validates group sizes and the minimum number of groups", () => {
     const config = sharkTank.defaultConfig;

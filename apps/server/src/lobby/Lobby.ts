@@ -115,7 +115,7 @@ export class Lobby {
     if (this.players.size >= MAX_PLAYERS_PER_LOBBY) fail("LOBBY_FULL", "This lobby is full.");
     const name = input.trim();
     if (!name || name.length > PLAYER_NAME_MAX)
-      fail("NAME_INVALID", "Use a name with 1 to 20 letters.");
+      fail("NAME_INVALID", `Use a name with 1 to ${PLAYER_NAME_MAX} letters.`);
     const names = new Set([...this.players.values()].map((p) => p.name.toLowerCase()));
     if (names.has(name.toLowerCase())) {
       let i = 2;

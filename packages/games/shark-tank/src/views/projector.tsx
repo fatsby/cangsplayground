@@ -9,7 +9,7 @@ export const stageLabels = {
   PREP: "Preparing",
   PITCH: "Pitch",
   QA: "Q&A",
-  HUDDLE: "Shark huddle",
+  HUDDLE: "Team talk",
   DECISION: "Decision",
   RESULTS: "Results",
   CLOSING: "I bought…",
@@ -147,11 +147,11 @@ function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: 
             {badge(score.groupId)}
             <dl className="st-score">
               <div>
-                <dt>Revenue</dt>
+                <dt>Money earned</dt>
                 <dd>${score.revenue}</dd>
               </div>
               <div>
-                <dt>Spending shortfall</dt>
+                <dt>Not spent (penalty)</dt>
                 <dd>−${score.shortfall}</dd>
               </div>
               <div>
@@ -172,7 +172,7 @@ function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: 
           <div className="cp-row">{results.bestStartup.map(badge)}</div>
           {results.bestShark.length > 0 && (
             <>
-              <h2>Best Shark</h2>
+              <h2>Best Buyer</h2>
               <div className="cp-row">{results.bestShark.map(badge)}</div>
             </>
           )}
@@ -202,23 +202,31 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
     if (!reduced) setFlashUntil(serverNow() + 2000);
   }, [expired, identity, sound, reduced, serverNow]);
   const presenter = shared.companies.find((c) => c.groupId === shared.presenter);
+  const closingStart = Math.floor((shared.closing?.index ?? 0) / 12) * 12;
   const name = (id: string) => lobby.players.find((p) => p.id === id)?.name ?? "Player";
   const badge = (id: string) => (
     <TeamBadge teamIndex={lobby.groups.find((g) => g.id === id)?.index ?? 0} />
   );
   return (
     <section
-      className={`cp-stack st-projector ${!reduced && now < flashUntil ? "st-time-flash" : ""}`}
+      className={`cp-stack st-projector st-stage-${shared.stage.toLowerCase()} ${!reduced && now < flashUntil ? "st-time-flash" : ""}`}
     >
       <header className="cp-row cp-spread">
         <h2 className="st-stage">{stageLabels[shared.stage]}</h2>
-        {timed && <Timer className="st-stage-timer" timer={shared.timer} serverNow={serverNow} />}
+        <div className="cp-row">
+          {shared.timer.pausedRemainingMs !== null && (
+            <span className="st-paused" role="status">
+              Paused
+            </span>
+          )}
+          {expired && (
+            <span className="st-time-up" role="status">
+              Time's up
+            </span>
+          )}
+          {timed && <Timer className="st-stage-timer" timer={shared.timer} serverNow={serverNow} />}
+        </div>
       </header>
-      {expired && (
-        <p className="st-time-up" role="status">
-          Time's up
-        </p>
-      )}
       {shared.stage === "PREP" && (
         <>
           <p className="st-next">
@@ -244,12 +252,12 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
               : "Ask a question about the product. The presenters answer."}
           </p>
           <Panel className="st-product">
-            <div>{badge(presenter.groupId)}</div>
+            <div className="st-product-team">{badge(presenter.groupId)}</div>
             <span className="st-product-emoji" aria-hidden="true">
               {presenter.idea?.emoji}
             </span>
             <h2>{presenter.idea?.name}</h2>
-            <p>{presenter.idea?.pitch}</p>
+            <p className="st-product-pitch">{presenter.idea?.pitch}</p>
             <p className="st-projector-price">
               {presenter.discounted && presenter.originalPrice !== null && (
                 <s>${presenter.originalPrice}</s>
@@ -258,11 +266,14 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
                 ${presenter.price}
               </strong>
             </p>
+            {presenter.priceAuto && <p className="st-auto-price">Price chosen automatically</p>}
           </Panel>
           <ul className="st-presenters">
             {presenter.members.map((id) => (
               <li key={id}>
-                <strong className="cp-person">{name(id)}</strong>
+                <strong className="cp-person st-name" title={name(id)}>
+                  {name(id)}
+                </strong>
                 <span>{presenter.parts?.[id]?.map((part) => partLabels[part]).join(" · ")}</span>
               </li>
             ))}
@@ -276,13 +287,7 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
             {shared.companies.map((c) => (
               <Panel key={c.groupId}>
                 {badge(c.groupId)}
-                <p>
-                  {c.groupId === shared.presenter
-                    ? "Presenting"
-                    : c.voted
-                      ? "✓ Voted"
-                      : "Discussing…"}
-                </p>
+                <p>{c.groupId === shared.presenter ? "Presenting" : c.voted ? "✓ Voted" : null}</p>
               </Panel>
             ))}
           </div>
@@ -297,7 +302,9 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
             {Object.entries(shared.announcers ?? {}).map(([groupId, id]) => (
               <Panel key={groupId}>
                 {badge(groupId)}
-                <h2 className="st-announcer cp-person">{name(id)}</h2>
+                <h2 className="st-announcer cp-person st-name" title={name(id)}>
+                  {name(id)}
+                </h2>
               </Panel>
             ))}
           </div>
@@ -308,12 +315,22 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
         <>
           <p className="st-next">
             Say what you bought and why. Listen while the highlighted person speaks.
+            {shared.closing && (
+              <span className="st-closing-progress">
+                Speaker {shared.closing.index + 1} of {shared.closing.order.length}
+              </span>
+            )}
           </p>
-          <ol className="st-closing-list">
-            {shared.closing?.order.map((id, i) => (
-              <li key={id} aria-current={i === shared.closing?.index ? "step" : undefined}>
-                <span className="cp-person">{name(id)}</span>
-                {i === shared.closing?.index && <Chip active>Your turn</Chip>}
+          <ol className="st-closing-list" start={closingStart + 1}>
+            {shared.closing?.order.slice(closingStart, closingStart + 12).map((id, i) => (
+              <li
+                key={id}
+                aria-current={closingStart + i === shared.closing?.index ? "step" : undefined}
+              >
+                <span className="cp-person st-name" title={name(id)}>
+                  {name(id)}
+                </span>
+                {closingStart + i === shared.closing?.index && <Chip active>Your turn</Chip>}
               </li>
             ))}
           </ol>

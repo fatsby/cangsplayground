@@ -37,8 +37,8 @@ export function reassignParts(
   return next;
 }
 
-export function maxQuantity(startMembers: number, wallet: number, price: number): number {
-  return Math.max(0, Math.min(startMembers, Math.floor(wallet / price)));
+export function maxQuantity(members: number, wallet: number, price: number): number {
+  return Math.max(0, Math.min(members, Math.floor(wallet / price)));
 }
 
 export function medianFloor(votes: number[]): number {
@@ -53,7 +53,7 @@ export function medianFloor(votes: number[]): number {
 function spendTarget(buyer: Company, sellers: Company[], config: SharkTankConfig): number {
   const available = sellers.reduce(
     // Before a price is entered, keep the live target at its maximum possible value.
-    (sum, seller) => sum + buyer.startMembers * (seller.price ?? config.maxPrice),
+    (sum, seller) => sum + buyer.members.length * (seller.price ?? config.maxPrice),
     0,
   );
   return Math.min(

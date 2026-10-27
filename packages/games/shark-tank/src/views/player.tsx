@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { GameAction, LobbyView } from "@cangsplayground/core";
 import {
   Button,
@@ -16,6 +16,7 @@ import {
   CLOSING_FRAME,
   DECISION_FRAMES,
   HUDDLE_FRAMES,
+  FRAME_HINTS,
   PART_FRAMES,
   QUESTION_BANK,
   blankCount,
@@ -44,7 +45,7 @@ const stageNames = {
   PREP: "Preparation",
   PITCH: "Pitch",
   QA: "Questions and answers",
-  HUDDLE: "Group huddle",
+  HUDDLE: "Team talk",
   DECISION: "Buying decisions",
   RESULTS: "Results",
   CLOSING: "Closing circle",
@@ -75,9 +76,13 @@ function Product({ company }: { company: CompanyView }) {
       </span>
       <h2>{company.idea.name}</h2>
       <p>{company.idea.pitch}</p>
-      {company.price !== null && <Chip>Price: ${company.price}</Chip>}
     </Panel>
   );
+}
+function BlankHints({ frame }: { frame: string }) {
+  const hints = FRAME_HINTS[frame];
+  if (!hints?.length) return null;
+  return <small className="cp-muted st-blank-hints">Examples: {hints.join(" · ")}</small>;
 }
 function Frames({ title, frames, hidden }: { title: string; frames: string[]; hidden: boolean }) {
   if (hidden) return null;
@@ -86,7 +91,10 @@ function Frames({ title, frames, hidden }: { title: string; frames: string[]; hi
       <h2>{title}</h2>
       <ul className="st-frames">
         {frames.map((frame) => (
-          <li key={frame}>{frame}</li>
+          <li key={frame}>
+            {frame}
+            <BlankHints frame={frame} />
+          </li>
         ))}
       </ul>
     </Panel>
@@ -122,11 +130,14 @@ function Script({
         )?.[0];
         return (
           <Panel key={part}>
-            <h2>
+            <h2 className="st-player-name">
               {partNames[part]}
               {speaker && name ? ` — ${name(speaker)}` : ""}
             </h2>
             <p className="st-script">{scriptText(company, part, hidden)}</p>
+            {!hidden && scriptText(company, part, hidden).includes("___") && (
+              <BlankHints frame={PART_FRAMES[part]} />
+            )}
           </Panel>
         );
       })}
@@ -170,7 +181,8 @@ function PartEditor({
         {blanks.map((value, index) => (
           <Input
             key={index}
-            label={`${partNames[part]} blank ${index + 1}`}
+            label={`${partNames[part]} blank ${index + 1} (e.g. ${FRAME_HINTS[PART_FRAMES[part]]?.[index] ?? "your idea"})`}
+            placeholder={`e.g. ${FRAME_HINTS[PART_FRAMES[part]]?.[index] ?? "your idea"}`}
             type="text"
             maxLength={80}
             value={value}
@@ -238,7 +250,6 @@ function PriceForm({
         <Button type="submit" variant="primary" disabled={disabled || !valid}>
           {label}
         </Button>
-        {!discount && price !== null && <p role="status">Current price: ${price}</p>}
       </form>
     </Panel>
   );
@@ -261,7 +272,7 @@ function Vote({
   disabled: boolean;
 }) {
   const cap = presenter.price
-    ? maxQuantity(own.startMembers ?? 0, own.wallet ?? 0, presenter.price)
+    ? maxQuantity(own.members.length, own.wallet ?? 0, presenter.price)
     : 0;
   const initial = own.votes?.[me] ?? 0;
   const [draft, setDraft] = useState(initial);
@@ -278,7 +289,11 @@ function Vote({
         <p>
           Still to spend: <strong>${own.minSpendLeft ?? 0}</strong>
         </p>
-        {!own.eligible && <p role="status">Nobody in your group asked a question</p>}
+        {!own.eligible ? (
+          <p role="status">Your group cannot buy: nobody asked a question.</p>
+        ) : cap === 0 && !own.voted ? (
+          <p role="status">Not enough money to buy this.</p>
+        ) : null}
         {own.voted && <Chip active>Vote locked</Chip>}
         <div className="st-quantity">
           <Button
@@ -299,29 +314,66 @@ function Vote({
             +
           </Button>
         </div>
-        {!own.voted && (
+        {!own.voted && own.eligible && cap > 0 && (
           <p className="cp-muted">
             Maximum: {cap}. The group decision locks when everyone has voted.
           </p>
         )}
-        <Button
-          variant="primary"
-          disabled={locked}
-          onClick={() => void send({ type: "st:vote", payload: { quantity } })}
-        >
-          Save my vote
-        </Button>
+        <div className="st-vote-save">
+          <Button
+            variant="primary"
+            disabled={locked}
+            onClick={() => void send({ type: "st:vote", payload: { quantity } })}
+          >
+            Save my vote
+          </Button>
+        </div>
         <h3>Your group’s votes</h3>
-        <ul>
+        <ul className="st-player-votes">
           {own.members.map((id) => (
             <li key={id}>
-              {name(id)}: {own.votes?.[id] ?? "Waiting"}
+              <span className="st-player-name">{name(id)}</span>
+              <span className="st-player-vote-status">: {own.votes?.[id] ?? "Waiting"}</span>
             </li>
           ))}
         </ul>
       </Panel>
     </>
   );
+}
+
+function PhoneTimeUp({
+  timer,
+  serverNow,
+  stageKey,
+}: {
+  timer: SharkTankView["timer"];
+  serverNow: () => number;
+  stageKey: string;
+}) {
+  const [, tick] = useState(0);
+  const announced = useRef(new Set<string>());
+  const expired =
+    timer.durationMs > 0 &&
+    timer.pausedRemainingMs === null &&
+    timer.endsAt !== null &&
+    serverNow() >= timer.endsAt;
+  useEffect(() => {
+    if (timer.endsAt === null || timer.pausedRemainingMs !== null) return;
+    const interval = setInterval(() => tick((value) => value + 1), 250);
+    return () => clearInterval(interval);
+  }, [timer.endsAt, timer.pausedRemainingMs]);
+  useEffect(() => {
+    if (expired && !announced.current.has(stageKey)) {
+      announced.current.add(stageKey);
+      navigator.vibrate?.(200);
+    }
+  }, [expired, stageKey]);
+  return expired ? (
+    <p className="st-phone-time-up" role="alert">
+      Time's up!
+    </p>
+  ) : null;
 }
 
 export function PlayerSessionScreen({
@@ -371,13 +423,13 @@ export function PlayerSessionScreen({
         ? presenting
           ? stage === "PITCH"
             ? "Speak your parts in order. Wait for your teacher to open questions."
-            : "Answer the sharks’ questions. You may give one discount before the huddle."
+            : "Answer the buyers’ questions. You may give one discount before team talk."
           : stage === "PITCH"
             ? "Listen to the pitch. Get a question ready for Q&A."
             : "Ask a question aloud so your group can buy. Your teacher marks questions."
         : stage === "HUDDLE"
           ? presenting
-            ? "Wait. The sharks are deciding."
+            ? "Wait. The buyers are deciding."
             : own.voted
               ? "Your vote is locked. Wait for your teacher to open decisions."
               : own.eligible
@@ -392,7 +444,9 @@ export function PlayerSessionScreen({
               : "Take turns saying what you bought and why. Listen to the current speaker.";
   const group = lobby.groups.find((g) => g.id === me.groupId);
   return (
-    <div className="cp-stack st-player">
+    <div
+      className={`cp-stack st-player${stage === "HUDDLE" && !presenting && own ? " st-player-voting" : ""}`}
+    >
       <header>
         <div className="cp-row">
           {group && <TeamBadge teamIndex={group.index} />}
@@ -401,7 +455,14 @@ export function PlayerSessionScreen({
         <h1>{stageNames[stage]}</h1>
       </header>
       {["PREP", "PITCH", "QA", "HUDDLE"].includes(stage) && (
-        <Timer timer={shared.timer} serverNow={serverNow} />
+        <>
+          <Timer timer={shared.timer} serverNow={serverNow} />
+          <PhoneTimeUp
+            timer={shared.timer}
+            serverNow={serverNow}
+            stageKey={`${stage}:${shared.presenterIndex ?? shared.presenter ?? "prep"}`}
+          />
+        </>
       )}
       <Panel>
         <p className="st-next" aria-label="Next step">
@@ -430,6 +491,14 @@ export function PlayerSessionScreen({
       </Panel>
       {own && (
         <>
+          {own.price !== null && (stage === "PREP" || presenting) && (
+            <div className="cp-stack">
+              <Chip>Your price: ${own.price}</Chip>
+              {own.priceAuto && (
+                <p role="status">No price was saved, so your price is ${own.price}.</p>
+              )}
+            </div>
+          )}
           {stage === "PREP" && (
             <>
               <fieldset className="st-step-control" disabled={disabled}>
@@ -465,9 +534,11 @@ export function PlayerSessionScreen({
                   >
                     Change idea
                   </Button>
-                  <p className="cp-muted">
-                    You can change your idea once, before moving past step 1.
-                  </p>
+                  {own.rerollAllowed && (
+                    <p className="cp-muted">
+                      You can change your idea once, before moving past step 1.
+                    </p>
+                  )}
                 </>
               )}
               {own.prepStep === 2 && (
@@ -521,14 +592,19 @@ export function PlayerSessionScreen({
                         disabled={disabled}
                       />
                     ) : (
-                      <Chip>Discount already given — price: ${own.price}</Chip>
+                      <Chip>Discount already given</Chip>
                     )}
                   </>
                 )}
               </>
             ) : (
               <>
-                {presenter && <Product company={presenter} />}
+                {presenter && (
+                  <>
+                    <Product company={presenter} />
+                    {presenter.price !== null && <Chip>Product price: ${presenter.price}</Chip>}
+                  </>
+                )}
                 <p className="cp-accent">
                   {own.eligible ? "Your group can buy" : "Ask a question so your group can buy"}
                 </p>
@@ -538,7 +614,7 @@ export function PlayerSessionScreen({
           {stage === "HUDDLE" &&
             (presenting ? (
               <Panel>
-                <h2>Wait. The sharks are deciding.</h2>
+                <h2>Wait. The buyers are deciding.</h2>
               </Panel>
             ) : (
               presenter && (
@@ -563,16 +639,23 @@ export function PlayerSessionScreen({
                     {shared.myDecision ? "Buying" : "Not buying"}
                   </p>
                   {!hidden && (
-                    <p className="st-script">
-                      {shared.myDecision ? DECISION_FRAMES.buy : DECISION_FRAMES.pass}
-                    </p>
+                    <>
+                      <p className="st-script">
+                        {shared.myDecision ? DECISION_FRAMES.buy : DECISION_FRAMES.pass}
+                      </p>
+                      <BlankHints
+                        frame={shared.myDecision ? DECISION_FRAMES.buy : DECISION_FRAMES.pass}
+                      />
+                    </>
                   )}
                 </>
               ) : (
                 <>
                   <h2>Listen to the decisions</h2>
                   {Object.values(shared.announcers ?? {}).map((id) => (
-                    <p key={id}>Listen to {name(id)}</p>
+                    <p key={id} className="st-player-name">
+                      Listen to {name(id)}
+                    </p>
                   ))}
                 </>
               )}
@@ -586,7 +669,7 @@ export function PlayerSessionScreen({
                 .map((s) => (
                   <dl className="st-score" key={s.groupId}>
                     <div>
-                      <dt>Revenue</dt>
+                      <dt>Money earned</dt>
                       <dd>${s.revenue}</dd>
                     </div>
                     <div>
@@ -594,7 +677,7 @@ export function PlayerSessionScreen({
                       <dd>${s.spent}</dd>
                     </div>
                     <div>
-                      <dt>Shortfall</dt>
+                      <dt>Not spent (penalty)</dt>
                       <dd>${s.shortfall}</dd>
                     </div>
                     <div>
@@ -611,14 +694,19 @@ export function PlayerSessionScreen({
           )}
           {stage === "CLOSING" && (
             <Panel>
-              <h2>
+              <h2 className="st-player-name">
                 {shared.closing?.order[shared.closing.index] === me.playerId
                   ? "Your turn"
                   : shared.closing?.order[shared.closing.index]
                     ? `Listen to ${name(shared.closing.order[shared.closing.index]!)}`
                     : "Wait for your teacher"}
               </h2>
-              {!hidden && <p className="st-script">{CLOSING_FRAME}</p>}
+              {!hidden && (
+                <>
+                  <p className="st-script">{CLOSING_FRAME}</p>
+                  <BlankHints frame={CLOSING_FRAME} />
+                </>
+              )}
             </Panel>
           )}
           <Vocabulary idea={own.idea} />

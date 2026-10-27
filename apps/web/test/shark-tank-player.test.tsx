@@ -29,6 +29,7 @@ function fixture(stage: Stage = "PREP") {
     startMembers: 3,
     idea: ideas()[0]!,
     price: 30,
+    priceAuto: false,
     originalPrice: null,
     parts: { p1: ["problem", "product"] as const, p2: ["price", "ask"] as const },
     help: false,
@@ -142,6 +143,8 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
   vi.restoreAllMocks();
+  vi.useRealTimers();
+  Reflect.deleteProperty(navigator, "vibrate");
   Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
 });
 async function mount(props = fixture()) {
@@ -183,7 +186,7 @@ it.each([false, true])("QA buyer sees the question bank and live eligibility (%s
 });
 it("HUDDLE ineligible locks the quantity at zero", () => {
   const screen = markup(fixture("HUDDLE"));
-  expect(screen.textContent).toContain("Nobody in your group asked a question");
+  expect(screen.textContent).toContain("Your group cannot buy: nobody asked a question.");
   expect(
     screen.querySelector('button[aria-label="Increase quantity"]')?.hasAttribute("disabled"),
   ).toBe(true);
@@ -288,7 +291,7 @@ it("presenters get their filled script and QA answers with one valid discount", 
   await mount(props);
   expect(container.querySelector('input[type="number"]')).toBeNull();
 });
-it("HUDDLE caps votes by the wallet and starting members, then locks voted groups", async () => {
+it("HUDDLE caps votes by the wallet and current members, then locks voted groups", async () => {
   const props = fixture("HUDDLE");
   props.own.eligible = true;
   props.own.votes = { p2: 1 };
@@ -314,7 +317,7 @@ it("HUDDLE caps votes by the wallet and starting members, then locks voted group
     container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled,
   ).toBe(true);
 });
-it("allows an explicit zero vote and keeps the starting cap after a leaver", async () => {
+it("allows an explicit zero vote and reduces the cap after a leaver", async () => {
   const props = fixture("HUDDLE");
   props.own.eligible = true;
   props.own.wallet = 300;
@@ -323,7 +326,7 @@ it("allows an explicit zero vote and keeps the starting cap after a leaver", asy
   expect(props.act).toHaveBeenCalledWith({ type: "st:vote", payload: { quantity: 0 } });
   for (let i = 0; i < 3; i++)
     await click(container.querySelector('[aria-label="Increase quantity"]')!);
-  expect(container.querySelector("output")?.textContent).toBe("3");
+  expect(container.querySelector("output")?.textContent).toBe("2");
   expect(
     container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled,
   ).toBe(true);
@@ -383,7 +386,7 @@ it("HUDDLE presenters wait without a buying control", () => {
   const props = fixture("HUDDLE");
   props.shared.presenter = "g1";
   const screen = markup(props);
-  expect(screen.textContent).toContain("Wait. The sharks are deciding.");
+  expect(screen.textContent).toContain("Wait. The buyers are deciding.");
   expect(screen.querySelector("output")).toBeNull();
 });
 it("RESULTS shows the own group's score breakdown", () => {
@@ -394,7 +397,13 @@ it("RESULTS shows the own group's score breakdown", () => {
     bestShark: [],
   };
   const text = markup(props).textContent!;
-  for (const label of ["Revenue", "Spent", "Shortfall", "No-question penalty", "Total"])
+  for (const label of [
+    "Money earned",
+    "Spent",
+    "Not spent (penalty)",
+    "No-question penalty",
+    "Total",
+  ])
     expect(text).toContain(label);
   for (const value of [120, 60, 10, 20, 90]) expect(text).toContain(`$${value}`);
 });
@@ -441,3 +450,94 @@ it("survives denied localStorage reads and writes", async () => {
   await click(container.querySelectorAll<HTMLButtonElement>('[role="switch"]')[1]!);
   expect(container.textContent).toContain("Hide sentence frames");
 });
+
+it.each(["quick", "blur"])("saves the typed price with a %s save", async (mode) => {
+  const props = fixture();
+  props.own.prepStep = 2;
+  await mount(props);
+  const input = container.querySelector<HTMLInputElement>('input[type="number"]')!;
+  await edit(input, "47");
+  if (mode === "blur")
+    await act(async () => input.dispatchEvent(new FocusEvent("focusout", { bubbles: true })));
+  await click(button("Save price"));
+  expect(props.act).toHaveBeenCalledExactlyOnceWith({ type: "st:price", payload: { price: 47 } });
+});
+it.each(["PITCH", "QA"] as const)(
+  "shows one own price chip and the auto-price explanation in %s",
+  (stage) => {
+    const props = fixture(stage);
+    props.shared.presenter = "g1";
+    props.own.priceAuto = true;
+    props.own.discounted = true;
+    const screen = markup(props);
+    expect(
+      [...screen.querySelectorAll(".cp-chip")].filter(
+        (chip) => chip.textContent === "Your price: $30",
+      ),
+    ).toHaveLength(1);
+    expect(screen.textContent).toContain("No price was saved, so your price is $30.");
+    expect(screen.textContent).not.toContain("Discount already given — price:");
+  },
+);
+it("shows a buyer only the presenter's price during QA, not their own", () => {
+  const props = fixture("QA");
+  props.own.priceAuto = true;
+  const screen = markup(props);
+  expect(screen.textContent).not.toContain("Your price");
+  expect(screen.textContent).not.toContain("No price was saved");
+  expect(screen.textContent).toContain("Product price: $");
+});
+it.each([
+  [false, 300, "Your group cannot buy: nobody asked a question."],
+  [true, 5, "Not enough money to buy this."],
+] as const)(
+  "explains why buying is unavailable (eligible %s, wallet %s)",
+  (eligible, wallet, reason) => {
+    const props = fixture("HUDDLE");
+    props.own.eligible = eligible;
+    props.own.wallet = wallet;
+    const screen = markup(props);
+    expect(screen.textContent).toContain(reason);
+    expect(screen.textContent).not.toContain("Maximum: 0");
+  },
+);
+it("hides the change-idea hint after the group uses its reroll", () => {
+  const props = fixture();
+  props.own.prepStep = 1;
+  props.own.rerollAllowed = false;
+  expect(markup(props).textContent).not.toContain("You can change your idea once");
+});
+it("shows examples for every editable blank", () => {
+  const screen = markup();
+  for (const input of screen.querySelectorAll<HTMLInputElement>('input[type="text"]'))
+    expect(input.placeholder).toMatch(/^e.g. .+/);
+});
+it.each(["PREP", "PITCH", "QA", "HUDDLE"] as const)(
+  "announces time up and vibrates once per stage in %s",
+  async (stage) => {
+    vi.useFakeTimers();
+    const vibrate = vi.fn();
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
+    const props = fixture(stage);
+    let now = 0;
+    props.serverNow = () => now;
+    props.shared.timer = { endsAt: 1000, pausedRemainingMs: null, durationMs: 1000 };
+    await mount(props);
+    expect(container.textContent).not.toContain("Time's up!");
+    now = 1000;
+    await act(async () => vi.advanceTimersByTime(1000));
+    expect(container.querySelector('[role="alert"]')?.textContent).toBe("Time's up!");
+    expect(vibrate).toHaveBeenCalledExactlyOnceWith(200);
+    await act(async () => vi.advanceTimersByTime(2000));
+    await mount(props);
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    props.shared.timer = { endsAt: null, pausedRemainingMs: 0, durationMs: 1000 };
+    await mount(props);
+    expect(container.textContent).not.toContain("Time's up!");
+    props.shared.timer = { endsAt: 1000, pausedRemainingMs: null, durationMs: 1000 };
+    props.shared.stage = stage === "QA" ? "HUDDLE" : "QA";
+    await mount(props);
+    expect(vibrate).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  },
+);

@@ -10,9 +10,19 @@ function nextLabel(shared: SharkTankView) {
     case "PITCH":
       return "Start Q&A";
     case "QA":
-      return "Start huddle";
-    case "HUDDLE":
-      return "Lock votes";
+      return "Start team talk";
+    case "HUDDLE": {
+      const buyers = shared.companies.filter(
+        (company) =>
+          company.groupId !== shared.presenter &&
+          company.eligible === true &&
+          company.members.length > 0,
+      );
+      const ready = buyers.filter((company) => company.voted).length;
+      return ready === buyers.length
+        ? "Show decisions"
+        : `Lock votes (${ready}/${buyers.length} groups ready)`;
+    }
     case "DECISION":
       return shared.order
         ?.slice((shared.presenterIndex ?? 0) + 1)
@@ -42,7 +52,7 @@ export function HostSessionPanel({
   const missingPrice = shared.stage === "PREP" && shared.companies.some((c) => c.price === null);
   return (
     <div className="cp-stack st-host">
-      <Panel className="cp-stack">
+      <Panel className="cp-stack st-host-controls">
         <h2>{stageLabels[shared.stage]}</h2>
         {timed && <Timer timer={shared.timer} serverNow={serverNow} />}
         {expired && (
@@ -104,7 +114,8 @@ export function HostSessionPanel({
         <Panel className="cp-stack">
           <h2>Who asked a question?</h2>
           <p className="cp-muted">
-            Tap a name to mark or unmark a question. Locked groups cannot change during the huddle.
+            Tap a name to mark or unmark a question. Locked groups cannot change during the team
+            talk.
           </p>
           {shared.companies
             .filter((c) => c.groupId !== shared.presenter)
@@ -126,7 +137,9 @@ export function HostSessionPanel({
                         void hostAct?.({ type: "st:asked", payload: { playerId: id } })
                       }
                     >
-                      {name(id)}
+                      <span className="st-name" title={name(id)}>
+                        {name(id)}
+                      </span>
                     </Button>
                   ))}
                 </div>
@@ -146,7 +159,7 @@ export function HostSessionPanel({
                 <th scope="col">Help</th>
                 <th scope="col">Wallet</th>
                 <th scope="col">Purchases</th>
-                <th scope="col">Revenue</th>
+                <th scope="col">Money earned</th>
               </tr>
             </thead>
             <tbody>
@@ -172,16 +185,25 @@ export function HostSessionPanel({
                     ) : shared.stage === "HUDDLE" ? (
                       company.groupId === shared.presenter ? (
                         "Presenting"
-                      ) : company.voted ? (
-                        "Voted"
                       ) : (
-                        "Not voted"
+                        <>
+                          <span>
+                            {
+                              company.members.filter((id) => Object.hasOwn(company.votes ?? {}, id))
+                                .length
+                            }
+                            /{company.members.length} voted
+                          </span>
+                          {company.voted && <p>✓ Locked</p>}
+                          {company.eligible === false && <p>Can't buy (no question)</p>}
+                        </>
                       )
                     ) : company.price !== null ? (
                       `Price: $${company.price}`
                     ) : (
                       "Price not set"
                     )}
+                    {company.priceAuto && <p className="cp-muted">Price chosen automatically</p>}
                   </td>
                   <td>
                     {company.help ? (
@@ -209,7 +231,13 @@ export function HostSessionPanel({
                       <ul>
                         {company.purchases.map((purchase) => (
                           <li key={purchase.seller}>
-                            {lobby.groups.find((g) => g.id === purchase.seller)?.name ?? "Group"}:{" "}
+                            <span
+                              className="st-name"
+                              title={lobby.groups.find((g) => g.id === purchase.seller)?.name}
+                            >
+                              {lobby.groups.find((g) => g.id === purchase.seller)?.name ?? "Group"}
+                            </span>
+                            {": "}
                             {purchase.quantity} × ${purchase.price}
                           </li>
                         ))}

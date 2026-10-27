@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Stage } from "../src/types.js";
+import { computeResults, minSpendLeft } from "../src/rules.js";
+import { configSchema, type Stage } from "../src/types.js";
 import { start } from "./helpers.js";
 
 type Harness = ReturnType<typeof start>;
@@ -62,7 +63,12 @@ describe("pitch stages", () => {
     expect(h.act("host", "st:discount", { price: 10 })).toBeNull();
     expect(h.act(buyers(h)[0]!.members[0]!, "st:discount", { price: 10 })).toBeNull();
     expect(h.act(actor, "st:discount", { price: 10 })).not.toBeNull();
-    expect(presenter(h)).toMatchObject({ price: 10, discounted: true, originalPrice: 35 });
+    expect(presenter(h)).toMatchObject({
+      price: 10,
+      discounted: true,
+      originalPrice: 35,
+      priceAuto: false,
+    });
     expect(h.act(actor, "st:discount", { price: 9 })).toBeNull();
     expect(h.act(actor, "st:discount", { price: 20 })).toBeNull();
     advance(h);
@@ -148,6 +154,24 @@ describe("votes and purchases", () => {
     company(h, buyer.groupId).wallet = 20;
     expect(h.act(actor, "st:vote", { quantity: 1 })).toBeNull();
     expect(h.act(actor, "st:vote", { quantity: 0 })).not.toBeNull();
+  });
+  it("caps a remaining member's vote at the current group size after two members leave", () => {
+    const h = huddle([3, 3]),
+      buyer = buyers(h)[0]!;
+    expect(minSpendLeft(buyer, h.shared, configSchema.parse({}))).toBe(105);
+    h.leave(buyer.members[1]!);
+    h.leave(buyer.members[2]!);
+    expect(minSpendLeft(company(h, buyer.groupId), h.shared, configSchema.parse({}))).toBe(35);
+    expect(company(h, buyer.groupId)).toMatchObject({
+      startMembers: 3,
+      startWallet: 300,
+      wallet: 300,
+    });
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 2 })).toBeNull();
+    expect(h.act(buyer.members[0]!, "st:vote", { quantity: 1 })).not.toBeNull();
+    expect(h.shared.purchases).toEqual([
+      { buyer: buyer.groupId, seller: presenter(h).groupId, quantity: 1, price: 35 },
+    ]);
   });
   it("re-voting before lock replaces the vote and after lock is rejected", () => {
     const h = huddle(),
@@ -260,12 +284,12 @@ describe("departures and ending", () => {
     advance(h);
     expect(h.act("host", "st:asked", { playerId: leaver })).toBeNull();
     for (const id of company(h, buyer.groupId).members)
-      expect(h.act(id, "st:vote", { quantity: 4 })).not.toBeNull();
-    expect(h.shared.purchases[0]).toMatchObject({ buyer: buyer.groupId, quantity: 4 });
+      expect(h.act(id, "st:vote", { quantity: 3 })).not.toBeNull();
+    expect(h.shared.purchases[0]).toMatchObject({ buyer: buyer.groupId, quantity: 3 });
     expect(company(h, buyer.groupId)).toMatchObject({
       startMembers: 4,
       startWallet: 400,
-      wallet: 260,
+      wallet: 295,
       formerMembers: [leaver],
     });
   });
@@ -329,16 +353,73 @@ describe("departures and ending", () => {
     expect(h.shared.asked[old]!.length).toBeGreaterThan(0);
     expect(h.shared.asked[presenter(h).groupId]).toEqual([]);
   });
-  it("an emptied current presenter keeps the normal stages and can still receive purchases", () => {
-    const h = qa(),
-      seller = presenter(h),
+  it.each(["PITCH", "QA", "HUDDLE"] as const)(
+    "skips a presenter whose last member leaves during %s without counting the pitch",
+    (stage) => {
+      const h =
+        stage === "HUDDLE" ? huddle([2, 2, 2]) : stage === "QA" ? qa([2, 2, 2]) : start([2, 2, 2]);
+      if (stage === "PITCH") advance(h);
+      const seller = presenter(h),
+        buyer = buyers(h)[0]!;
+      if (stage === "HUDDLE") h.act(buyer.members[0]!, "st:vote", { quantity: 1 });
+      h.leave(seller.members[0]!);
+      expect(h.shared.stage).toBe(stage);
+      h.tick(5000);
+      h.leave(seller.members[1]!);
+      expect(h.shared.stage).toBe("PITCH");
+      expect(h.shared.presenterIndex).toBe(1);
+      expect(presenter(h).members.length).toBeGreaterThan(0);
+      expect(h.shared.presented).not.toContain(seller.groupId);
+      expect(h.shared.purchases).toEqual([]);
+      expect(h.shared).toMatchObject({ votes: {}, locked: [], announcers: {} });
+      expect(h.shared.timer.endsAt).toBe(6000 + h.shared.timer.durationMs);
+    },
+  );
+  it("refunds locked purchases for an abandoned pitch while preserving earlier purchases", () => {
+    const h = huddle([2, 2, 2]),
+      previousSeller = presenter(h).groupId;
+    for (const id of buyers(h)[0]!.members) h.act(id, "st:vote", { quantity: 1 });
+    advance(h);
+    advance(h);
+    const seller = presenter(h),
       buyer = buyers(h)[0]!;
-    for (const id of seller.members) h.leave(id);
-    expect(h.shared.stage).toBe("QA");
+    const history = structuredClone(h.shared.purchases);
+    const wallet = company(h, buyer.groupId).wallet;
+    advance(h);
     h.act("host", "st:asked", { playerId: buyer.members[0] });
     advance(h);
     for (const id of buyer.members) h.act(id, "st:vote", { quantity: 1 });
-    expect(h.shared.purchases[0]).toMatchObject({ seller: seller.groupId, quantity: 1 });
+    expect(company(h, buyer.groupId).wallet).toBe(wallet - 35);
+    expect(h.shared.purchases).toHaveLength(history.length + 1);
+    for (const id of seller.members) h.leave(id);
+    expect(h.shared.purchases).toEqual(history);
+    expect(company(h, buyer.groupId).wallet).toBe(wallet);
+    expect(h.shared.presented).toEqual([previousSeller]);
+    finish(h);
+    expect(h.shared.presented).not.toContain(seller.groupId);
+  });
+  it("enters RESULTS when the current presenter leaves and all later presenters are empty", () => {
+    const h = qa([2, 2, 2]),
+      seller = presenter(h);
+    for (const buyer of buyers(h)) for (const id of buyer.members) h.leave(id);
+    for (const id of seller.members) h.leave(id);
+    expect(h.shared.stage).toBe("RESULTS");
+    expect(h.shared.presented).toEqual([]);
+    expect(h.shared.purchases).toEqual([]);
+    expect(h.shared).toMatchObject({ votes: {}, locked: [], announcers: {} });
+    expect(h.shared.timer).toEqual({ durationMs: 0, endsAt: null, pausedRemainingMs: null });
+  });
+  it("keeps question credit from a pitch that is skipped because its presenter left", () => {
+    const h = qa([2, 2]),
+      seller = presenter(h),
+      buyer = buyers(h)[0]!;
+    for (const id of buyer.members) h.act("host", "st:asked", { playerId: id });
+    for (const id of seller.members) h.leave(id);
+    expect(h.shared.presented).toEqual([]);
+    const score = computeResults(h.shared, configSchema.parse({})).scores.find(
+      (s) => s.groupId === buyer.groupId,
+    );
+    expect(score?.noQuestion).toBe(0);
   });
   it("replaces a departing announcer and removes the entry when their company becomes empty", () => {
     const h = huddle([2, 2]),

@@ -233,7 +233,7 @@ it("RESULTS reveals scores in order, then awards and one confetti burst", async 
     [...container.querySelectorAll(".st-result")].map((el) => el.getAttribute("data-group-id")),
   ).toEqual(scores.map((s) => s.groupId));
   expect(container.textContent).toContain("Best Startup");
-  expect(container.textContent).toContain("Best Shark");
+  expect(container.textContent).toContain("Best Buyer");
   expect(container.textContent).not.toMatch(/Ada|Bo|Cy|Dee|Eli|Fay/);
   expect(effects.confetti).toHaveBeenCalledTimes(1);
   await mount(props);
@@ -246,11 +246,11 @@ it("RESULTS shows all results and Best Startup immediately under reduced motion"
   expect(screen.querySelectorAll(".st-result")).toHaveLength(3);
   expect(screen.textContent).toContain("Best Startup");
 });
-it("omits Best Shark when the award is empty", () => {
+it("omits Best Buyer when the award is empty", () => {
   effects.reduced = true;
   const props = fixture("projector", "RESULTS");
   (props.session.shared as SharkTankView).results!.bestShark = [];
-  expect(markup(props).textContent).not.toContain("Best Shark");
+  expect(markup(props).textContent).not.toContain("Best Buyer");
 });
 it("CLOSING highlights the current speaker", () => {
   const screen = markup(fixture("projector", "CLOSING"));
@@ -277,8 +277,8 @@ it("host HUDDLE disables asked chips for locked groups", async () => {
 it.each([
   ["PREP", "Start pitches"],
   ["PITCH", "Start Q&A"],
-  ["QA", "Start huddle"],
-  ["HUDDLE", "Lock votes"],
+  ["QA", "Start team talk"],
+  ["HUDDLE", "Show decisions"],
   ["DECISION", "Next group"],
   ["RESULTS", "I bought… round"],
   ["CLOSING", "Next speaker"],
@@ -303,7 +303,7 @@ it("uses the host view's presenter index after the first pitch", async () => {
   props.raw.presenterIndex = 1;
   props.refresh();
   await mount(props, true);
-  await click(button("Start huddle"));
+  await click(button("Start team talk"));
   expect(props.hostAct).toHaveBeenCalledWith({
     type: "st:next",
     payload: { from: "QA", presenterIndex: 1 },
@@ -446,4 +446,92 @@ it("sound reads and writes tolerate unavailable storage", async () => {
   await click(container.querySelector<HTMLButtonElement>('[role="switch"]')!);
   await advance(1000);
   expect(effects.beep).not.toHaveBeenCalled();
+});
+
+it("host HUDDLE counts current members' saved votes, including zero, and shows locks", () => {
+  const props = fixture("host");
+  props.raw.votes.g2 = { p3: 0, formerMember: 2 };
+  props.refresh();
+  const screen = markup(props, true);
+  const rows = screen.querySelectorAll("tbody tr");
+  expect(rows[1]!.textContent).toContain("1/2 voted");
+  expect(rows[1]!.textContent).toContain("✓ Locked");
+  expect(rows[2]!.textContent).toContain("0/2 voted");
+  expect(rows[2]!.textContent).toContain("Can't buy (no question)");
+});
+it("host HUDDLE readiness excludes the presenter, empty and ineligible groups", async () => {
+  const props = fixture("host");
+  props.raw.asked.g1 = ["p3", "p5"];
+  props.raw.votes.g3 = { p5: 0 };
+  props.refresh();
+  await mount(props, true);
+  await click(button("Lock votes (1/2 groups ready)"));
+  expect(props.hostAct).toHaveBeenCalledWith({
+    type: "st:next",
+    payload: { from: "HUDDLE", presenterIndex: 0 },
+  });
+  props.raw.locked.push("g3");
+  props.refresh();
+  expect(markup(props, true).textContent).toContain("Show decisions");
+  props.raw.locked = [];
+  props.raw.companies[2]!.members = [];
+  props.refresh();
+  expect(markup(props, true).textContent).toContain("Lock votes (0/1 groups ready)");
+  props.raw.asked.g1 = [];
+  props.refresh();
+  expect(markup(props, true).textContent).toContain("Show decisions");
+});
+it.each(["PITCH", "QA"] as const)(
+  "%s projector identifies an automatically chosen price",
+  (stage) => {
+    const props = fixture("projector", stage);
+    props.raw.companies[0]!.priceAuto = true;
+    props.refresh();
+    const screen = markup(props);
+    expect(screen.querySelector(".st-projector-price")?.textContent).toContain("$40");
+    expect(screen.textContent).toContain("Price chosen automatically");
+    props.raw.companies[0]!.priceAuto = false;
+    props.refresh();
+    expect(markup(props).textContent).not.toContain("Price chosen automatically");
+  },
+);
+it("host identifies an automatically chosen price in the status table", () => {
+  const props = fixture("host", "PITCH");
+  props.raw.companies[0]!.priceAuto = true;
+  props.refresh();
+  expect(markup(props, true).querySelector("tbody tr")?.textContent).toContain(
+    "Price chosen automatically",
+  );
+});
+it("projector labels a paused timer and removes the label on resume", async () => {
+  const props = fixture("projector", "QA");
+  props.raw.timer = { endsAt: null, pausedRemainingMs: 700, durationMs: 1000 };
+  props.refresh();
+  await mount(props);
+  expect(container.querySelector('[role="status"]')?.textContent).toBe("Paused");
+  await advance(2000);
+  expect(container.textContent).not.toContain("Time's up");
+  props.raw.timer = { endsAt: 4000, pausedRemainingMs: null, durationMs: 1000 };
+  props.refresh();
+  await mount(props);
+  expect(container.textContent).not.toContain("Paused");
+});
+it("projector avoids claiming an ineligible group is discussing when eligibility is private", () => {
+  const props = fixture();
+  const shared = props.session.shared as SharkTankView;
+  expect(shared.companies[2]!.eligible).toBeNull();
+  expect(shared.asked).toBeNull();
+  expect(markup(props).textContent).not.toContain("Discussing");
+});
+it("CLOSING keeps the current speaker visible in a bounded page for a full classroom", () => {
+  const props = fixture("projector", "CLOSING");
+  props.raw.closing = { order: Array.from({ length: 60 }, (_, i) => `p${i + 1}`), index: 58 };
+  props.refresh();
+  const screen = markup(props);
+  expect(screen.querySelectorAll(".st-closing-list li")).toHaveLength(12);
+  const current = screen.querySelectorAll('[aria-current="step"]');
+  expect(current).toHaveLength(1);
+  expect(screen.querySelectorAll(".st-closing-list .cp-chip")).toHaveLength(1);
+  expect(current[0]!.querySelector(".cp-chip")).not.toBeNull();
+  expect(screen.textContent).toContain("Speaker 59 of 60");
 });

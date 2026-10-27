@@ -118,13 +118,20 @@ function pickAnnouncer(company: Company, ctx: Pick<Context, "roster" | "rng">): 
   return candidates.length ? candidates[ctx.rng.int(candidates.length)] : undefined;
 }
 
-function startPitch(shared: SharkTankShared, ctx: Context): void {
-  shared.stage = "PITCH";
-  shared.timer = startTimer(ctx.config.pitchSeconds, ctx.now);
-  shared.asked[shared.order[shared.presenterIndex]!] = [];
+function startPitch(shared: SharkTankShared, ctx: Pick<Context, "config" | "now">): void {
   shared.votes = {};
   shared.locked = [];
   shared.announcers = {};
+  while (shared.presenterIndex < shared.order.length && !presenter(shared)?.members.length)
+    shared.presenterIndex++;
+  if (shared.presenterIndex >= shared.order.length) {
+    shared.stage = "RESULTS";
+    shared.timer = idleTimer();
+    return;
+  }
+  shared.stage = "PITCH";
+  shared.timer = startTimer(ctx.config.pitchSeconds, ctx.now);
+  shared.asked[shared.order[shared.presenterIndex]!] = [];
 }
 
 function next(shared: SharkTankShared, ctx: Context): SharkTankShared | null {
@@ -134,9 +141,12 @@ function next(shared: SharkTankShared, ctx: Context): SharkTankShared | null {
         shared.companies.filter((c) => c.members.length).map((c) => c.groupId),
         ctx.rng,
       );
-      if (!order.length) return null;
-      for (const company of shared.companies)
-        company.price ??= Math.round((ctx.config.minPrice + ctx.config.maxPrice) / 2);
+      for (const company of shared.companies) {
+        if (company.price === null) {
+          company.price = Math.round((ctx.config.minPrice + ctx.config.maxPrice) / 2);
+          company.priceAuto = true;
+        }
+      }
       shared.order = order;
       shared.presenterIndex = 0;
       startPitch(shared, ctx);
@@ -168,19 +178,8 @@ function next(shared: SharkTankShared, ctx: Context): SharkTankShared | null {
       const seller = presenter(shared);
       if (seller && !shared.presented.includes(seller.groupId))
         shared.presented.push(seller.groupId);
-      let index = shared.presenterIndex + 1;
-      while (
-        index < shared.order.length &&
-        !shared.companies.find((c) => c.groupId === shared.order[index])?.members.length
-      )
-        index++;
-      if (index < shared.order.length) {
-        shared.presenterIndex = index;
-        startPitch(shared, ctx);
-      } else {
-        shared.stage = "RESULTS";
-        shared.timer = idleTimer();
-      }
+      shared.presenterIndex++;
+      startPitch(shared, ctx);
       break;
     }
     case "RESULTS":
@@ -217,6 +216,7 @@ export const ACTIONS: Record<string, Reducer> = {
       return null;
     company.originalPrice = company.price;
     company.price = parsed.data.price;
+    company.priceAuto = false;
     company.discounted = true;
     return shared;
   },
@@ -258,7 +258,7 @@ export const ACTIONS: Record<string, Reducer> = {
       !isEligible(company, shared) ||
       !parsed.success ||
       seller.price === null ||
-      parsed.data.quantity > maxQuantity(company.startMembers, company.wallet, seller.price)
+      parsed.data.quantity > maxQuantity(company.members.length, company.wallet, seller.price)
     )
       return null;
     const votes = (shared.votes[company.groupId] ??= {});
@@ -303,6 +303,7 @@ export const ACTIONS: Record<string, Reducer> = {
     )
       return null;
     company.price = parsed.data.price;
+    company.priceAuto = false;
     return shared;
   },
   "st:script": (shared, ctx, payload) => {
@@ -494,6 +495,7 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
         rerolled: false,
         rerollLocked: false,
         price: null,
+        priceAuto: false,
         discounted: false,
         members: [...group.playerIds],
         formerMembers: [],
@@ -517,7 +519,7 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
     if (!Object.hasOwn(ACTIONS, action.type)) return null;
     return ACTIONS[action.type]!(structuredClone(shared), ctx, action.payload);
   },
-  onSharedPlayerLeft({ shared, playerId, roster, rng }) {
+  onSharedPlayerLeft({ shared, playerId, roster, rng, config, now }) {
     const next = structuredClone(shared);
     const company = next.companies.find((c) => c.members.includes(playerId));
     if (!company) return next;
@@ -526,6 +528,22 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
     company.parts = reassignParts(company.parts, playerId, company.members);
     if (next.votes[company.groupId]) delete next.votes[company.groupId]![playerId];
     next.left.push(playerId);
+    if (
+      ["PITCH", "QA", "HUDDLE"].includes(next.stage) &&
+      company.groupId === presenter(next)?.groupId &&
+      !company.members.length
+    ) {
+      // A skipped pitch cannot charge buyers, including groups that already locked.
+      for (const purchase of next.purchases) {
+        if (purchase.seller !== company.groupId) continue;
+        const buyer = next.companies.find((c) => c.groupId === purchase.buyer)!;
+        buyer.wallet += purchase.quantity * purchase.price;
+      }
+      next.purchases = next.purchases.filter((p) => p.seller !== company.groupId);
+      // Questions already asked still count against the no-question penalty.
+      next.presenterIndex++;
+      startPitch(next, { config, now });
+    }
     if (next.stage === "HUDDLE" && company.groupId !== presenter(next)?.groupId) {
       if (!company.members.length) lock(next, company, 0);
       else tryLock(next, company, roster);

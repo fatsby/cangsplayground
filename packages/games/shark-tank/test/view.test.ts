@@ -108,6 +108,26 @@ it.each(roles)("filters preparation prices for %s and shows them after preparati
   expect(f.target(role).price).toBe(40);
 });
 
+it.each(roles)(
+  "reveals auto-filled prices to %s after PREP and keeps the flag private during PREP",
+  (role) => {
+    const h = start([3, 3, 3]);
+    h.act("g1p1", "st:price", { price: 20 });
+    const args = {
+      config,
+      viewer: fixture().args(role).viewer,
+      viewerGroupId: role === "own" ? "g2" : role === "other" ? "g3" : null,
+    };
+    expect(viewFor({ ...args, shared: h.shared }).companies[1]!.priceAuto).toBe(
+      role === "host" || role === "own" ? false : null,
+    );
+    h.act("host", "st:next", { from: "PREP", presenterIndex: 0 });
+    const view = viewFor({ ...args, shared: h.shared });
+    expect(view.companies.map((c) => c.priceAuto)).toEqual([false, true, true]);
+    expect(view.companies.map((c) => c.price)).toEqual([20, 35, 35]);
+  },
+);
+
 it.each(roles)("filters speaking part assignments for %s during preparation", (role) => {
   const f = fixture("PREP"),
     parts = f.shared.companies[1]!.parts;

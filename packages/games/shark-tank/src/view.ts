@@ -51,6 +51,7 @@ export function viewFor({
         startMembers: privateInfo ? company.startMembers : null,
         idea: privateInfo ? idea : preparing ? null : publicIdea,
         price: privateInfo || !preparing ? company.price : null,
+        priceAuto: privateInfo || !preparing ? (company.priceAuto ?? false) : null,
         originalPrice: privateInfo || !preparing ? (company.originalPrice ?? null) : null,
         parts: privateInfo || !preparing ? company.parts : null,
         help: privateInfo ? company.help : null,

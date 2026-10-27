@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { ideas, ideaById } from "../src/ideas.js";
 import {
   PART_FRAMES,
+  FRAME_HINTS,
   blankCount,
   QUESTION_BANK,
   ANSWER_FRAMES,
@@ -101,4 +102,31 @@ it.each([
   expect(parse(max)).toBe(true);
   for (const invalid of [min - 1, max + 1, min + 0.5, String(min), null])
     expect(parse(invalid)).toBe(false);
+});
+
+it("gives every sentence-frame blank a short non-empty hint", () => {
+  const frames = [
+    ...Object.values(PART_FRAMES),
+    ...QUESTION_BANK,
+    ...ANSWER_FRAMES,
+    ...HUDDLE_FRAMES,
+    ...Object.values(DECISION_FRAMES),
+    CLOSING_FRAME,
+  ];
+  for (const frame of frames.filter((text) => blankCount(text) > 0)) {
+    const hints = FRAME_HINTS[frame];
+    expect(hints, frame).toHaveLength(blankCount(frame));
+    for (const hint of hints!) expect(hint.trim().length, frame).toBeGreaterThan(0);
+  }
+});
+it("gives any idea-data blank a hint students can read inline", () => {
+  const check = (value: unknown): void => {
+    if (typeof value === "string") {
+      expect(value.match(/___/g)?.length ?? 0, value).toBe(
+        value.match(/___ \(e.g. [^)]+\)/g)?.length ?? 0,
+      );
+    } else if (Array.isArray(value)) value.forEach(check);
+    else if (value && typeof value === "object") Object.values(value).forEach(check);
+  };
+  check(ideas());
 });

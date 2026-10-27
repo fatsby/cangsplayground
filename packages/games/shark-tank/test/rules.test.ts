@@ -101,7 +101,7 @@ describe("speaking parts", () => {
 });
 
 describe("quantity and median", () => {
-  it("caps quantity by starting members and the remaining wallet", () => {
+  it("caps quantity by current members and the remaining wallet", () => {
     expect(maxQuantity(4, 400, 60)).toBe(4);
     expect(maxQuantity(4, 100, 60)).toBe(1);
     expect(maxQuantity(3, 5, 10)).toBe(0);
@@ -143,10 +143,14 @@ describe("minimum spending", () => {
     expect(minSpendTarget(buyer, state, config)).toBe(240);
     expect(minSpendTarget(buyer, state, { ...config, minSpendPercent: 100 })).toBe(400);
   });
-  it("uses fixed starting membership and wallet, not current members, wallet or money settings", () => {
+  it("uses current membership but the fixed starting wallet regardless of money settings", () => {
     const buyer = { ...company("g1"), members: ["g1p1"], wallet: 5 };
     const state = shared([buyer, company("g2", 10), company("g3", 10)]);
-    expect(minSpendTarget(buyer, state, { ...config, moneyPerMember: 1000 })).toBe(80);
+    expect(minSpendTarget(buyer, state, { ...config, moneyPerMember: 1000 })).toBe(20);
+    expect(minSpendLeft(buyer, state, config)).toBe(20);
+    expect(computeResults(state, config).scores.find((s) => s.groupId === "g1")!.shortfall).toBe(
+      20,
+    );
   });
   it("floors the percentage before comparing against available purchases", () => {
     const buyer = { ...company("g1"), startWallet: 101 };

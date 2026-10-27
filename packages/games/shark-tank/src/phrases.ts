@@ -42,3 +42,24 @@ export const DECISION_FRAMES: { buy: string; pass: string } = {
   pass: "We are not buying because ___.",
 };
 export const CLOSING_FRAME = "I bought ___ because ___.";
+
+// One short example for each blank, in the same order as the sentence.
+export const FRAME_HINTS: Record<string, string[]> = {
+  [PART_FRAMES.problem]: ["feel tired"],
+  [PART_FRAMES.product]: ["a robot", "carry your books"],
+  [PART_FRAMES.story]: ["are late for school", "you get there fast"],
+  [PART_FRAMES.price]: ["a new bike"],
+  [PART_FRAMES.ask]: ["it saves time"],
+  [ANSWER_FRAMES[0]!]: ["It costs $30"],
+  [ANSWER_FRAMES[1]!]: ["we can give you a discount"],
+  [ANSWER_FRAMES[2]!]: ["fly"],
+  [ANSWER_FRAMES[3]!]: ["it saves time"],
+  [HUDDLE_FRAMES[0]!]: ["two robots", "they help us"],
+  [HUDDLE_FRAMES[1]!]: ["expensive"],
+  [HUDDLE_FRAMES[2]!]: ["50"],
+  [HUDDLE_FRAMES[3]!]: ["one robot", "it is useful"],
+  [HUDDLE_FRAMES[4]!]: ["the flying bag"],
+  [DECISION_FRAMES.buy]: ["it saves time"],
+  [DECISION_FRAMES.pass]: ["it costs too much"],
+  [CLOSING_FRAME]: ["a robot", "it helps me"],
+};

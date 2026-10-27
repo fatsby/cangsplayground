@@ -41,6 +41,8 @@ export interface Company {
   /** Has ever moved past step 1. */
   rerollLocked: boolean;
   price: number | null;
+  /** True when Prepare ended without a price and the midpoint was filled in. */
+  priceAuto?: boolean;
   /** Set only when the company gives its one discount. */
   originalPrice?: number;
   discounted: boolean;
@@ -97,6 +99,7 @@ export interface CompanyView {
   startMembers: number | null;
   idea: Idea | IdeaPublic | null;
   price: number | null;
+  priceAuto: boolean | null;
   originalPrice: number | null;
   parts: Record<PlayerId, PartId[]> | null;
   help: boolean | null;

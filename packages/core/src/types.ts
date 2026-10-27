@@ -10,7 +10,7 @@ export type PlayerId = string;
 export type GroupId = string;
 
 export const MAX_PLAYERS_PER_LOBBY = 60; // LOB-08
-export const PLAYER_NAME_MAX = 20; // JOIN-02
+export const PLAYER_NAME_MAX = 32; // JOIN-02
 export const LOBBY_TTL_MINUTES_DEFAULT = 180; // LOB-07
 export const AWAY_AFTER_MS = 5 * 60_000; // NFR-05
 export const EXTEND_MS = 30_000; // TMR-04 "+30s"

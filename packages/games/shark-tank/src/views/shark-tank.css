@@ -214,3 +214,375 @@
     animation: none;
   }
 }
+
+/* Shark Tank uses the available display height, including its shared chrome. */
+.projector:has(.st-projector) {
+  padding: 16px 24px;
+  gap: 16px;
+}
+.projector:has(.st-projector) .projector-header {
+  flex-shrink: 0;
+  gap: 24px;
+}
+.projector:has(.st-projector) .qr-frame svg {
+  width: 80px;
+  height: 80px;
+}
+.projector:has(.st-projector) .cp-lobby-code {
+  font-size: clamp(40px, 4vw, 64px);
+}
+.projector:has(.st-projector) .projector-title {
+  gap: 4px;
+}
+.projector:has(.st-projector) .projector-public:empty {
+  display: none;
+}
+.projector:has(.st-projector) .projector-content {
+  gap: 0;
+}
+.projector:has(.st-projector) .projector-footer {
+  flex-shrink: 0;
+  gap: 12px;
+  font-size: 16px;
+}
+.projector:has(.st-projector) .projector-footer > span:last-child {
+  display: none;
+}
+.projector:has(.st-projector) .projector-tools label {
+  font-size: 16px;
+}
+.st-projector {
+  flex: 1;
+  min-height: 0;
+  gap: 16px;
+  font-size: clamp(24px, 2.2vw, 32px);
+}
+.st-projector > header {
+  flex-shrink: 0;
+}
+.st-projector .st-stage {
+  font-size: clamp(32px, 3vw, 48px);
+}
+.st-projector .st-stage-timer {
+  min-width: 180px;
+  font-size: 2.5rem;
+}
+.st-projector .st-next {
+  font-size: clamp(24px, 2vw, 30px);
+}
+.st-paused {
+  color: var(--cp-warning);
+  font-weight: 700;
+}
+.st-projector-grid {
+  min-height: 0;
+  gap: 16px;
+}
+.st-name {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-stage-pitch,
+.st-stage-qa {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+.st-stage-pitch > header,
+.st-stage-qa > header,
+.st-stage-pitch > .st-next,
+.st-stage-qa > .st-next {
+  grid-column: 1 / -1;
+}
+.st-projector .st-product {
+  display: grid;
+  grid-template-columns: clamp(80px, 8vw, 140px) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr auto auto;
+  gap: 8px 20px;
+  min-height: 0;
+  align-items: center;
+  text-align: left;
+  padding: 20px;
+}
+.st-product-team {
+  grid-column: 1 / -1;
+}
+.st-projector .st-product-emoji {
+  grid-column: 1;
+  grid-row: 2 / 6;
+  font-size: clamp(64px, 8vw, 120px);
+}
+.st-product h2,
+.st-product .st-product-pitch,
+.st-product .st-projector-price,
+.st-product .st-auto-price {
+  grid-column: 2;
+  margin: 0;
+}
+.st-projector .st-product h2 {
+  font-size: clamp(28px, 2.6vw, 44px);
+  line-height: 1.2;
+}
+.st-product .st-product-pitch {
+  font-size: clamp(24px, 2vw, 32px);
+  line-height: 1.4;
+}
+.st-product .st-projector-price {
+  font-size: clamp(40px, 4vw, 64px);
+  line-height: 1.2;
+}
+.st-product .st-auto-price {
+  color: var(--cp-ink-muted);
+  font-size: 22px;
+}
+.st-projector .st-presenters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-content: center;
+  min-height: 0;
+  margin: 0;
+  gap: 16px;
+}
+.st-projector .st-presenters li {
+  min-width: 0;
+  gap: 4px;
+  font-size: 24px;
+}
+.st-projector .st-presenters span {
+  font-size: 20px;
+}
+.st-projector .st-announcer {
+  font-size: clamp(28px, 3vw, 48px);
+  margin-top: 16px;
+}
+.st-projector .st-score {
+  margin: 12px 0 0;
+  font-size: clamp(22px, 1.8vw, 28px);
+}
+.st-projector .st-score > div {
+  gap: 12px;
+  padding: 6px 0;
+}
+.st-stage-results .st-projector-grid {
+  flex: 1;
+}
+.st-projector .st-awards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 12px;
+  padding: 12px;
+}
+.st-projector .st-awards .cp-team-badge {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.st-projector .st-awards h2 {
+  font-size: clamp(24px, 2vw, 32px);
+}
+.st-projector .st-closing-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: start;
+  min-height: 0;
+  margin: 0;
+  gap: 12px;
+}
+.st-projector .st-closing-list li {
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px 16px;
+  font-size: 26px;
+}
+.st-closing-progress {
+  display: block;
+  color: var(--cp-ink-muted);
+  font-size: 22px;
+}
+/* Larger classes use score rows so the labels and totals stay readable. */
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) {
+  flex: 0 0 auto;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: end;
+  gap: 12px;
+  padding: 4px 12px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .cp-team-badge {
+  justify-self: start;
+  align-self: end;
+  padding: 6px 8px;
+  margin-bottom: 1px;
+  font-size: 12px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score > div {
+  flex-direction: column;
+  align-items: end;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  text-align: right;
+  line-height: 1.2;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) dt {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result:not(:first-child) dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.st-host-controls {
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+  gap: 8px;
+  box-shadow: var(--cp-elev-3);
+}
+.st-host .cp-button {
+  max-width: 100%;
+}
+.st-host .cp-button .st-name {
+  max-width: 20ch;
+}
+.st-status-table {
+  table-layout: fixed;
+  font-size: 12px;
+}
+.st-status-table th,
+.st-status-table td {
+  padding: 8px 4px;
+  overflow-wrap: anywhere;
+}
+.st-status-table th:nth-child(1) {
+  width: 17%;
+}
+.st-status-table th:nth-child(2) {
+  width: 24%;
+}
+.st-status-table th:nth-child(3) {
+  width: 14%;
+}
+.st-status-table th:nth-child(4) {
+  width: 12%;
+}
+.st-status-table th:nth-child(5) {
+  width: 19%;
+}
+.st-status-table th:nth-child(6) {
+  width: 14%;
+}
+.st-status-table .cp-team-badge {
+  max-width: 100%;
+  padding: 6px 4px;
+  gap: 4px;
+  white-space: normal;
+  font-size: 10px;
+}
+.st-status-table .cp-team-badge svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.st-status-table .cp-button {
+  font-size: 11px;
+  padding: 8px 4px;
+  overflow-wrap: normal;
+}
+.st-status-table ul {
+  list-style: none;
+  padding: 0;
+}
+@media (min-width: 900px) {
+  .host-screen:has(.st-host) {
+    max-width: 960px;
+  }
+  .st-status-table {
+    font-size: 15px;
+  }
+  .st-status-table th,
+  .st-status-table td {
+    padding: 10px 8px;
+  }
+  .st-status-table .cp-team-badge {
+    padding: 8px;
+    font-size: 13px;
+  }
+  .st-status-table .cp-button {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
+
+/* player-fixes start */
+.st-player .st-blank-hints {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+.st-player .st-player-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-player-votes li {
+  display: flex;
+  gap: 4px;
+}
+.st-player-votes .st-player-name {
+  display: inline-block;
+  flex: 1;
+}
+.st-player-vote-status {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.st-player-voting {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+.st-player .st-vote-save {
+  position: fixed;
+  z-index: 30;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--cp-border);
+  background: var(--cp-surface);
+}
+.st-vote-save button {
+  width: 100%;
+  max-width: 480px;
+}
+.st-phone-time-up {
+  padding: 16px;
+  margin: 0;
+  border: 2px solid var(--cp-danger);
+  border-radius: var(--cp-r);
+  background: var(--cp-surface);
+  color: var(--cp-danger);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+/* player-fixes end */
