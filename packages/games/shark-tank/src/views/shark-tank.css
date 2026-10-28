@@ -520,31 +520,31 @@
 .st-status-table th,
 .st-status-table td {
   padding: 8px 4px;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
-.st-status-table th:nth-child(1) {
-  width: 17%;
+.st-status-table thead th:nth-child(1) {
+  width: 20%;
 }
-.st-status-table th:nth-child(2) {
-  width: 24%;
+.st-status-table thead th:nth-child(2) {
+  width: 21%;
 }
-.st-status-table th:nth-child(3) {
-  width: 14%;
+.st-status-table thead th:nth-child(3) {
+  width: 13%;
 }
-.st-status-table th:nth-child(4) {
-  width: 12%;
+.st-status-table thead th:nth-child(4) {
+  width: 10%;
 }
-.st-status-table th:nth-child(5) {
-  width: 19%;
+.st-status-table thead th:nth-child(5) {
+  width: 22%;
 }
-.st-status-table th:nth-child(6) {
+.st-status-table thead th:nth-child(6) {
   width: 14%;
 }
 .st-status-table .cp-team-badge {
   max-width: 100%;
   padding: 6px 4px;
   gap: 4px;
-  white-space: normal;
+  white-space: nowrap;
   font-size: 10px;
 }
 .st-status-table .cp-team-badge svg {
@@ -560,6 +560,109 @@
 .st-status-table ul {
   list-style: none;
   padding: 0;
+  margin: 0;
+}
+.st-status-table li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+.st-status-table li + li {
+  margin-top: 8px;
+}
+.st-purchase-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.st-purchase-amount {
+  white-space: nowrap;
+}
+@media (max-width: 899px) {
+  .st-status-table,
+  .st-status-table tbody {
+    display: block;
+  }
+  .st-status-table {
+    font-size: 15px;
+  }
+  /* Keep column headers available to assistive technology in the card layout. */
+  .st-status-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .st-status-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "group group"
+      "progress help"
+      "wallet earned"
+      "purchases purchases";
+    gap: 16px;
+    padding: 16px 0;
+  }
+  .st-status-table tbody tr + tr {
+    border-top: 1px solid var(--cp-border);
+  }
+  .st-status-table tbody th,
+  .st-status-table tbody td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .st-status-table tbody th {
+    grid-area: group;
+  }
+  .st-status-table td::before {
+    content: attr(data-label);
+    color: var(--cp-ink-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .st-status-table td:nth-child(2) {
+    grid-area: progress;
+  }
+  .st-status-table td:nth-child(3) {
+    grid-area: help;
+  }
+  .st-status-table td:nth-child(4) {
+    grid-area: wallet;
+  }
+  .st-status-table td:nth-child(5) {
+    grid-area: purchases;
+  }
+  .st-status-table td:nth-child(6) {
+    grid-area: earned;
+  }
+  .st-status-table ul {
+    width: 100%;
+  }
+  .st-status-table .cp-team-badge {
+    padding: 8px 12px;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .st-status-table .cp-team-badge svg {
+    width: 16px;
+    height: 16px;
+  }
+  .st-status-table .cp-button {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
 }
 @media (min-width: 900px) {
   .host-screen:has(.st-host) {

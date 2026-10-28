@@ -170,7 +170,7 @@ export function HostSessionPanel({
                       teamIndex={lobby.groups.find((g) => g.id === company.groupId)?.index ?? 0}
                     />
                   </th>
-                  <td>
+                  <td data-label="Progress">
                     {shared.stage === "PREP" ? (
                       <>
                         <p>
@@ -205,7 +205,7 @@ export function HostSessionPanel({
                     )}
                     {company.priceAuto && <p className="cp-muted">Price chosen automatically</p>}
                   </td>
-                  <td>
+                  <td data-label="Help">
                     {company.help ? (
                       <>
                         <p className="cp-error">Need help</p>
@@ -225,20 +225,18 @@ export function HostSessionPanel({
                       "—"
                     )}
                   </td>
-                  <td>${company.wallet ?? 0}</td>
-                  <td>
+                  <td data-label="Wallet">${company.wallet ?? 0}</td>
+                  <td data-label="Purchases">
                     {company.purchases?.length ? (
                       <ul>
                         {company.purchases.map((purchase) => (
                           <li key={purchase.seller}>
-                            <span
-                              className="st-name"
-                              title={lobby.groups.find((g) => g.id === purchase.seller)?.name}
-                            >
+                            <span className="st-purchase-name">
                               {lobby.groups.find((g) => g.id === purchase.seller)?.name ?? "Group"}
+                            </span>{" "}
+                            <span className="st-purchase-amount">
+                              {purchase.quantity} × ${purchase.price}
                             </span>
-                            {": "}
-                            {purchase.quantity} × ${purchase.price}
                           </li>
                         ))}
                       </ul>
@@ -246,7 +244,7 @@ export function HostSessionPanel({
                       "None"
                     )}
                   </td>
-                  <td>${company.revenue ?? 0}</td>
+                  <td data-label="Money earned">${company.revenue ?? 0}</td>
                 </tr>
               ))}
             </tbody>
