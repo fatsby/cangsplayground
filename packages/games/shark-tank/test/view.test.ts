@@ -31,8 +31,12 @@ it.each(roles)(
     expect(f.view(role)).toMatchObject({ minPrice: 10, maxPrice: 60 });
     expect(f.target(role)).toMatchObject({
       rerollAllowed: privileged ? true : null,
+      ideaLocked: privileged ? false : null,
+      ideaLockVotes: privileged ? [] : null,
       startMembers: privileged ? 3 : null,
     });
+    f.shared.companies[1]!.ideaLockVotes = ["g2p1"];
+    expect(f.target(role).ideaLockVotes).toEqual(privileged ? ["g2p1"] : null);
     f.shared.companies[1]!.rerollLocked = true;
     expect(f.target(role).rerollAllowed).toBe(privileged ? false : null);
     f.shared.companies[1]!.rerollLocked = false;
@@ -63,6 +67,7 @@ function fixture(stage: Stage = "HUDDLE") {
   shared.announcers = { g2: "g2p2", g3: "g3p1" };
   for (const [index, company] of shared.companies.entries()) {
     company.prepStep = 3;
+    company.prepSteps = Object.fromEntries(company.members.map((id) => [id, 3 as const]));
     company.price = 35 + index * 5;
     company.scripts = { problem: [`private script ${company.groupId}`] };
     company.help = true;

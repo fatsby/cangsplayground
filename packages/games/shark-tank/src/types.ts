@@ -36,10 +36,13 @@ export type IdeaPublic = Pick<Idea, "id" | "name" | "emoji" | "pitch">;
 export interface Company {
   groupId: GroupId;
   ideaId: string;
+  /** Furthest step visited, for host/projector progress. */
   prepStep: 1 | 2 | 3 | 4;
+  prepSteps: Record<PlayerId, Company["prepStep"]>;
   rerolled: boolean;
-  /** Has ever moved past step 1. */
+  /** The group has locked its idea by voting or using its one change. */
   rerollLocked: boolean;
+  ideaLockVotes: PlayerId[];
   price: number | null;
   /** True when Prepare ended without a price and the midpoint was filled in. */
   priceAuto?: boolean;
@@ -95,6 +98,9 @@ export interface CompanyView {
   voted: boolean;
   /** Host and own group only. */
   rerollAllowed: boolean | null;
+  /** Host and own group only. */
+  ideaLocked: boolean | null;
+  ideaLockVotes: PlayerId[] | null;
   /** Fixed at Prepare; host and own group only. */
   startMembers: number | null;
   idea: Idea | IdeaPublic | null;

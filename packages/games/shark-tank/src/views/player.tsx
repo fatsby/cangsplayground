@@ -551,8 +551,29 @@ export function PlayerSessionScreen({
                   </Button>
                   {own.rerollAllowed && (
                     <p className="cp-muted">
-                      You can change your idea once, before moving past step 1.
+                      You can change your idea once, until your group locks it.
                     </p>
+                  )}
+                  {own.ideaLocked ? (
+                    <p role="status">Your group’s idea is locked.</p>
+                  ) : (
+                    <Panel className="cp-stack">
+                      <Button
+                        disabled={disabled || !own.idea || !!own.ideaLockVotes?.includes(me.playerId)}
+                        onClick={() => {
+                          if (own.idea)
+                            void send({ type: "st:lockIdea", payload: { ideaId: own.idea.id } });
+                        }}
+                      >
+                        {own.ideaLockVotes?.includes(me.playerId)
+                          ? "Voted to lock idea"
+                          : "Lock idea"}
+                      </Button>
+                      <p role="status">
+                        {own.ideaLockVotes?.length ?? 0} / {Math.ceil(own.members.length / 2)} votes.
+                        At least half of your group must vote to lock this idea.
+                      </p>
+                    </Panel>
                   )}
                 </>
               )}

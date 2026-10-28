@@ -194,6 +194,39 @@ async function socketSetup(n = 6, groups = 3) {
   return { host, projector, players, player, code, lobby, url, hostAction, hostNext, commandId };
 }
 
+it("keeps PREP tabs personal across broadcasts and resume while sharing idea lock votes", async () => {
+  const s = await socketSetup(8, 2);
+  const c = state(s.lobby).companies[0]!;
+  const first = s.player(c.members[0]!);
+  const second = s.player(c.members[1]!);
+  const own = (client: typeof first) =>
+    sharedView(client)?.companies.find((company) => company.groupId === c.groupId);
+  await ack(first.socket, "game:action", { type: "st:step", payload: { step: 2 } });
+  await ack(second.socket, "game:action", { type: "st:step", payload: { step: 4 } });
+  await until(() => own(first)?.prepStep === 2 && own(second)?.prepStep === 4);
+  expect(own(first)?.rerollAllowed).toBe(true);
+  first.socket.disconnect();
+  const resumed = await connect(s.url);
+  await ack(resumed.socket, "session:resume", { token: first.playerToken });
+  await until(() => sharedView(resumed)?.companies[0]?.prepStep === 2);
+  await ack(resumed.socket, "game:action", {
+    type: "st:lockIdea",
+    payload: { ideaId: c.ideaId },
+  });
+  await until(() => own(second)?.ideaLockVotes?.length === 1);
+  expect(own(second)?.ideaLocked).toBe(false);
+  expect(own(second)?.rerollAllowed).toBe(true);
+  await ack(second.socket, "game:action", {
+    type: "st:lockIdea",
+    payload: { ideaId: c.ideaId },
+  });
+  await until(() => sharedView(resumed)?.companies[0]?.ideaLocked === true);
+  expect(sharedView(resumed)?.companies[0]?.rerollAllowed).toBe(false);
+  expect(sharedView(resumed)?.companies[0]?.prepStep).toBe(2);
+  await until(() => own(second)?.ideaLocked === true);
+  expect(own(second)?.prepStep).toBe(4);
+});
+
 it("a kicked non-voter mid-huddle transfers their parts and locks the remaining votes", async () => {
   const s = await socketSetup(6, 2);
   for (const c of state(s.lobby).companies) {

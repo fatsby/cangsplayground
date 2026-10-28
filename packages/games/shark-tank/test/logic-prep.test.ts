@@ -4,7 +4,7 @@ import sharkTank, { ACTIONS } from "../src/index.js";
 import { ideas } from "../src/ideas.js";
 import { PART_FRAMES, blankCount } from "../src/phrases.js";
 import { assignParts } from "../src/rules.js";
-import type { PartId, Stage } from "../src/types.js";
+import type { PartId, SharkTankView, Stage } from "../src/types.js";
 import { start } from "./helpers.js";
 
 const group = (n: number, id = "g1"): GroupSummary => ({
@@ -65,6 +65,7 @@ describe("Shark Tank preparation", () => {
     expect(h.shared.companies[0]!.ideaId).not.toBe(before.companies[0]!.ideaId);
     expect(h.shared.companies[0]!.ideaId).not.toBe(h.shared.companies[1]!.ideaId);
     expect(h.shared.companies[0]!.rerolled).toBe(true);
+    expect(h.shared.companies[0]!.rerollLocked).toBe(true);
     expect(h.shared.companies[1]).toEqual(before.companies[1]);
     expect(before.companies[0]!.rerolled).toBe(false);
     expect(h.act("g1p1", "st:reroll")).toBeNull();
@@ -74,15 +75,73 @@ describe("Shark Tank preparation", () => {
     expect(h.act("g1p1", "st:reroll")).toBeNull();
     expect(h.shared.companies[0]!.rerolled).toBe(false);
   });
-  it("never rerolls after moving past step 1, even after returning to it", () => {
+  it("keeps each member's preparation tab independent without locking rerolls", () => {
     const h = start([3, 3]);
     expect(h.act("g1p1", "st:step", { step: 2 })).not.toBeNull();
     expect(h.shared.companies[0]!.prepStep).toBe(2);
-    expect(h.act("g1p2", "st:step", { step: 1 })).not.toBeNull();
-    expect(h.shared.companies[0]!.rerollLocked).toBe(true);
-    expect(h.act("g1p3", "st:reroll")).toBeNull();
+    const view = (playerId: string) =>
+      (
+        sharkTank.sharedViewFor!({
+          config: sharkTank.defaultConfig,
+          shared: h.shared,
+          viewer: { kind: "player", playerId },
+          viewerGroupId: "g1",
+        }) as SharkTankView
+      ).companies[0]!;
+    expect(view("g1p1").prepStep).toBe(2);
+    expect(view("g1p2").prepStep).toBe(1);
+    h.act("g1p2", "st:step", { step: 4 });
+    expect(view("g1p1").prepStep).toBe(2);
+    expect(view("g1p2").prepStep).toBe(4);
+    h.act("g1p1", "st:step", { step: 1 });
+    expect(h.shared.companies[0]!.rerollLocked).toBe(false);
+    expect(h.act("g1p3", "st:reroll")).not.toBeNull();
     for (const step of [0, 5, 1.5, "2", null])
       expect(h.act("g1p1", "st:step", { step })).toBeNull();
+  });
+  it.each([
+    [2, 1],
+    [3, 2],
+    [4, 2],
+    [5, 3],
+  ])("locks the idea for %i members after %i distinct votes", (size, required) => {
+    const h = start([size, 3]);
+    const ideaId = h.shared.companies[0]!.ideaId;
+    for (let i = 1; i <= required; i++) {
+      expect(h.act(`g1p${i}`, "st:lockIdea", { ideaId })).not.toBeNull();
+      expect(h.shared.companies[0]!.rerollLocked).toBe(i === required);
+      expect(h.act(`g1p${i}`, "st:lockIdea", { ideaId })).toBeNull();
+    }
+    expect(h.shared.companies[1]!.rerollLocked).toBe(false);
+    expect(h.act("g1p1", "st:reroll")).toBeNull();
+  });
+  it("changing idea finalizes it without requiring any more votes", () => {
+    const h = start([4, 3]);
+    const ideaId = h.shared.companies[0]!.ideaId;
+    h.act("g1p1", "st:lockIdea", { ideaId });
+    expect(h.act("g1p2", "st:reroll")).not.toBeNull();
+    expect(h.shared.companies[0]!.ideaLockVotes).toEqual([]);
+    expect(h.act("g1p2", "st:lockIdea", { ideaId })).toBeNull();
+    const current = h.shared.companies[0]!.ideaId;
+    expect(h.shared.companies[0]!.rerollLocked).toBe(true);
+    expect(h.act("g1p2", "st:lockIdea", { ideaId: current })).toBeNull();
+    expect(h.act("g1p3", "st:reroll")).toBeNull();
+  });
+  it("counts disconnected members and recalculates votes when a member leaves", () => {
+    const h = start([5, 3]);
+    const ideaId = h.shared.companies[0]!.ideaId;
+    h.setConnected("g1p5", false);
+    h.act("g1p1", "st:lockIdea", { ideaId });
+    h.act("g1p2", "st:lockIdea", { ideaId });
+    expect(h.shared.companies[0]!.rerollLocked).toBe(false);
+    h.leave("g1p1");
+    expect(h.shared.companies[0]!.ideaLockVotes).toEqual(["g1p2"]);
+    expect(h.shared.companies[0]!.rerollLocked).toBe(false);
+    h.leave("g1p5");
+    h.leave("g1p4");
+    expect(h.shared.companies[0]!.rerollLocked).toBe(true);
+    h.leave("g1p2");
+    expect(h.shared.companies[0]!.rerollLocked).toBe(true);
   });
   it("price must be within range and an integer, and any current member can update it", () => {
     const h = start([3, 3]);
@@ -138,22 +197,37 @@ describe("Shark Tank preparation", () => {
     for (const actor of ["host", "outsider"])
       for (const [type, payload] of [
         ["st:reroll", undefined],
+        ["st:lockIdea", { ideaId: h.shared.companies[0]!.ideaId }],
         ["st:step", { step: 2 }],
         ["st:price", { price: 35 }],
         ["st:script", { part: "problem", blanks: ["test"] }],
       ] as const)
         expect(h.act(actor, type, payload)).toBeNull();
     next(h);
-    for (const type of ["st:reroll", "st:step", "st:price", "st:script"])
+    for (const type of ["st:reroll", "st:lockIdea", "st:step", "st:price", "st:script"])
       expect(
-        h.act("g1p1", type, { step: 2, price: 35, part: "problem", blanks: ["test"] }),
+        h.act("g1p1", type, {
+          step: 2,
+          price: 35,
+          part: "problem",
+          blanks: ["test"],
+          ideaId: h.shared.companies[0]!.ideaId,
+        }),
       ).toBeNull();
   });
   it("rejects unknown actions, projector actors and malformed payloads without changing state", () => {
     const h = start([3, 3]);
     const before = structuredClone(h.shared);
     for (const type of ["missing", "toString", "__proto__"]) expect(h.act("host", type)).toBeNull();
-    for (const type of ["st:step", "st:price", "st:script", "st:help", "st:clearHelp", "st:next"])
+    for (const type of [
+      "st:lockIdea",
+      "st:step",
+      "st:price",
+      "st:script",
+      "st:help",
+      "st:clearHelp",
+      "st:next",
+    ])
       for (const payload of [undefined, null, 1, "wrong", {}])
         expect(h.act("g1p1", type, payload)).toBeNull();
     for (const type of ["st:reroll", "st:pause", "st:resume", "st:extend"])

@@ -43,11 +43,16 @@ export function viewFor({
       const publicIdea = { id: idea.id, name: idea.name, emoji: idea.emoji, pitch: idea.pitch };
       return {
         groupId: company.groupId,
-        prepStep: company.prepStep,
+        prepStep:
+          viewer.kind === "player" && own?.groupId === company.groupId
+            ? (company.prepSteps[viewer.playerId] ?? 1)
+            : company.prepStep,
         members: company.members,
         discounted: company.discounted,
         voted: shared.locked.includes(company.groupId),
         rerollAllowed: privateInfo ? preparing && !company.rerolled && !company.rerollLocked : null,
+        ideaLocked: privateInfo ? company.rerollLocked : null,
+        ideaLockVotes: privateInfo ? company.ideaLockVotes : null,
         startMembers: privateInfo ? company.startMembers : null,
         idea: privateInfo ? idea : preparing ? null : publicIdea,
         price: privateInfo || !preparing ? company.price : null,

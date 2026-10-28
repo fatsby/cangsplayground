@@ -43,6 +43,7 @@ function canTime(shared: SharkTankShared, ctx: Context, payload: unknown): boole
 }
 
 const stepPayload = z.object({ step: z.number().int().min(1).max(4) });
+const lockIdeaPayload = z.object({ ideaId: z.string().min(1) });
 const pricePayload = z.object({ price: z.number().int() });
 const scriptPayload = z.object({
   part: z.enum(PART_ORDER),
@@ -68,6 +69,14 @@ export function isEligible(company: Company, shared: SharkTankShared): boolean {
 
 function connectedMembers(company: Company, roster: Context["roster"]): string[] {
   return company.members.filter((id) => roster.some((r) => r.playerId === id && r.connected));
+}
+
+function tryLockIdea(company: Company): void {
+  if (
+    company.members.length &&
+    company.ideaLockVotes.length >= Math.ceil(company.members.length / 2)
+  )
+    company.rerollLocked = true;
 }
 
 function currentVotes(company: Company, shared: SharkTankShared): number[] {
@@ -282,14 +291,35 @@ export const ACTIONS: Record<string, Reducer> = {
     if (!available.length) return null;
     company.ideaId = available[ctx.rng.int(available.length)]!.id;
     company.rerolled = true;
+    company.rerollLocked = true;
+    company.ideaLockVotes = [];
+    return shared;
+  },
+  "st:lockIdea": (shared, ctx, payload) => {
+    const company = playerCompany(shared, ctx.actor);
+    const parsed = lockIdeaPayload.safeParse(payload);
+    if (
+      shared.stage !== "PREP" ||
+      ctx.actor.kind !== "player" ||
+      !company ||
+      !parsed.success ||
+      parsed.data.ideaId !== company.ideaId ||
+      company.rerollLocked ||
+      company.ideaLockVotes.includes(ctx.actor.playerId)
+    )
+      return null;
+    company.ideaLockVotes.push(ctx.actor.playerId);
+    tryLockIdea(company);
     return shared;
   },
   "st:step": (shared, ctx, payload) => {
     const company = playerCompany(shared, ctx.actor),
       parsed = stepPayload.safeParse(payload);
-    if (shared.stage !== "PREP" || !company || !parsed.success) return null;
-    company.prepStep = parsed.data.step as Company["prepStep"];
-    if (company.prepStep > 1) company.rerollLocked = true;
+    if (shared.stage !== "PREP" || ctx.actor.kind !== "player" || !company || !parsed.success)
+      return null;
+    const step = parsed.data.step as Company["prepStep"];
+    company.prepSteps[ctx.actor.playerId] = step;
+    company.prepStep = Math.max(company.prepStep, step) as Company["prepStep"];
     return shared;
   },
   "st:price": (shared, ctx, payload) => {
@@ -493,8 +523,10 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
         groupId: group.groupId,
         ideaId: dealt[index]!.id,
         prepStep: 1,
+        prepSteps: Object.fromEntries(group.playerIds.map((id) => [id, 1 as const])),
         rerolled: false,
         rerollLocked: false,
+        ideaLockVotes: [],
         price: null,
         priceAuto: false,
         discounted: false,
@@ -527,6 +559,9 @@ export const sharkTank: GameModule<SharkTankConfig, null, SharkTankShared> = {
     company.members = company.members.filter((id) => id !== playerId);
     company.formerMembers.push(playerId);
     company.parts = reassignParts(company.parts, playerId, company.members);
+    delete company.prepSteps[playerId];
+    company.ideaLockVotes = company.ideaLockVotes.filter((id) => id !== playerId);
+    if (next.stage === "PREP") tryLockIdea(company);
     if (next.votes[company.groupId]) delete next.votes[company.groupId]![playerId];
     next.left.push(playerId);
     if (

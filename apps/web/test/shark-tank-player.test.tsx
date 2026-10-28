@@ -26,6 +26,8 @@ function fixture(stage: Stage = "PREP") {
     discounted: false,
     voted: false,
     rerollAllowed: true,
+    ideaLocked: false,
+    ideaLockVotes: [] as string[],
     startMembers: 3,
     idea: ideas()[0]!,
     price: 30,
@@ -63,6 +65,8 @@ function fixture(stage: Stage = "PREP") {
         idea: ideas()[1]!,
         price: 30,
         rerollAllowed: null,
+        ideaLocked: null,
+        ideaLockVotes: null,
         startMembers: null,
         parts: { p3: ["problem", "product"], p4: ["price", "ask"] },
         scripts: null,
@@ -229,7 +233,7 @@ it("PREP 1 shows full vocabulary and selling points, and respects the reroll loc
   await mount(props);
   expect(button("Change idea").disabled).toBe(true);
 });
-it("PREP tabs send the selected shared step", async () => {
+it("PREP tabs send the member's selected step", async () => {
   const props = fixture();
   await mount(props);
   const tab = [...container.querySelectorAll('[role="tab"]')][1]!;
@@ -237,6 +241,45 @@ it("PREP tabs send the selected shared step", async () => {
     tab.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 })),
   );
   expect(props.act).toHaveBeenCalledWith({ type: "st:step", payload: { step: 2 } });
+});
+it("PREP Idea lets a member vote once and disables changes when locked", async () => {
+  const props = fixture();
+  props.own.prepStep = 1;
+  props.own.members = ["p1", "p2", "p5"];
+  props.own.ideaLockVotes = [];
+  props.own.ideaLocked = false;
+  await mount(props);
+  expect(container.textContent).toContain("0 / 2 votes");
+  await click(button("Lock idea"));
+  expect(props.act).toHaveBeenCalledWith({
+    type: "st:lockIdea",
+    payload: { ideaId: props.own.idea!.id },
+  });
+  props.own.ideaLockVotes = ["p1"];
+  await mount(props);
+  expect(button("Voted to lock idea").disabled).toBe(true);
+  expect(button("Change idea").disabled).toBe(false);
+  props.own.ideaLockVotes = ["p1", "p2"];
+  props.own.ideaLocked = true;
+  props.own.rerollAllowed = false;
+  await mount(props);
+  expect(button("Lock idea")).toBeUndefined();
+  expect(button("Voted to lock idea")).toBeUndefined();
+  expect(container.textContent).not.toContain("votes");
+  expect(container.textContent).toContain("Your group’s idea is locked.");
+  expect(button("Change idea").disabled).toBe(true);
+});
+it("PREP needs no lock vote after the group's only idea change", async () => {
+  const props = fixture();
+  props.own.prepStep = 1;
+  props.own.rerollAllowed = false;
+  props.own.ideaLocked = true;
+  props.own.ideaLockVotes = [];
+  await mount(props);
+  expect(button("Change idea").disabled).toBe(true);
+  expect(button("Lock idea")).toBeUndefined();
+  expect(container.textContent).not.toContain("votes");
+  expect(container.textContent).toContain("Your group’s idea is locked.");
 });
 it("saves a full part's blanks on blur, never on each keystroke", async () => {
   const props = fixture();
