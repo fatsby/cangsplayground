@@ -77,6 +77,7 @@ export default function Join() {
             required
             error={error}
           />
+          <p className="cp-muted">Got disconnected? Type the same name to get back in.</p>
           {suggestion && (
             <Button
               onClick={() => {

@@ -349,6 +349,27 @@ it("session:resume restores the player's group, speaking parts and own scripts",
     });
 }, 15000);
 
+it("a disconnected player who lost their token rejoins the running game by typing the same name", async () => {
+  const s = await socketSetup();
+  const c = state(s.lobby).companies[0]!,
+    id = c.members[0]!;
+  const player = s.player(id);
+  const name = s.lobby.players.get(id)!.name;
+  const otherBrowser = await connect(s.url);
+  await expect(
+    ack(otherBrowser.socket, "lobby:join", { code: s.code, name: ` ${name.toUpperCase()} ` }),
+  ).rejects.toThrow("NAME_TAKEN");
+  await ack(s.host.socket, "lobby:lock", { locked: true, commandId: s.commandId() });
+  player.socket.disconnect();
+  await until(() => s.lobby.players.get(id)!.sockets.size === 0);
+  expect(
+    await ack(otherBrowser.socket, "lobby:join", { code: s.code, name: name.toUpperCase() }),
+  ).toEqual({ playerToken: player.playerToken, playerId: id });
+  await until(() => sharedView(otherBrowser)?.stage === "PREP");
+  expect(otherBrowser.observed.view!.me).toMatchObject({ playerId: id, groupId: c.groupId });
+  expect(s.lobby.players.size).toBe(6);
+}, 15000);
+
 it("a socket disconnect locks the last pending buyer without moving parts, and reconnect never charges twice", async () => {
   const s = await socketSetup(4, 2);
   await s.hostNext();

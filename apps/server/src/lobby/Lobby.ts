@@ -111,20 +111,32 @@ export class Lobby {
   }
   join(input: string): Player {
     if (this.status !== "open") fail("LOBBY_CLOSED", "This lobby has ended.");
-    if (this.locked) fail("LOBBY_LOCKED", "This lobby is locked.");
-    if (this.players.size >= MAX_PLAYERS_PER_LOBBY) fail("LOBBY_FULL", "This lobby is full.");
     const name = input.trim();
     if (!name || name.length > PLAYER_NAME_MAX)
       fail("NAME_INVALID", `Use a name with 1 to ${PLAYER_NAME_MAX} letters.`);
+    // A phone that lost its saved token reclaims its offline player by name, even when locked.
+    const existing = [...this.players.values()].find(
+      (p) => p.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (existing && existing.sockets.size === 0) {
+      existing.lastSeenAt = this.now();
+      return existing;
+    }
+    if (this.locked) fail("LOBBY_LOCKED", "This lobby is locked.");
+    if (this.players.size >= MAX_PLAYERS_PER_LOBBY) fail("LOBBY_FULL", "This lobby is full.");
     const names = new Set([...this.players.values()].map((p) => p.name.toLowerCase()));
-    if (names.has(name.toLowerCase())) {
+    if (existing) {
       let i = 2;
       let suggestion: string;
       do {
         const suffix = String(i++);
         suggestion = name.slice(0, PLAYER_NAME_MAX - suffix.length) + suffix;
       } while (names.has(suggestion.toLowerCase()));
-      throw new CommandError("NAME_TAKEN", "This name is in use. Try this name.", suggestion);
+      throw new CommandError(
+        "NAME_TAKEN",
+        "This name is in use. If it's you, wait a minute and try again.",
+        suggestion,
+      );
     }
     const player: Player = {
       id: newPlayerId(),

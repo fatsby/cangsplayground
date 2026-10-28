@@ -18,11 +18,14 @@ describe("Lobby and groups", () => {
   it("validates names, suggests a free name, enforces lock/full and removes kicked players", () => {
     const { lobby, players } = setup();
     expect(() => lobby.join("  ")).toThrow("name");
-    try {
-      lobby.join(" player0 ");
-    } catch (e) {
-      expect(e).toMatchObject({ code: "NAME_TAKEN", suggestion: "player02" });
-    }
+    players[0]!.sockets.add("online");
+    expect(() => lobby.join(" player0 ")).toThrow(
+      expect.objectContaining({
+        code: "NAME_TAKEN",
+        message: expect.stringContaining("If it's you, wait a minute"),
+        suggestion: "player02",
+      }),
+    );
     lobby.locked = true;
     expect(() => lobby.join("New")).toThrow("locked");
     lobby.locked = false;
@@ -41,7 +44,7 @@ describe("Lobby and groups", () => {
   it("suggests unique duplicate-name suffixes within 32 characters, including two-digit suffixes", () => {
     const { lobby } = setup(0);
     const name = "a".repeat(32);
-    lobby.join(name);
+    lobby.join(name).sockets.add("online");
     for (let i = 2; i <= 10; i++) {
       const suggestion = "a".repeat(i < 10 ? 31 : 30) + i;
       expect(() => lobby.join(name)).toThrow(
@@ -52,6 +55,19 @@ describe("Lobby and groups", () => {
       );
       expect(lobby.join(suggestion).name).toHaveLength(32);
     }
+  });
+  it("lets an offline player reclaim their name, group and token even when locked or full", () => {
+    const { lobby, players } = setup(60);
+    lobby.assign("count", 2);
+    const offline = players[0]!;
+    lobby.locked = true;
+    const reclaimed = lobby.join(" PLAYER0 ");
+    expect(reclaimed).toBe(offline);
+    expect(reclaimed).toMatchObject({ id: offline.id, token: offline.token });
+    expect(reclaimed.groupId).not.toBeNull();
+    expect(lobby.players.size).toBe(60);
+    offline.sockets.add("online");
+    expect(() => lobby.join("Player0")).toThrow("locked");
   });
   it("assigns balanced groups, validates minimums, moves members and requires confirmation", () => {
     const { lobby, players } = setup(8);
