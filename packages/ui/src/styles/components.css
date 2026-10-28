@@ -70,6 +70,36 @@ small {
   font-weight: 600;
   overflow-wrap: anywhere;
 }
+.cp-avatar {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: cover;
+  background: var(--cp-surface-2);
+}
+.cp-player-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.cp-player-identity > .cp-identity-name {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: inherit;
+  font-size: inherit;
+}
+.cp-turn-indicator p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.cp-members li > span {
+  min-width: 0;
+}
 .cp-muted {
   color: var(--cp-ink-muted);
 }

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import {
   Button,
   Panel,
+  PlayerIdentity,
   TeamBadge,
   TeamShape,
   Timer,
@@ -15,6 +16,7 @@ import {
 } from "@cangsplayground/ui";
 import { toast } from "sonner";
 import { MobileToaster } from "../components/MobileToaster";
+import { AvatarEditor } from "../components/AvatarEditor";
 import { gameViews } from "../games/registry";
 import { readToken, request } from "../socket";
 import { useLobbyStore } from "../store";
@@ -93,7 +95,14 @@ export default function Player() {
         ) : (
           <>
             <header className="player-header">
-              <strong className="cp-person">{view.me.name}</strong>
+              <strong className="cp-person">
+                <PlayerIdentity
+                  player={view.players.find((p) => p.id === view.me!.playerId)}
+                  playerId={view.me.playerId}
+                >
+                  {view.me.name}
+                </PlayerIdentity>
+              </strong>
               {session?.clock && (
                 <GameClock
                   clock={session.clock}
@@ -104,6 +113,9 @@ export default function Player() {
               )}
               {group && <TeamBadge teamIndex={group.index} />}
             </header>
+            {!session && view.players.find((p) => p.id === view.me!.playerId) && (
+              <AvatarEditor player={view.players.find((p) => p.id === view.me!.playerId)!} />
+            )}
             {!group ? (
               <>
                 <Waiting
@@ -140,7 +152,10 @@ export default function Player() {
                   <ul className="team-member-list">
                     {group.playerIds.map((id) => (
                       <li className="cp-person" key={id}>
-                        {view.players.find((p) => p.id === id)?.name}
+                        <PlayerIdentity
+                          player={view.players.find((p) => p.id === id)}
+                          playerId={id}
+                        />
                       </li>
                     ))}
                   </ul>

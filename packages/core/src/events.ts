@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { avatarSchema } from "./avatar.js";
 import { LOBBY_CODE_LENGTH } from "./lobbyCode.js";
 import { PLAYER_NAME_MAX, type LobbyView } from "./types.js";
 
@@ -47,6 +48,7 @@ export const schemas = {
   /** Player reconnect / reload (JOIN-03). */
   "session:resume": z.object({ token }),
   "session:leave": z.object({}).strict(),
+  "player:avatar": z.object({ avatar: avatarSchema }).strict(),
   "lobby:lock": z.object({ locked: z.boolean(), commandId }),
   "lobby:kick": z.object({ playerId: z.string().min(1), commandId }),
   "lobby:close": z.object({ commandId }),
@@ -106,6 +108,7 @@ export interface C2SResults {
   "lobby:join": { playerToken: string; playerId: string };
   "session:resume": { code: string; playerId: string };
   "session:leave": undefined;
+  "player:avatar": undefined;
   "lobby:lock": undefined;
   "lobby:kick": undefined;
   "lobby:close": undefined;

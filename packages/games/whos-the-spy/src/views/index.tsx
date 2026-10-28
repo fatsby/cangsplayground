@@ -6,6 +6,8 @@ import {
   Button,
   Chip,
   Panel,
+  PlayerAvatar,
+  PlayerIdentity,
   SecretCard,
   Timer,
   TurnIndicator,
@@ -103,7 +105,7 @@ function VoteScreen(props: PlayerProps) {
               disabled={!!locked || submitting || paused}
               onClick={() => setSelected(id)}
             >
-              {nameOf(lobby, id)}
+              <PlayerIdentity player={lobby.players.find((p) => p.id === id)} playerId={id} />
             </Button>
           ))}
       </div>
@@ -148,9 +150,7 @@ function PlayerScreen(props: PlayerProps) {
       time: "Time's up. A spy is still in the game.",
     };
     return (
-      <Panel
-        className={`cp-stack wts-result ${won ? "wts-win" : "wts-loss"}`}
-      >
+      <Panel className={`cp-stack wts-result ${won ? "wts-win" : "wts-loss"}`}>
         <span className="wts-result-symbol" aria-hidden="true">
           {won ? "🎉" : "🕵️"}
         </span>
@@ -159,7 +159,11 @@ function PlayerScreen(props: PlayerProps) {
         <p className="cp-muted">{lines[data.result.reason]}</p>
         {data.lastVote?.out && (
           <p className="wts-final-verdict">
-            {nameOf(lobby, data.lastVote.out)} was voted out:{" "}
+            <PlayerIdentity
+              player={lobby.players.find((p) => p.id === data.lastVote!.out)}
+              playerId={data.lastVote.out}
+            />{" "}
+            was voted out:{" "}
             <strong>{data.lastVote.wasSpy ? "was a SPY!" : "was NOT the spy"}</strong>
           </p>
         )}
@@ -168,17 +172,23 @@ function PlayerScreen(props: PlayerProps) {
           <strong className="wts-secret-title">{data.topic?.name}</strong>
           <p>
             {(data.spies?.length ?? 0) === 1 ? "Spy" : "Spies"}:{" "}
-            {data.spies?.map((id) => nameOf(lobby, id)).join(", ")}
+            {data.spies?.map((id, index) => (
+              <span key={id}>
+                {index > 0 && ", "}
+                <PlayerIdentity
+                  player={lobby.players.find((p) => p.id === id)}
+                  playerId={id}
+                  size={28}
+                />
+              </span>
+            ))}
           </p>
         </div>
         {wait}
       </Panel>
     );
   }
-  if (
-    group.eliminated.includes(me.playerId) &&
-    !(group.phase === "ROUND_END" && data.lastVote)
-  )
+  if (group.eliminated.includes(me.playerId) && !(group.phase === "ROUND_END" && data.lastVote))
     return (
       <Panel className="cp-stack wts-out">
         <h1>You're out</h1>
@@ -186,7 +196,15 @@ function PlayerScreen(props: PlayerProps) {
         <div className="wts-reveal">
           {group.phase === "RUNNING" && group.currentSpeakerId ? (
             <>
-              <p>Now speaking: <strong className="cp-person">{nameOf(lobby, group.currentSpeakerId)}</strong></p>
+              <p>
+                Now speaking:{" "}
+                <strong className="cp-person">
+                  <PlayerIdentity
+                    player={lobby.players.find((p) => p.id === group.currentSpeakerId)}
+                    playerId={group.currentSpeakerId}
+                  />
+                </strong>
+              </p>
               <Timer timer={group.timer} serverNow={serverNow} />
             </>
           ) : (
@@ -215,11 +233,20 @@ function PlayerScreen(props: PlayerProps) {
         {last.out ? (
           <div className={`wts-verdict ${last.wasSpy ? "wts-caught" : ""}`}>
             <span className="cp-muted">Voted out</span>
+            <PlayerAvatar
+              playerId={last.out}
+              avatar={lobby.players.find((p) => p.id === last.out)?.avatar}
+              size={72}
+            />
             <h1 className="cp-person">{votedOut ? "You" : nameOf(lobby, last.out)}</h1>
             <strong>
               {votedOut
-                ? last.wasSpy ? "were a SPY!" : "were NOT the spy"
-                : last.wasSpy ? "was a SPY!" : "was NOT the spy"}
+                ? last.wasSpy
+                  ? "were a SPY!"
+                  : "were NOT the spy"
+                : last.wasSpy
+                  ? "was a SPY!"
+                  : "was NOT the spy"}
             </strong>
           </div>
         ) : (
@@ -233,7 +260,11 @@ function PlayerScreen(props: PlayerProps) {
             .sort((a, b) => b[1] - a[1])
             .map(([id, n]) => (
               <li key={id}>
-                <span className="cp-person">{nameOf(lobby, id)}</span>
+                <PlayerIdentity
+                  player={lobby.players.find((p) => p.id === id)}
+                  playerId={id}
+                  size={28}
+                />
                 <strong>{n}</strong>
               </li>
             ))}
@@ -261,6 +292,8 @@ function PlayerScreen(props: PlayerProps) {
         <p className="cp-muted wts-wait">Get ready. Hold your card to check it.</p>
       ) : (
         <TurnIndicator
+          currentPlayer={lobby.players.find((p) => p.id === group.currentSpeakerId)}
+          nextPlayer={lobby.players.find((p) => p.id === group.nextSpeakerId)}
           current={group.currentSpeakerId ? nameOf(lobby, group.currentSpeakerId) : undefined}
           next={group.nextSpeakerId ? nameOf(lobby, group.nextSpeakerId) : undefined}
         />
@@ -270,15 +303,23 @@ function PlayerScreen(props: PlayerProps) {
 }
 function ProjectorHeader({ session }: { session: GameViewProps["session"] }) {
   const info = session.publicInfo as WhosTheSpyPublicInfo;
-  return <div className="wts-projector-category"><Chip>Category: {categoryName(info.category)}</Chip></div>;
+  return (
+    <div className="wts-projector-category">
+      <Chip>Category: {categoryName(info.category)}</Chip>
+    </div>
+  );
 }
 function ProjectorGroupCard(props: GameViewProps) {
   const data = dataOf(props.group);
   if (!data) return null;
   if (props.group.phase === "FINISHED")
-    return <p className={`wts-projector-result ${data.result?.winner === "team" ? "wts-team-result" : "wts-spy-result"}`}>
-      {data.result?.winner === "team" ? "Team wins!" : "Spy wins!"}
-    </p>;
+    return (
+      <p
+        className={`wts-projector-result ${data.result?.winner === "team" ? "wts-team-result" : "wts-spy-result"}`}
+      >
+        {data.result?.winner === "team" ? "Team wins!" : "Spy wins!"}
+      </p>
+    );
   if (props.group.phase === "VOTING") return null;
   if (props.group.phase === "ROUND_END")
     return <p className="wts-projector-tip">Wait for your teacher…</p>;

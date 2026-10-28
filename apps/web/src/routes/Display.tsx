@@ -9,6 +9,7 @@ import {
   Button,
   GameClock,
   GroupCard,
+  PlayerIdentity,
   LobbyCodeDisplay,
   Switch,
   Waiting,
@@ -274,7 +275,7 @@ export default function Display() {
                           className="cp-person"
                           key={player.id}
                         >
-                          {player.name}
+                          <PlayerIdentity player={player} size={36} />
                         </motion.li>
                       ))}
                     </ul>
@@ -353,7 +354,7 @@ export default function Display() {
                               delay: Math.min(index * 0.03, 1.5),
                             }}
                           >
-                            {player?.name ?? "Player"}
+                            <PlayerIdentity player={player} playerId={id} size={28} />
                           </motion.span>
                         )}
                       >

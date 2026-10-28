@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToStaticMarkup, renderToReadableStream } from "react-dom/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { LobbyView } from "@cangsplayground/core";
 import {
@@ -129,6 +129,20 @@ function fixture(stage: Stage = "PREP") {
   };
 }
 const Screen = views.PlayerSessionScreen!;
+it("shows saved circular avatars beside Shark Tank team votes", async () => {
+  const props = fixture("HUDDLE");
+  props.lobby.players[1]!.avatar = { seed: "custom-Bo", backgroundColor: "efe6ff" };
+  const stream = await renderToReadableStream(<Screen {...props} />);
+  await stream.allReady;
+  const html = await new Response(stream).text();
+  expect(html).toContain('data-player-id="p2"');
+  const svg = [...html.matchAll(/src="(data:image\/svg\+xml[^"]*)"/g)]
+    .map((match) => decodeURIComponent(match[1]!.split(",")[1]!))
+    .join("\n");
+  expect(svg).toContain("#efe6ff");
+  expect(html).toContain("Bo");
+  expect(html).toContain("border-radius:50%");
+});
 function markup(props = fixture()) {
   const container = document.createElement("div");
   container.innerHTML = renderToStaticMarkup(<Screen {...props} />);
@@ -620,31 +634,42 @@ it.each(["PREP", "PITCH", "QA", "HUDDLE"] as const)(
     vi.useRealTimers();
   },
 );
-it.each([false, true])("locks HUDDLE voting at expiry and unlocks after an extension (saved %s)", async (saved) => {
-  vi.useFakeTimers();
-  const props = fixture("HUDDLE");
-  props.own.eligible = true;
-  props.own.voted = saved;
-  props.own.votes = saved ? { p1: 1 } : {};
-  let now = 0;
-  props.serverNow = () => now;
-  props.shared.timer = { endsAt: 1000, pausedRemainingMs: null, durationMs: 1000 };
-  await mount(props);
-  now = 1000;
-  await act(async () => vi.advanceTimersByTime(1000));
-  expect(container.querySelector<HTMLButtonElement>('[aria-label="Decrease quantity"]')!.disabled).toBe(true);
-  expect(container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled).toBe(true);
-  expect(button("Save my vote").disabled).toBe(true);
-  expect(container.textContent).toContain("Time's up. Your vote is closed.");
-  expect(container.textContent).toContain(saved ? "Your saved vote counts." : "You did not vote in time.");
+it.each([false, true])(
+  "locks HUDDLE voting at expiry and unlocks after an extension (saved %s)",
+  async (saved) => {
+    vi.useFakeTimers();
+    const props = fixture("HUDDLE");
+    props.own.eligible = true;
+    props.own.voted = saved;
+    props.own.votes = saved ? { p1: 1 } : {};
+    let now = 0;
+    props.serverNow = () => now;
+    props.shared.timer = { endsAt: 1000, pausedRemainingMs: null, durationMs: 1000 };
+    await mount(props);
+    now = 1000;
+    await act(async () => vi.advanceTimersByTime(1000));
+    expect(
+      container.querySelector<HTMLButtonElement>('[aria-label="Decrease quantity"]')!.disabled,
+    ).toBe(true);
+    expect(
+      container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled,
+    ).toBe(true);
+    expect(button("Save my vote").disabled).toBe(true);
+    expect(container.textContent).toContain("Time's up. Your vote is closed.");
+    expect(container.textContent).toContain(
+      saved ? "Your saved vote counts." : "You did not vote in time.",
+    );
 
-  props.shared.timer = { endsAt: 5000, pausedRemainingMs: null, durationMs: 5000 };
-  await mount(props);
-  expect(container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled).toBe(saved);
-  expect(button("Save my vote").disabled).toBe(saved);
-  if (!saved) {
-    await click(button("Save my vote"));
-    expect(props.act).toHaveBeenCalledWith({ type: "st:vote", payload: { quantity: 0 } });
-  }
-  vi.useRealTimers();
-});
+    props.shared.timer = { endsAt: 5000, pausedRemainingMs: null, durationMs: 5000 };
+    await mount(props);
+    expect(
+      container.querySelector<HTMLButtonElement>('[aria-label="Increase quantity"]')!.disabled,
+    ).toBe(saved);
+    expect(button("Save my vote").disabled).toBe(saved);
+    if (!saved) {
+      await click(button("Save my vote"));
+      expect(props.act).toHaveBeenCalledWith({ type: "st:vote", payload: { quantity: 0 } });
+    }
+    vi.useRealTimers();
+  },
+);

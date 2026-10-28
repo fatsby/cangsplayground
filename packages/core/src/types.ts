@@ -5,6 +5,7 @@
  */
 
 import type { C2SPayload } from "./events.js";
+import type { AvatarConfig } from "./avatar.js";
 
 export type PlayerId = string;
 export type GroupId = string;
@@ -38,6 +39,7 @@ export interface TimerState {
 
 export interface PlayerSummary {
   id: PlayerId;
+  avatar?: AvatarConfig;
   name: string;
   groupId: GroupId | null; // null = "No group yet" (JOIN-05)
   connected: boolean;

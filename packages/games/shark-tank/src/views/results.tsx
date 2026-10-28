@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "motion/react";
 import confetti from "canvas-confetti";
 import { teamName, teamStyle } from "@cangsplayground/core";
-import { Button, TeamBadge, type SessionViewProps } from "@cangsplayground/ui";
+import { Button, PlayerIdentity, TeamBadge, type SessionViewProps } from "@cangsplayground/ui";
 import type { Score } from "../rules.js";
 import type { SharkTankView } from "../types.js";
 
@@ -79,7 +79,11 @@ function TeamMembers({ lobby, shared, id }: Props & { id: string }) {
     <ul className="st-reveal-members" aria-label="Team members">
       {company?.members.map((member) => (
         <li className="cp-person" key={member}>
-          {lobby.players.find((p) => p.id === member)?.name ?? "Player"}
+          <PlayerIdentity
+            player={lobby.players.find((p) => p.id === member)}
+            playerId={member}
+            size={28}
+          />
         </li>
       ))}
     </ul>

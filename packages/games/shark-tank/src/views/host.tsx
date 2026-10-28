@@ -2,6 +2,7 @@ import {
   Button,
   Chip,
   Panel,
+  PlayerIdentity,
   TeamBadge,
   Timer,
   type GameViewProps,
@@ -160,7 +161,11 @@ export function HostSessionPanel({
                       }
                     >
                       <span className="st-name" title={name(id)}>
-                        {name(id)}
+                        <PlayerIdentity
+                          player={lobby.players.find((p) => p.id === id)}
+                          playerId={id}
+                          size={28}
+                        />
                       </span>
                     </Button>
                   ))}

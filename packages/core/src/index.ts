@@ -1,4 +1,5 @@
 export * from "./rng.js";
+export * from "./avatar.js";
 export * from "./lobbyCode.js";
 export * from "./teams.js";
 export * from "./groups.js";

@@ -2,6 +2,62 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Lobby } from "../src/lobby/Lobby.js";
 import { TimerService } from "../src/timer/TimerService.js";
 import { buildView } from "../src/broadcast.js";
+import { schemas } from "@cangsplayground/core";
+
+describe("player avatars", () => {
+  const avatar = { seed: "new-look", backgroundColor: "e3edff", hairVariant: "shortHair" } as const;
+  it("publishes a saved avatar to every viewer and preserves it through regrouping and reclaim", () => {
+    const { lobby, players } = setup();
+    const player = players[0]!;
+    lobby.updateAvatar(player.id, avatar);
+    lobby.assign("count", 2);
+    for (const viewer of [
+      { kind: "host" },
+      { kind: "projector" },
+      { kind: "player", playerId: player.id },
+    ] as const)
+      expect(buildView(lobby, viewer).players.find((p) => p.id === player.id)?.avatar).toEqual(
+        avatar,
+      );
+    expect(lobby.join(player.name).avatar).toEqual(avatar);
+  });
+  it("rejects saves after game selection without changing the saved avatar, and allows editing after exit", () => {
+    const { lobby, players } = setup();
+    const player = players[0]!;
+    lobby.updateAvatar(player.id, avatar);
+    lobby.selectGame("free-talk");
+    expect(() => lobby.updateAvatar(player.id, { seed: "other" })).toThrow(
+      expect.objectContaining({ code: "INVALID_STATE" }),
+    );
+    expect(player.avatar).toEqual(avatar);
+    lobby.control("exit");
+    lobby.updateAvatar(player.id, { seed: "other" });
+    expect(player.avatar).toEqual({ seed: "other" });
+  });
+  it("rejects unknown players and closed lobbies", () => {
+    const { lobby, players } = setup();
+    expect(() => lobby.updateAvatar("missing", avatar)).toThrow(
+      expect.objectContaining({ code: "NOT_FOUND" }),
+    );
+    lobby.status = "closed";
+    expect(() => lobby.updateAvatar(players[0]!.id, avatar)).toThrow(
+      expect.objectContaining({ code: "LOBBY_CLOSED" }),
+    );
+  });
+  it("allows only supported appearance options and pastel backgrounds", () => {
+    const schema = schemas["player:avatar"];
+    expect(schema.safeParse({ avatar }).success).toBe(true);
+    for (const invalid of [
+      { ...avatar, backgroundColor: "000000" },
+      { ...avatar, hairVariant: "unknown" },
+      { ...avatar, seed: "" },
+      { ...avatar, seed: "x".repeat(65) },
+      { ...avatar, url: "https://example.com/face.svg" },
+    ])
+      expect(schema.safeParse({ avatar: invalid }).success).toBe(false);
+    expect(schema.safeParse({ avatar, playerId: "someone-else" }).success).toBe(false);
+  });
+});
 
 function setup(n = 4) {
   const lobby = new Lobby({

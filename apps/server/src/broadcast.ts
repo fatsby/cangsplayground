@@ -39,6 +39,7 @@ export function buildView(lobby: Lobby, viewer: Viewer): LobbyView {
     players: [...lobby.players.values()].map((p) => ({
       id: p.id,
       name: p.name,
+      avatar: { ...p.avatar },
       groupId: p.groupId,
       connected: p.sockets.size > 0,
       away: p.sockets.size === 0 && lobby.now() - p.lastSeenAt >= AWAY_AFTER_MS,

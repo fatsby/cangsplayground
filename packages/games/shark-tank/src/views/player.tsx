@@ -5,6 +5,7 @@ import {
   Chip,
   Input,
   Panel,
+  PlayerIdentity,
   Switch,
   Tabs,
   TeamBadge,
@@ -50,8 +51,7 @@ const stageNames = {
   RESULTS: "Results",
   CLOSING: "Closing circle",
 };
-const formatMoney = (amount: number) =>
-  amount < 0 ? `−$${Math.abs(amount)}` : `$${amount}`;
+const formatMoney = (amount: number) => (amount < 0 ? `−$${Math.abs(amount)}` : `$${amount}`);
 
 function Vocabulary({ idea }: { idea: Idea | IdeaPublic | null }) {
   if (!idea || !("keywords" in idea)) return null;
@@ -118,11 +118,13 @@ function Script({
   parts,
   hidden,
   name,
+  players,
 }: {
   company: CompanyView;
   parts: PartId[];
   hidden: boolean;
   name?: (id: string) => string;
+  players?: LobbyView["players"];
 }) {
   return (
     <div className="cp-stack">
@@ -134,7 +136,21 @@ function Script({
           <Panel key={part}>
             <h2 className="st-player-name">
               {partNames[part]}
-              {speaker && name ? ` — ${name(speaker)}` : ""}
+              {speaker && name ? (
+                <>
+                  {" "}
+                  —{" "}
+                  <PlayerIdentity
+                    player={players?.find((p) => p.id === speaker)}
+                    playerId={speaker}
+                    size={24}
+                  >
+                    {name(speaker)}
+                  </PlayerIdentity>
+                </>
+              ) : (
+                ""
+              )}
             </h2>
             <p className="st-script">{scriptText(company, part, hidden)}</p>
             {!hidden && scriptText(company, part, hidden).includes("___") && (
@@ -266,6 +282,7 @@ function Vote({
   hidden,
   me,
   name,
+  players,
   send,
   disabled,
   timeExpired,
@@ -275,6 +292,7 @@ function Vote({
   hidden: boolean;
   me: string;
   name: (id: string) => string;
+  players: LobbyView["players"];
   send: Send;
   disabled: boolean;
   timeExpired: boolean;
@@ -293,7 +311,8 @@ function Vote({
         <h2>How many should your group buy?</h2>
         {timeExpired && (
           <p role="status">
-            Time's up. Your vote is closed. {own.voted ? "Your saved vote counts." : "You did not vote in time."}
+            Time's up. Your vote is closed.{" "}
+            {own.voted ? "Your saved vote counts." : "You did not vote in time."}
           </p>
         )}
         <p>
@@ -345,7 +364,11 @@ function Vote({
         <ul className="st-player-votes">
           {own.members.map((id) => (
             <li key={id}>
-              <span className="st-player-name">{name(id)}</span>
+              <span className="st-player-name">
+                <PlayerIdentity player={players.find((p) => p.id === id)} playerId={id} size={28}>
+                  {name(id)}
+                </PlayerIdentity>
+              </span>
               <span className="st-player-vote-status">: {own.votes?.[id] ?? "Waiting"}</span>
             </li>
           ))}
@@ -370,13 +393,7 @@ function usePhoneTimerExpired(timer: SharkTankView["timer"], serverNow: () => nu
   return expired;
 }
 
-function PhoneTimeUp({
-  expired,
-  stageKey,
-}: {
-  expired: boolean;
-  stageKey: string;
-}) {
+function PhoneTimeUp({ expired, stageKey }: { expired: boolean; stageKey: string }) {
   const announced = useRef(new Set<string>());
   useEffect(() => {
     if (expired && !announced.current.has(stageKey)) {
@@ -559,7 +576,9 @@ export function PlayerSessionScreen({
                   ) : (
                     <Panel className="cp-stack">
                       <Button
-                        disabled={disabled || !own.idea || !!own.ideaLockVotes?.includes(me.playerId)}
+                        disabled={
+                          disabled || !own.idea || !!own.ideaLockVotes?.includes(me.playerId)
+                        }
                         onClick={() => {
                           if (own.idea)
                             void send({ type: "st:lockIdea", payload: { ideaId: own.idea.id } });
@@ -570,8 +589,8 @@ export function PlayerSessionScreen({
                           : "Lock idea"}
                       </Button>
                       <p role="status">
-                        {own.ideaLockVotes?.length ?? 0} / {Math.ceil(own.members.length / 2)} votes.
-                        At least half of your group must vote to lock this idea.
+                        {own.ideaLockVotes?.length ?? 0} / {Math.ceil(own.members.length / 2)}{" "}
+                        votes. At least half of your group must vote to lock this idea.
                       </p>
                     </Panel>
                   )}
@@ -606,6 +625,7 @@ export function PlayerSessionScreen({
                   )}
                   hidden={hidden}
                   name={name}
+                  players={lobby.players}
                 />
               )}
             </>
@@ -655,6 +675,7 @@ export function PlayerSessionScreen({
               hidden={hidden}
               me={me.playerId}
               name={name}
+              players={lobby.players}
               send={send}
               disabled={disabled}
               timeExpired={timeExpired}
@@ -684,7 +705,11 @@ export function PlayerSessionScreen({
                   <h2>Listen to the decisions</h2>
                   {Object.values(shared.announcers ?? {}).map((id) => (
                     <p key={id} className="st-player-name">
-                      Listen to {name(id)}
+                      Listen to{" "}
+                      <PlayerIdentity
+                        player={lobby.players.find((p) => p.id === id)}
+                        playerId={id}
+                      />
                     </p>
                   ))}
                 </>
@@ -725,11 +750,21 @@ export function PlayerSessionScreen({
           {stage === "CLOSING" && (
             <Panel>
               <h2 className="st-player-name">
-                {shared.closing?.order[shared.closing.index] === me.playerId
-                  ? "Your turn"
-                  : shared.closing?.order[shared.closing.index]
-                    ? `Listen to ${name(shared.closing.order[shared.closing.index]!)}`
-                    : "Wait for your teacher"}
+                {shared.closing?.order[shared.closing.index] === me.playerId ? (
+                  "Your turn"
+                ) : shared.closing?.order[shared.closing.index] ? (
+                  <>
+                    Listen to{" "}
+                    <PlayerIdentity
+                      player={lobby.players.find(
+                        (p) => p.id === shared.closing!.order[shared.closing!.index],
+                      )}
+                      playerId={shared.closing.order[shared.closing.index]}
+                    />
+                  </>
+                ) : (
+                  "Wait for your teacher"
+                )}
               </h2>
               {!hidden && (
                 <>

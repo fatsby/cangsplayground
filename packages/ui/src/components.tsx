@@ -38,6 +38,7 @@ import {
   type GameClockView,
 } from "@cangsplayground/core";
 import { allGroupsFinished, showTurnTimer, timerDisplay } from "./timer";
+import { PlayerAvatar, PlayerIdentity } from "./avatar";
 
 export function teamVars(index: number): CSSProperties {
   const team = teamStyle(index);
@@ -368,14 +369,30 @@ export function Timer({
     </div>
   );
 }
-export function TurnIndicator({ current, next }: { current?: string; next?: string }) {
+export function TurnIndicator({
+  current,
+  next,
+  currentPlayer,
+  nextPlayer,
+}: {
+  current?: string;
+  next?: string;
+  currentPlayer?: PlayerSummary;
+  nextPlayer?: PlayerSummary;
+}) {
   return (
     <div className="cp-turn-indicator">
       <p>
-        Now: <strong className="cp-accent cp-person">{current ?? "—"}</strong>
+        Now:{" "}
+        <strong className="cp-accent cp-person">
+          {currentPlayer ? <PlayerIdentity player={currentPlayer} /> : (current ?? "—")}
+        </strong>
       </p>
       <p className="cp-muted">
-        Next: <span className="cp-person">{next ?? "—"}</span>
+        Next:{" "}
+        <span className="cp-person">
+          {nextPlayer ? <PlayerIdentity player={nextPlayer} size={24} /> : (next ?? "—")}
+        </span>
       </p>
     </div>
   );
@@ -471,12 +488,18 @@ export function GroupCard({
               key={id}
             >
               {speaking && game.currentSpeakerId === id && <Mic strokeWidth={2.25} size={24} />}
-              {renderMember
-                ? renderMember(
-                    players.find((player) => player.id === id),
-                    id,
-                  )
-                : (players.find((player) => player.id === id)?.name ?? "Player")}
+              {renderMember ? (
+                renderMember(
+                  players.find((player) => player.id === id),
+                  id,
+                )
+              ) : (
+                <PlayerIdentity
+                  player={players.find((player) => player.id === id)}
+                  playerId={id}
+                  size={28}
+                />
+              )}
               {renderMemberMark?.(id)}
             </li>
           ))}
@@ -602,6 +625,7 @@ export function PlayerList({
         return (
           <li key={player.id}>
             <span className={`cp-presence cp-presence-${status}`} aria-label={status} />
+            <PlayerAvatar playerId={player.id} avatar={player.avatar} size={40} />
             <div className="cp-player-name">
               <strong className="cp-person">{player.name}</strong>
               <small>{status}</small>

@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
-import { Chip, Panel, Switch, TeamBadge, Timer, type SessionViewProps } from "@cangsplayground/ui";
+import {
+  Chip,
+  Panel,
+  PlayerIdentity,
+  Switch,
+  TeamBadge,
+  Timer,
+  type SessionViewProps,
+} from "@cangsplayground/ui";
 import type { SharkTankView } from "../types.js";
 import { Results } from "./results.js";
 
@@ -203,7 +211,11 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
             {presenter.members.map((id) => (
               <li key={id}>
                 <strong className="cp-person st-presenter-name" title={name(id)}>
-                  {name(id)}
+                  <PlayerIdentity
+                    player={lobby.players.find((p) => p.id === id)}
+                    playerId={id}
+                    size={48}
+                  />
                 </strong>
                 <span>{presenter.parts?.[id]?.map((part) => partLabels[part]).join(" · ")}</span>
               </li>
@@ -234,7 +246,11 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
               <Panel key={groupId}>
                 {badge(groupId)}
                 <h2 className="st-announcer cp-person st-name" title={name(id)}>
-                  {name(id)}
+                  <PlayerIdentity
+                    player={lobby.players.find((p) => p.id === id)}
+                    playerId={id}
+                    size={48}
+                  />
                 </h2>
               </Panel>
             ))}
@@ -259,7 +275,11 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
                 aria-current={closingStart + i === shared.closing?.index ? "step" : undefined}
               >
                 <span className="cp-person st-closing-name" title={name(id)}>
-                  {name(id)}
+                  <PlayerIdentity
+                    player={lobby.players.find((p) => p.id === id)}
+                    playerId={id}
+                    size={36}
+                  />
                 </span>
                 {closingStart + i === shared.closing?.index && <Chip active>Your turn</Chip>}
               </li>

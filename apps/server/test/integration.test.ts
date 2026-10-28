@@ -55,6 +55,45 @@ async function connect(url: string) {
 async function until(check: () => boolean) {
   await expect.poll(check, { timeout: 3000, interval: 10 }).toBe(true);
 }
+it("authenticates avatar updates, broadcasts the saved appearance and restores it on resume", async () => {
+  server = await createServer();
+  const url = await server.listen(0, "127.0.0.1");
+  const host = await connect(url),
+    projector = await connect(url),
+    player = await connect(url),
+    other = await connect(url);
+  const lobby = await ack(host.socket, "lobby:create", {});
+  await ack(host.socket, "host:attach", lobby);
+  await ack(projector.socket, "display:watch", { code: lobby.code });
+  const identity = await ack(player.socket, "lobby:join", { code: lobby.code, name: "Ana" });
+  const otherIdentity = await ack(other.socket, "lobby:join", { code: lobby.code, name: "Bo" });
+  const original = server.manager.get(lobby.code).players.get(otherIdentity.playerId)!.avatar;
+  const avatar = { seed: "saved", backgroundColor: "e2f5e9", accessoriesVariant: "none" } as const;
+  for (const client of [host, projector])
+    await expect(ack(client.socket, "player:avatar", { avatar })).rejects.toThrow("UNAUTHORIZED");
+  await ack(player.socket, "player:avatar", { avatar });
+  await until(() =>
+    [host, projector, player, other].every(
+      (client) =>
+        client.state.view?.players.find((p) => p.id === identity.playerId)?.avatar?.seed ===
+        "saved",
+    ),
+  );
+  expect(server.manager.get(lobby.code).players.get(otherIdentity.playerId)!.avatar).toEqual(
+    original,
+  );
+  player.socket.disconnect();
+  const resumed = await connect(url);
+  await ack(resumed.socket, "session:resume", { token: identity.playerToken });
+  expect(resumed.state.view!.players.find((p) => p.id === identity.playerId)?.avatar).toEqual(
+    avatar,
+  );
+  await ack(host.socket, "game:select", { gameId: "free-talk", commandId: "select" });
+  await expect(
+    ack(resumed.socket, "player:avatar", { avatar: { seed: "too-late" } }),
+  ).rejects.toThrow("INVALID_STATE");
+  expect(server.manager.get(lobby.code).players.get(identity.playerId)!.avatar).toEqual(avatar);
+});
 it("30 clients keep matching groups and the exact authoritative timer after reconnect and repeated games", async () => {
   server = await createServer({ seed: 1 });
   const url = await server.listen(0, "127.0.0.1");

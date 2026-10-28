@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@cangsplayground/core": "workspace:*",
+    "@dicebear/core": "10.7.0",
+    "@dicebear/styles": "10.6.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.60.0",
     "motion": "^14.4.0",

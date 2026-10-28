@@ -1,6 +1,7 @@
 import {
   Chip,
   Panel,
+  PlayerIdentity,
   SecretCard,
   TurnIndicator,
   type GameViewProps,
@@ -33,7 +34,7 @@ function WordList({
     <ul className="sw-words">
       {Object.entries(words).map(([id, word]) => (
         <li key={id}>
-          <span className="cp-person">{nameOf(lobby, id) ?? "Player"}</span>
+          <PlayerIdentity player={lobby.players.find((p) => p.id === id)} playerId={id} size={28} />
           <span className="sw-word">{word}</span>
         </li>
       ))}
@@ -75,6 +76,8 @@ function PlayerScreen({ lobby, group }: PlayerProps) {
         )}
         {!ended && (
           <TurnIndicator
+            currentPlayer={lobby.players.find((p) => p.id === group.currentSpeakerId)}
+            nextPlayer={lobby.players.find((p) => p.id === group.nextSpeakerId)}
             current={nameOf(lobby, group.currentSpeakerId)}
             next={nameOf(lobby, group.nextSpeakerId)}
           />

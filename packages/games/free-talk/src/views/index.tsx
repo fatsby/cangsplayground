@@ -1,4 +1,11 @@
-import { Chip, Panel, TurnIndicator, type GameViewProps, type GameViews } from "@cangsplayground/ui";
+import {
+  Chip,
+  Panel,
+  PlayerIdentity,
+  TurnIndicator,
+  type GameViewProps,
+  type GameViews,
+} from "@cangsplayground/ui";
 import type { FreeTalkGroupView, FreeTalkPublicInfo } from "../types";
 function info(session: GameViewProps["session"]) {
   return session.publicInfo as FreeTalkPublicInfo | null;
@@ -22,9 +29,7 @@ function Order({ lobby, group }: Pick<GameViewProps, "lobby" | "group">) {
     <ol className="speaking-order">
       {group.turnOrder?.map((id, index) => (
         <li key={`${id}-${index}`} className={index === group.turnIndex ? "order-current" : ""}>
-          <span className="cp-person">
-            {lobby.players.find((p) => p.id === id)?.name ?? "Player"}
-          </span>
+          <PlayerIdentity player={lobby.players.find((p) => p.id === id)} playerId={id} />
           <span className="cp-muted">
             {index < group.turnIndex
               ? "Spoken"
@@ -59,6 +64,8 @@ function PlayerScreen({
         <h2>Let’s talk</h2>
         <p>{info(session)?.prompt || "Tell your group about your day."}</p>
         <TurnIndicator
+          currentPlayer={lobby.players.find((p) => p.id === group.currentSpeakerId)}
+          nextPlayer={lobby.players.find((p) => p.id === group.nextSpeakerId)}
           current={lobby.players.find((p) => p.id === group.currentSpeakerId)?.name}
           next={lobby.players.find((p) => p.id === group.nextSpeakerId)?.name}
         />

@@ -19,6 +19,7 @@ import {
   type GameClockView,
   type GameAction,
   type RosterEntry,
+  type AvatarConfig,
 } from "@cangsplayground/core";
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
@@ -26,6 +27,7 @@ import { newPlayerId, newToken } from "../auth/tokens.js";
 
 export interface Player {
   id: string;
+  avatar: AvatarConfig;
   token: string;
   name: string;
   groupId: string | null;
@@ -138,8 +140,10 @@ export class Lobby {
         suggestion,
       );
     }
+    const id = newPlayerId();
     const player: Player = {
-      id: newPlayerId(),
+      id,
+      avatar: { seed: id },
       token: newToken(),
       name,
       groupId: null,
@@ -149,6 +153,18 @@ export class Lobby {
     this.players.set(player.id, player);
     this.changed();
     return player;
+  }
+  updateAvatar(playerId: string, avatar: AvatarConfig) {
+    if (this.status !== "open") fail("LOBBY_CLOSED", "This lobby has ended.");
+    const player = this.players.get(playerId);
+    if (!player) fail("NOT_FOUND", "Player not found.");
+    if (this.game)
+      fail(
+        "INVALID_STATE",
+        "Your teacher has selected a game. Customize your avatar between games.",
+      );
+    player.avatar = { ...avatar };
+    this.changed();
   }
   removePlayer(playerId: string) {
     const player = this.players.get(playerId);

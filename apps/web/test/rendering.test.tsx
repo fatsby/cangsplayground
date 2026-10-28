@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToStaticMarkup, renderToReadableStream } from "react-dom/server";
 import { SecretCard, HostSecretRow } from "@cangsplayground/ui";
 import { ConfigForm } from "../src/components/ConfigForm";
 import type { ConfigField, GameModule, GroupGameView, LobbyView } from "@cangsplayground/core";
 import { freeTalk } from "@cangsplayground/game-free-talk";
+import freeTalkViews from "@cangsplayground/game-free-talk/views";
+import secretWordViews from "@cangsplayground/game-secret-word/views";
 import { secretWord } from "@cangsplayground/game-secret-word";
 import whosTheSpy, { type WhosTheSpyGroupView } from "@cangsplayground/game-whos-the-spy";
 import whosTheSpyViews, { SecretFace } from "@cangsplayground/game-whos-the-spy/views";
@@ -181,6 +183,38 @@ function spyView(phase: GroupGameView["phase"], data: Partial<WhosTheSpyGroupVie
   } satisfies WhosTheSpyGroupView;
   return { lobby, session, group, me: lobby.me, serverNow: () => 0 };
 }
+it.each(["free-talk", "secret-word", "whos-the-spy"])(
+  "renders saved avatars alongside names in %s without mounting secrets",
+  async (gameId) => {
+    const props = spyView(gameId === "whos-the-spy" ? "VOTING" : "RUNNING");
+    props.group.timer.endsAt = 30000;
+    props.lobby.players[1]!.avatar = {
+      seed: "Bo-custom",
+      backgroundColor: "e3edff",
+      hairColor: "238d80",
+    };
+    const Screen =
+      gameId === "free-talk"
+        ? freeTalkViews.PlayerScreen
+        : gameId === "secret-word"
+          ? secretWordViews.PlayerScreen
+          : whosTheSpyViews.PlayerScreen;
+    if (gameId === "free-talk") props.group.data = { spoken: [] };
+    if (gameId === "secret-word") props.group.data = { myWord: "PRIVATE_WORD", words: null };
+    const stream = await renderToReadableStream(<Screen {...props} />);
+    await stream.allReady;
+    const html = await new Response(stream).text();
+    expect(html).toContain('data-player-id="p2"');
+    const svgs = [...html.matchAll(/src="(data:image\/svg\+xml[^"]*)"/g)]
+      .map((match) => decodeURIComponent(match[1]!.split(",")[1]!))
+      .join("\n");
+    expect(svgs).toContain("#e3edff");
+    expect(svgs).toContain("#238d80");
+    expect(html).toContain("Bo");
+    expect(html).not.toContain("PRIVATE_WORD");
+    expect(html).not.toContain("You are the SPY");
+  },
+);
 it("spy PlayerScreen shows role and category after hold, no topic", () => {
   const props = spyView("RUNNING");
   const html = renderToStaticMarkup(<whosTheSpyViews.PlayerScreen {...props} />);
@@ -217,7 +251,7 @@ it("result screen for spies by time", () => {
   expect(html).toContain("Time&#x27;s up. A spy is still in the game.");
   expect(html).toContain("The topic was");
   expect(html).toContain("Airport");
-  expect(html).toContain("Spy: Bo");
+  expect(html.replace(/<[^>]*>/g, "")).toContain("Spy: Bo");
 });
 it("controlLabels rename and hide host buttons", () => {
   const props = spyView("ROUND_END");
