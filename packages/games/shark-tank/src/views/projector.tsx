@@ -208,6 +208,7 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
     if (!reduced) setFlashUntil(serverNow() + 2000);
   }, [expired, identity, sound, reduced, serverNow]);
   const presenter = shared.companies.find((c) => c.groupId === shared.presenter);
+  const presenting = shared.stage === "PITCH" || shared.stage === "QA";
   const closingStart = Math.floor((shared.closing?.index ?? 0) / 12) * 12;
   const name = (id: string) => lobby.players.find((p) => p.id === id)?.name ?? "Player";
   const badge = (id: string) => (
@@ -218,7 +219,14 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
       className={`cp-stack st-projector st-stage-${shared.stage.toLowerCase()} ${!reduced && now < flashUntil ? "st-time-flash" : ""}`}
     >
       <header className="cp-row cp-spread">
-        <h2 className="st-stage">{stageLabels[shared.stage]}</h2>
+        {presenting && presenter ? (
+          <div className="cp-row st-presentation-heading">
+            {badge(presenter.groupId)}
+            <h2 className="st-stage">{stageLabels[shared.stage]}</h2>
+          </div>
+        ) : (
+          <h2 className="st-stage">{stageLabels[shared.stage]}</h2>
+        )}
         <div className="cp-row">
           {shared.timer.pausedRemainingMs !== null && (
             <span className="st-paused" role="status">
@@ -250,7 +258,7 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
           </div>
         </>
       )}
-      {(shared.stage === "PITCH" || shared.stage === "QA") && presenter && (
+      {presenting && presenter && (
         <>
           <p className="st-next">
             {shared.stage === "PITCH"
@@ -258,21 +266,22 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
               : "Ask a question about the product. The presenters answer."}
           </p>
           <Panel className="st-product">
-            <div className="st-product-team">{badge(presenter.groupId)}</div>
             <span className="st-product-emoji" aria-hidden="true">
               {presenter.idea?.emoji}
             </span>
-            <h2>{presenter.idea?.name}</h2>
-            <p className="st-product-pitch">{presenter.idea?.pitch}</p>
-            <p className="st-projector-price">
-              {presenter.discounted && presenter.originalPrice !== null && (
-                <s>${presenter.originalPrice}</s>
-              )}{" "}
-              <strong key={presenter.price} className={presenter.discounted ? "st-discount" : ""}>
-                ${presenter.price}
-              </strong>
-            </p>
-            {presenter.priceAuto && <p className="st-auto-price">Price chosen automatically</p>}
+            <div className="st-product-copy">
+              <h2>{presenter.idea?.name}</h2>
+              <p className="st-product-pitch">{presenter.idea?.pitch}</p>
+              <p className="st-projector-price">
+                {presenter.discounted && presenter.originalPrice !== null && (
+                  <s>${presenter.originalPrice}</s>
+                )}{" "}
+                <strong key={presenter.price} className={presenter.discounted ? "st-discount" : ""}>
+                  ${presenter.price}
+                </strong>
+              </p>
+              {presenter.priceAuto && <p className="st-auto-price">Price chosen automatically</p>}
+            </div>
           </Panel>
           <ul className="st-presenters">
             {presenter.members.map((id) => (
