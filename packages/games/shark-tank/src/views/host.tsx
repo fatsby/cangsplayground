@@ -1,7 +1,29 @@
-import { Button, Chip, Panel, TeamBadge, Timer, type SessionViewProps } from "@cangsplayground/ui";
+import {
+  Button,
+  Chip,
+  Panel,
+  TeamBadge,
+  Timer,
+  type GameViewProps,
+  type SessionViewProps,
+} from "@cangsplayground/ui";
 import type { GameSessionView, LobbyView } from "@cangsplayground/core";
 import type { SharkTankView } from "../types.js";
 import { prepLabels, stageLabels, useStageTime } from "./projector.js";
+
+export function HostGroupPanel({ session, group }: GameViewProps) {
+  const shared = session.shared as SharkTankView | undefined;
+  const idea = shared?.companies.find((company) => company.groupId === group.groupId)?.idea;
+  if (!idea) return <span>No idea assigned yet.</span>;
+  return (
+    <span className="cp-stack">
+      <strong>
+        {idea.emoji} {idea.name}
+      </strong>
+      <span>{idea.pitch}</span>
+    </span>
+  );
+}
 
 function nextLabel(shared: SharkTankView) {
   switch (shared.stage) {
