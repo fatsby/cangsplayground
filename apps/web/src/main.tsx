@@ -36,6 +36,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/display/:code" element={<Display />} />
         <Route path="*" element={<Home />} />
       </Routes>
+      <footer className="site-footer">made by Le Minh Tri</footer>
     </Suspense>
   </BrowserRouter>,
 );

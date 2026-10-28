@@ -9,6 +9,12 @@
   min-height: 100dvh;
   color: var(--cp-ink-muted);
 }
+.site-footer {
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  color: var(--cp-ink-muted);
+  font-size: 12px;
+  text-align: center;
+}
 .mobile-screen {
   max-width: 480px;
   min-height: 100dvh;
