@@ -219,25 +219,89 @@ it("DECISION announces names without revealing purchase quantities", () => {
   expect(text).toContain("Eli");
   expect(text).not.toContain("$");
 });
-it("RESULTS reveals scores in order, then awards and one confetti burst", async () => {
+it("RESULTS spotlights teams from lowest to highest before showing the podium", async () => {
   const props = fixture("projector", "RESULTS");
   await mount(props);
   const scores = (props.session.shared as SharkTankView).results!.scores;
-  expect(container.querySelectorAll(".st-result")).toHaveLength(1);
+  expect(container.querySelector(".st-podium")).toBeNull();
   expect(container.textContent).not.toContain("Best Startup");
-  await advance(1500);
-  expect(container.querySelectorAll(".st-result")).toHaveLength(2);
-  await advance(1500);
-  expect(container.querySelectorAll(".st-result")).toHaveLength(3);
-  expect(
-    [...container.querySelectorAll(".st-result")].map((el) => el.getAttribute("data-group-id")),
-  ).toEqual(scores.map((s) => s.groupId));
+  const seen: string[] = [];
+  for (let i = 0; i < 100 && !container.querySelector(".st-podium"); i++) {
+    await advance(1000);
+    const id = container.querySelector(".st-spotlight")?.getAttribute("data-group-id");
+    if (id && seen.at(-1) !== id) seen.push(id);
+    if (seen.length < scores.length) expect(container.textContent).not.toContain("Best Startup");
+  }
+  expect(seen).toEqual(scores.map((s) => s.groupId));
+  expect(container.querySelector(".st-podium")).not.toBeNull();
   expect(container.textContent).toContain("Best Startup");
   expect(container.textContent).toContain("Best Buyer");
-  expect(container.textContent).not.toMatch(/Ada|Bo|Cy|Dee|Eli|Fay/);
+  expect(container.textContent).toMatch(/Ada/);
   expect(effects.confetti).toHaveBeenCalledTimes(1);
   await mount(props);
   expect(effects.confetti).toHaveBeenCalledTimes(1);
+});
+it("RESULTS lists members, buyer quantities, earned amounts, wallet and separate penalties", () => {
+  effects.reduced = true;
+  const props = fixture("projector", "RESULTS");
+  props.raw.purchases.push({ buyer: "g3", seller: "g1", quantity: 1, price: 25 });
+  props.refresh();
+  const card = markup(props).querySelector('.st-result[data-group-id="g1"]')!;
+  expect(card.textContent).toContain("Ada");
+  expect(card.textContent).toContain("Bo");
+  expect(card.textContent).toContain("3 items sold");
+  expect(card.querySelectorAll(".st-sale")).toHaveLength(2);
+  expect(card.querySelectorAll(".st-sale")[0]!.textContent).toContain("2 × $40");
+  expect(card.querySelectorAll(".st-sale")[1]!.textContent).toContain("1 × $25");
+  expect(card.textContent).toContain("$105");
+  expect(card.textContent).toContain("Money not spent");
+  expect(card.textContent).toContain("$200");
+  expect(card.textContent).toContain("Unspent penalty");
+  expect(card.textContent).toContain("No-question penalty");
+});
+it("RESULTS can skip and replay without exposing later totals during the introduction", async () => {
+  const props = fixture("projector", "RESULTS");
+  await mount(props);
+  expect(container.querySelector(".st-score")).toBeNull();
+  await click(button("Skip to podium"));
+  expect(container.querySelector(".st-podium")).not.toBeNull();
+  await advance(100000);
+  expect(effects.confetti).toHaveBeenCalledTimes(1);
+  await click(button("Replay reveal"));
+  expect(container.querySelector(".st-podium")).toBeNull();
+  expect(container.querySelector(".st-score")).toBeNull();
+});
+it("RESULTS crowns every tied winner and gives equal scores equal podium ranks", () => {
+  effects.reduced = true;
+  const props = fixture("projector", "RESULTS");
+  const results = (props.session.shared as SharkTankView).results!;
+  results.scores.forEach((score) => {
+    score.total = 80;
+  });
+  results.bestStartup = results.scores.map((score) => score.groupId);
+  const screen = markup(props);
+  expect(screen.querySelectorAll('.st-podium-team[data-rank="1"]')).toHaveLength(3);
+  expect(screen.querySelectorAll(".st-crown")).toHaveLength(3);
+  expect(screen.querySelector(".st-godrays")).not.toBeNull();
+});
+it("RESULTS keeps its reveal timing when an equivalent server snapshot arrives", async () => {
+  const props = fixture("projector", "RESULTS");
+  await mount(props);
+  await advance(3500);
+  expect(container.querySelector('.st-spotlight[data-phase="team"]')).not.toBeNull();
+  props.session.shared = structuredClone(props.session.shared);
+  await mount(props);
+  await advance(200);
+  expect(container.querySelector('.st-spotlight[data-phase="revenue"]')).not.toBeNull();
+});
+it("RESULTS cancels pending reveal timers when leaving for CLOSING", async () => {
+  await mount(fixture("projector", "RESULTS"));
+  expect(vi.getTimerCount()).toBeGreaterThan(0);
+  await mount(fixture("projector", "CLOSING"));
+  expect(vi.getTimerCount()).toBe(0);
+  await advance(100000);
+  expect(effects.confetti).not.toHaveBeenCalled();
+  expect(container.textContent).toContain("I bought…");
 });
 it("RESULTS shows all results and Best Startup immediately under reduced motion", () => {
   effects.reduced = true;
@@ -265,7 +329,9 @@ it("RESULTS summarizes an all-team tie instead of rendering one badge per team",
   const screen = markup(props);
   expect(screen.querySelector(".st-awards")?.textContent).toContain("8 teams tie");
   expect(screen.querySelectorAll(".st-award-tie")).toHaveLength(1);
-  expect(screen.querySelector(".st-award-tie")?.parentElement?.querySelector(".cp-team-badge")).toBeNull();
+  expect(
+    screen.querySelector(".st-award-tie")?.parentElement?.querySelector(".cp-team-badge"),
+  ).toBeNull();
 });
 it("omits Best Buyer when the award is empty", () => {
   effects.reduced = true;

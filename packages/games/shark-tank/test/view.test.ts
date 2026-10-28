@@ -187,6 +187,16 @@ it.each(roles)("filters buyer purchase history for %s until results", (role) => 
   }
 });
 
+it.each(roles)("reveals the remaining wallet to %s only once results are public", (role) => {
+  const f = fixture();
+  const privileged = role === "host" || role === "own";
+  expect(f.target(role).wallet).toBe(privileged ? 230 : null);
+  for (const stage of ["RESULTS", "CLOSING"] as Stage[]) {
+    f.shared.stage = stage;
+    expect(f.target(role).wallet).toBe(230);
+  }
+});
+
 it.each(roles)("reveals revenue to %s only with the appropriate timing", (role) => {
   const f = fixture();
   expect(f.target(role).revenue).toBe(role === "host" ? 40 : null);

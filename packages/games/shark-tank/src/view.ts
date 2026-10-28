@@ -61,7 +61,7 @@ export function viewFor({
         parts: privateInfo || !preparing ? company.parts : null,
         help: privateInfo ? company.help : null,
         scripts: privateInfo ? company.scripts : null,
-        wallet: privateInfo ? company.wallet : null,
+        wallet: privateInfo || revealed ? company.wallet : null,
         minSpendLeft: privateInfo ? minSpendLeft(company, shared, config) : null,
         votes: privateInfo ? (shared.votes[company.groupId] ?? {}) : null,
         eligible: privateInfo

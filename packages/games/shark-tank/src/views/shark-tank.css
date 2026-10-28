@@ -409,32 +409,6 @@
   font-size: clamp(28px, 3vw, 48px);
   margin-top: 16px;
 }
-.st-projector .st-score {
-  margin: 12px 0 0;
-  font-size: clamp(22px, 1.8vw, 28px);
-}
-.st-projector .st-score > div {
-  gap: 12px;
-  padding: 6px 0;
-}
-.st-stage-results .st-projector-grid {
-  flex: 1;
-}
-.st-projector .st-awards {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px 12px;
-  padding: 12px;
-}
-.st-projector .st-awards .cp-team-badge {
-  padding: 6px 8px;
-  font-size: 12px;
-}
-.st-projector .st-awards h2 {
-  font-size: clamp(24px, 2vw, 32px);
-}
 .st-projector .st-closing-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -456,90 +430,6 @@
   display: block;
   color: var(--cp-ink-muted);
   font-size: 22px;
-}
-/* Larger classes use score rows so the labels and totals stay readable. */
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) {
-  flex: 0 0 auto;
-  grid-template-columns: 1fr;
-  gap: 4px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  align-items: end;
-  gap: 12px;
-  padding: 4px 12px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .cp-team-badge {
-  justify-self: start;
-  align-self: end;
-  padding: 6px 8px;
-  margin-bottom: 1px;
-  font-size: 12px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score > div {
-  flex-direction: column;
-  align-items: end;
-  gap: 0;
-  padding: 0;
-  border: 0;
-  text-align: right;
-  line-height: 1.2;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) dt {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result:not(:first-child) dt {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-result {
-  grid-template-columns: 150px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  padding: 1px 10px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .cp-team-badge {
-  align-self: center;
-  padding: 3px 6px;
-  font-size: 11px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score {
-  font-size: 18px;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) .st-score dd {
-  line-height: 1.05;
-}
-.st-stage-results .st-projector-grid:has(.st-result:nth-child(4)) dt {
-  font-size: 15px;
-  margin-bottom: 2px;
-}
-.st-projector .st-award-tie {
-  align-self: center;
-  font-size: 18px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards {
-  gap: 6px 10px;
-  padding: 6px 10px;
-}
-.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards h2 {
-  font-size: clamp(18px, 1.5vw, 24px);
-}
-.st-stage-results:has(.st-projector-grid .st-result:nth-child(4)) .st-awards .cp-team-badge {
-  padding: 3px 6px;
-  font-size: 11px;
 }
 .st-host-controls {
   position: sticky;

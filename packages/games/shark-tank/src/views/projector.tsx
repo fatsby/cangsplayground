@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
-import confetti from "canvas-confetti";
-import { teamStyle } from "@cangsplayground/core";
 import { Chip, Panel, Switch, TeamBadge, Timer, type SessionViewProps } from "@cangsplayground/ui";
 import type { SharkTankView } from "../types.js";
+import { Results } from "./results.js";
 
 export const stageLabels = {
   PREP: "Preparing",
@@ -105,89 +104,6 @@ function beep() {
     /* The visible expiry label remains available without Web Audio. */
   }
 }
-function Results({ lobby, shared }: Pick<SessionViewProps, "lobby"> & { shared: SharkTankView }) {
-  const reduced = useReducedMotion();
-  const results = shared.results;
-  const count = results?.scores.length ?? 0;
-  const [visible, setVisible] = useState(reduced ? count : Math.min(1, count));
-  const celebrated = useRef(false);
-  useEffect(() => {
-    if (reduced) {
-      setVisible(count);
-      return;
-    }
-    const id = setInterval(() => setVisible((n) => Math.min(n + 1, count)), 1500);
-    return () => clearInterval(id);
-  }, [count, reduced]);
-  const complete = visible >= count;
-  useEffect(() => {
-    if (!complete || reduced || celebrated.current || !count) return;
-    celebrated.current = true;
-    void confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: lobby.groups.map((g) => teamStyle(g.index).neon),
-      disableForReducedMotion: true,
-    });
-  }, [complete, reduced, count, lobby.groups]);
-  const badge = (id: string) => (
-    <TeamBadge key={id} teamIndex={lobby.groups.find((g) => g.id === id)?.index ?? 0} />
-  );
-  const award = (ids: string[]) =>
-    ids.length > 3 ? (
-      <span className="st-award-tie">{ids.length} teams tie</span>
-    ) : (
-      ids.map(badge)
-    );
-  return (
-    <>
-      <p className="st-next">
-        {complete
-          ? "Celebrate the awards. Get ready for the I bought… round."
-          : "Watch the scores appear, from lowest to highest."}
-      </p>
-      <div className="st-projector-grid" aria-live="polite">
-        {results?.scores.slice(0, reduced ? count : visible).map((score) => (
-          <Panel className="st-result" key={score.groupId} data-group-id={score.groupId}>
-            {badge(score.groupId)}
-            <dl className="st-score">
-              <div>
-                <dt>Money earned</dt>
-                <dd>${score.revenue}</dd>
-              </div>
-              <div>
-                <dt>Not spent (penalty)</dt>
-                <dd>−${score.shortfall}</dd>
-              </div>
-              <div>
-                <dt>No-question penalty</dt>
-                <dd>−${score.noQuestion}</dd>
-              </div>
-              <div>
-                <dt>Final total</dt>
-                <dd>{score.total < 0 ? `−$${Math.abs(score.total)}` : `$${score.total}`}</dd>
-              </div>
-            </dl>
-          </Panel>
-        ))}
-      </div>
-      {(complete || reduced) && results && (
-        <Panel className="st-awards">
-          <h2>Best Startup</h2>
-          <div className="cp-row">{award(results.bestStartup)}</div>
-          {results.bestShark.length > 0 && (
-            <>
-              <h2>Best Buyer</h2>
-              <div className="cp-row">{award(results.bestShark)}</div>
-            </>
-          )}
-        </Panel>
-      )}
-    </>
-  );
-}
-
 export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps) {
   const shared = session.shared as SharkTankView;
   const { timed, expired, now } = useStageTime(shared, serverNow);
