@@ -63,3 +63,13 @@ on the same network can scan the QR. Re-run it after the IP changes. Logs: `dock
 
 Create `packages/games/<id>` exporting a `GameModule` (`.`) and `GameViews` (`./views`), then add one line to
 `apps/server/src/games/registry.ts` and `apps/web/src/games/registry.ts`. `packages/games/secret-word` is the example.
+
+## Guess the Character
+
+Groups play in pairs, all at the same time. Make an **even number of groups** (at least 2); a group can have a single
+player and the two groups in a pair can differ in size. Each round, every pair votes for one of nine categories, then
+each team gets a different secret character (hold the card to see it). Teams take turns asking; inside each team the
+members rotate. One **turn time** (default 120 s) covers a question and its answer, and only the current questioner
+can tap **I'm done** to end it early. Anyone in a pair can type a guess at any time; a wrong guess locks the whole team
+for the **wrong guess cooldown** (default 5 s). The host can pause, skip or end each match, and starts a New round
+once every match is over. Vote, turn and cooldown times are set before Prepare; timers run on the server.
