@@ -13,13 +13,14 @@
   "dependencies": {
     "@cangsplayground/core": "workspace:*",
     "@cangsplayground/game-free-talk": "workspace:*",
+    "@cangsplayground/game-guess-the-character": "workspace:*",
     "@cangsplayground/game-secret-word": "workspace:*",
     "@cangsplayground/game-shark-tank": "workspace:*",
+    "@cangsplayground/game-whos-the-spy": "workspace:*",
     "@fastify/static": "^10.1.6",
     "fastify": "^5.12.7",
     "socket.io": "^4.8.4",
-    "zod": "^4.6.7",
-    "@cangsplayground/game-whos-the-spy": "workspace:*"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

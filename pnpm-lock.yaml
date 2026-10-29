@@ -205,6 +205,9 @@ importers:
       '@cangsplayground/game-free-talk':
         specifier: workspace:*
         version: link:../../packages/games/free-talk
+      '@cangsplayground/game-guess-the-character':
+        specifier: workspace:*
+        version: link:../../packages/games/guess-the-character
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
