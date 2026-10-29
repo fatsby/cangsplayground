@@ -1,75 +1,97 @@
-# CangsPlayground — Phase 1 prototype
+# CangsPlayground
 
-Real-time minigame platform for the ESL Speaking Club. Specs: `docs_v3/prototype/` (PRD, TECH-STACK, DESIGN, PHASE1-IMPLEMENTATION).
+**Good games. Great talks.** A real-time minigame platform that gets a whole classroom speaking English: the teacher
+opens a lobby on the projector, students join from their phones with a QR code, and the platform handles teams,
+secret roles, and timed turns.
 
-```bash
-corepack enable pnpm      # pnpm 12
-pnpm install
-pnpm test                 # core, games, server, web
-```
+Built for an ESL Speaking Club, no student accounts and no app to install.
 
-## Run
+<p align="center">
+  <img src="docs/assets/screenshots/projector-spy.png" alt="Projector view during a Who's the Spy round: lobby code, QR code, game clock and two teams with per-team turn timers" width="900" />
+</p>
 
-Development (server :3000, Vite :5173 with proxy):
+## Why CangsPlayground?
 
-```bash
-pnpm dev
-# if :3000 is taken
-PORT=3100 pnpm --filter @cangsplayground/server dev
-CANGSPLAYGROUND_SERVER_URL=http://localhost:3100 pnpm --filter @cangsplayground/web dev
-```
+Speaking-club games like Who's the Spy usually run on paper slips, private chat messages and a teacher's stopwatch.
+Splitting teams takes minutes, secret roles leak, and nobody sees the same clock.
 
-Production (one service — Node serves the built web app + Socket.IO):
+CangsPlayground turns that routine into one shared flow: **lobby → teams → game → timed turns → reveal**. The same
+lobby carries on across rounds, new teams and different games.
 
-```bash
-pnpm build
-PORT=3000 PUBLIC_URL=https://your.domain LOBBY_TTL_MINUTES=180 pnpm start
-```
+## What it does
 
-`PUBLIC_URL` is what the QR codes point to (default: first LAN IPv4 + port, so phones on the same Wi-Fi work).
-Load check: `pnpm --filter @cangsplayground/server sim -- --url http://localhost:3000 --clients 30`.
+- **Join in seconds.** Students scan the projector QR or type a 6-character code, enter a name and pick an avatar.
+  No accounts. Up to 60 players per lobby.
+- **Instant teams.** Split the class by number of teams or maximum team size, and re-shuffle any time.
+- **Secrets stay secret.** The projector only shows public information. Roles, cards and secret words go only to the
+  host console or the one player who should see them, and are revealed by holding the card.
+- **One clock for everyone.** Timers run on the server, so every phone and the projector agree. Phones show
+  "YOUR TURN" to the current speaker, and reloading mid-game puts a player back in the same team and turn.
+- **Teacher in control from a phone.** Pair a phone through a QR on the projector to pause, skip, add time, call a
+  vote, or lock the lobby.
+- **Five games, one framework.** Each game is a self-contained module, so adding a game doesn't touch the core.
 
-## Acceptance (PRD §17)
+## Games
 
-`pnpm acceptance http://localhost:3000 [screenshot-dir]` drives 24 emulated phones that join only by decoding the
-projector QR, then checks group display time, max-size split, YOUR TURN + vibrate, reload mid-turn, token leaks and
-repeated re-assign / game change. Needs Chromium (`CHROMIUM_PATH=…` or `pnpm exec playwright-core install chromium`).
-
-## Deploy
-
-`Dockerfile` builds the single service; `render.yaml` is a Render blueprint (1 instance — Phase 1 state is in RAM).
-Set `PUBLIC_URL` to the public HTTPS URL so QR codes point there.
-
-**Public via Cloudflare Tunnel:** create a tunnel in the Cloudflare dashboard (Networks → Tunnels), add the public
-hostname `playground.fatsby.me` → service `http://cangsplayground:3000`, then put its token in `.env` as `TUNNEL_TOKEN`
-(and `TUNNEL_PUBLIC_URL=https://playground.fatsby.me`). `scripts/docker-up.sh` then also starts the `cloudflared`
-container and points QR codes at the public URL. Leave `TUNNEL_TOKEN` empty to go back to LAN mode.
-
-**Local (Docker Compose):** `scripts/docker-up.sh [port]` builds and starts the `cangsplayground` container on host port
-3100 (or `HOST_PORT` from `.env`, see `.env.example`), with `PUBLIC_URL` set to this machine's current LAN IP so phones
-on the same network can scan the QR. Re-run it after the IP changes. Logs: `docker compose logs -f`; stop:
-`docker compose down`. It restarts with Docker unless stopped.
-
-## Views
-
-| Route | Who |
+| Game | In a sentence |
 |---|---|
-| `/` | Laptop: create a lobby, or enter a code |
-| `/display/:code` | Projector (public info only); "Pair host phone" QR |
-| `/host/:code` | Teacher phone (opened from the pairing QR) |
-| `/join/:code` → `/play/:code` | Students |
+| **Who's the Spy** | Talk about the topic without saying its name, and find the spy. |
+| **Shark Tank** | Pitch a wild product, take questions, then make a deal with your budget. |
+| **Guess the Character** | Two teams ask questions in English to guess each other's secret character. |
+| **Secret Word** | Everyone gets a secret word to use while speaking. Can your group find it? |
+| **Free Talk Timer** | A topic, and fair timed turns for every member of the group. |
 
-## Adding a game
+Rules and settings: [docs/games.md](docs/games.md).
 
-Create `packages/games/<id>` exporting a `GameModule` (`.`) and `GameViews` (`./views`), then add one line to
-`apps/server/src/games/registry.ts` and `apps/web/src/games/registry.ts`. `packages/games/secret-word` is the example.
+## Three screens, one lobby
 
-## Guess the Character
+| Screen | Device | Purpose |
+|---|---|---|
+| Home `/` | Teacher's laptop | Create a lobby or enter a code |
+| Projector `/display/:code` | Classroom display | Lobby code, join QR, teams, timers; public information only |
+| Host console `/host/:code` | Teacher's phone | Full control, including the private "Secrets" view |
+| Player `/join/:code` → `/play/:code` | Student phones | Your team, your card, your turn |
 
-Groups play in pairs, all at the same time. Make an **even number of groups** (at least 2); a group can have a single
-player and the two groups in a pair can differ in size. Each round, every pair votes for one of nine categories, then
-each team gets a different secret character (hold the card to see it). Teams take turns asking; inside each team the
-members rotate. One **turn time** (default 120 s) covers a question and its answer, and only the current questioner
-can tap **I'm done** to end it early. Anyone in a pair can type a guess at any time; a wrong guess locks the whole team
-for the **wrong guess cooldown** (default 5 s). The host can pause, skip or end each match, and starts a New round
-once every match is over. Vote, turn and cooldown times are set before Prepare; timers run on the server.
+<p align="center">
+  <img src="docs/assets/screenshots/home.png" alt="Home screen with a Create lobby button and a lobby code field" width="900" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/screenshots/projector-groups.png" alt="Projector showing the lobby code, QR code and two teams of four players" width="440" />
+  <img src="docs/assets/screenshots/projector-shark-tank.png" alt="Projector during Shark Tank preparation with a countdown for each team" width="440" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/screenshots/phone-spy.png" alt="Player phone showing a hold-to-reveal secret card, the turn timer and whose turn is next" width="260" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="docs/assets/screenshots/host-spy.png" alt="Host console on a phone listing players with their teams, with pause, skip, add time and vote controls" width="260" />
+</p>
+
+## Quick start
+
+```bash
+corepack enable pnpm
+pnpm install
+pnpm dev          # server on :3000, web app on :5173
+```
+
+Open the web app, choose **Create lobby**, and have phones scan the QR code. For classroom use, see the
+[Deployment guide](docs/deployment.md) (single Node service, Docker image, Docker Compose, Render blueprint and
+Cloudflare Tunnel).
+
+## Documentation
+
+- [Games](docs/games.md): rules and settings
+- [Development guide](docs/development.md): setup, tests, acceptance run, adding a game, repository layout
+- [Deployment guide](docs/deployment.md): production build, Docker, Render, Cloudflare Tunnel, environment variables
+- `docs_v3/prototype/`: PRD, tech stack, design and Phase 1 implementation notes
+
+## Tech stack
+
+TypeScript monorepo (pnpm workspaces): Fastify and Socket.IO on the server, a React web app built with Vite,
+shared core and UI packages, and one package per game. Tests run with Vitest.
+
+## Status
+
+Phase 1 prototype. Lobby state is held in memory, so run a single instance; lobbies expire after
+`LOBBY_TTL_MINUTES` (default 180).
