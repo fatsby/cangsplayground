@@ -62,6 +62,14 @@ export interface SharedArgs<Config, Shared> {
   rng: Rng;
 }
 
+/** A shared-state wake-up the server schedules on the module's behalf. */
+export interface SharedDeadline {
+  /** Unique among the deadlines exported at one time; encode every version it depends on. */
+  key: string;
+  /** Epoch ms, server clock. */
+  endsAt: number;
+}
+
 export interface ActionResult<Data> {
   data?: Data;
   /** Ask core to advance to the next speaker. */
@@ -136,6 +144,20 @@ export interface GameModule<Config = any, Data = any, Shared = any> {
   ): Shared;
   /** A player connected or disconnected (roster.connected changed). */
   onSharedRosterChange?(args: SharedArgs<Config, Shared>): Shared;
+  /**
+   * Optional: deadlines the server must wake the module for, so timed shared state
+   * advances with no client online. Recomputed after every change.
+   */
+  sharedDeadlines?(args: SharedArgs<Config, Shared>): SharedDeadline[];
+  /**
+   * A deadline exported by sharedDeadlines() is due. Core has already checked that it is
+   * still exported unchanged. Return null (or the same reference) for no change.
+   */
+  onSharedDeadline?(
+    args: SharedArgs<Config, Shared> & {
+      deadline: SharedDeadline;
+    },
+  ): Shared | null;
   /**
    * REQUIRED when prepareShared is declared: filter shared state for this viewer (PRD §7).
    * Called only while ACTIVE with non-null prepared shared state.

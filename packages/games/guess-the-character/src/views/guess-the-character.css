@@ -1,0 +1,508 @@
+/* Guess the Character — layout on top of the shared Arcade Night tokens. */
+.gc-player,
+.gc-host,
+.gc-projector {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.gc-player h1 {
+  margin: 0;
+}
+.gc-small {
+  font-size: 0.875rem;
+}
+
+/* Header and versus row */
+.gc-player-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gc-versus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.gc-opponent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.gc-vs {
+  font: 800 0.875rem/1 var(--cp-font-display);
+  color: var(--cp-ink-muted);
+  text-transform: uppercase;
+}
+
+/* Category vote */
+.gc-vote-status {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r);
+  background: var(--cp-bg);
+  box-shadow: 0 8px 16px -12px var(--cp-bg-deep);
+}
+.gc-vote-status p {
+  margin: 0;
+}
+.gc-categories {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gc-category {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  text-align: left;
+  color: var(--cp-ink);
+  font: inherit;
+  background: var(--cp-surface);
+  border: var(--cp-border-w-strong) solid var(--cp-border);
+  border-radius: var(--cp-r);
+  cursor: pointer;
+  transition:
+    border-color var(--cp-dur-fast) var(--cp-ease-out),
+    background var(--cp-dur-fast) var(--cp-ease-out);
+}
+.gc-category strong {
+  font: 700 1.0625rem/1.3 var(--cp-font-display);
+}
+.gc-category span {
+  color: var(--cp-ink-muted);
+  font-size: 0.9375rem;
+}
+.gc-category[aria-pressed="true"] {
+  border-color: var(--cp-accent);
+  background: color-mix(in srgb, var(--cp-accent) 14%, var(--cp-surface));
+}
+.gc-category[aria-pressed="true"] strong::after {
+  content: " ✓";
+  color: var(--cp-accent);
+}
+.gc-category:focus-visible {
+  outline: 3px solid var(--cp-accent);
+  outline-offset: 2px;
+}
+.gc-category:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Turn panel */
+.gc-turn {
+  display: grid;
+  gap: 12px;
+}
+.gc-turn p,
+.gc-turn h2 {
+  margin: 0;
+}
+.gc-turn-mine {
+  border-color: var(--cp-accent);
+  --glow: var(--cp-accent-neon);
+  box-shadow: var(--cp-glow-sm);
+}
+.gc-turn-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gc-turn-head .cp-timer {
+  flex: 1 1 140px;
+}
+.gc-your-turn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cp-accent);
+  font: 800 1.5rem/1.2 var(--cp-font-display);
+}
+.gc-speaker {
+  display: grid;
+  gap: 4px;
+}
+.gc-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.gc-done {
+  width: 100%;
+}
+.gc-paused {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--cp-warning);
+  font-weight: 600;
+}
+
+/* Secret card */
+.gc-card {
+  display: grid;
+  gap: 8px;
+}
+.gc-card p {
+  margin: 0;
+}
+.gc-card .cp-secret-card {
+  min-height: 200px;
+}
+.gc-secret-face {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+}
+.cp-secret-inner strong.gc-secret-name {
+  font: 800 clamp(1.75rem, 8vw, 2.5rem) / 1.15 var(--cp-font-display);
+  color: var(--cp-accent);
+}
+
+/* Language help */
+.gc-help {
+  display: grid;
+  gap: 12px;
+}
+.gc-help h2 {
+  margin: 0;
+}
+.gc-help-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gc-level {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-pill);
+}
+.gc-level-option {
+  min-width: 48px;
+  min-height: 40px;
+  padding: 0 14px;
+  color: var(--cp-ink-muted);
+  font: 700 0.9375rem/1 var(--cp-font-body);
+  background: transparent;
+  border: 0;
+  border-radius: var(--cp-r-pill);
+  cursor: pointer;
+}
+.gc-level-option[aria-pressed="true"] {
+  color: var(--cp-primary-fg);
+  background: var(--cp-primary);
+}
+.gc-level-option:focus-visible {
+  outline: 3px solid var(--cp-accent);
+  outline-offset: 1px;
+}
+.gc-phrases {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gc-phrases li {
+  display: grid;
+  gap: 2px;
+  padding-left: 12px;
+  border-left: 3px solid var(--cp-primary);
+}
+.gc-en {
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+.gc-vi {
+  display: block;
+  color: var(--cp-ink-muted);
+  font-size: 0.9375rem;
+}
+.gc-grammar {
+  margin: 0;
+  padding: 12px;
+  border-radius: var(--cp-r-sm);
+  background: color-mix(in srgb, var(--cp-primary) 16%, transparent);
+}
+.gc-vocab summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 32px;
+}
+.gc-vocab dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 8px 0 0;
+}
+.gc-vocab dt {
+  color: var(--cp-accent);
+  font-weight: 600;
+}
+.gc-vocab dd {
+  margin: 2px 0 0;
+  color: var(--cp-ink-muted);
+}
+
+/* Guess form */
+.gc-guess {
+  display: grid;
+  gap: 10px;
+  /* Leave room above the on-screen keyboard when the field scrolls into view. */
+  scroll-margin-bottom: 120px;
+}
+.gc-guess h2,
+.gc-guess p {
+  margin: 0;
+}
+.gc-guess-row {
+  display: flex;
+  gap: 8px;
+}
+.gc-guess-row .cp-input {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 1.0625rem;
+}
+.gc-guess-row .cp-button {
+  flex: 0 0 auto;
+}
+.gc-guess-status {
+  min-height: 1.5em;
+}
+.gc-cooldown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--cp-warning);
+  font-weight: 600;
+}
+.gc-cooldown .cp-timer {
+  flex: 1 1 120px;
+}
+
+/* Result */
+.gc-result {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+}
+.gc-result h2 {
+  margin: 0;
+}
+.gc-trophy {
+  color: var(--cp-warning);
+}
+.gc-answers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+}
+.gc-answers div {
+  padding: 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-sm);
+}
+.gc-answers dt {
+  color: var(--cp-ink-muted);
+  font-size: 0.875rem;
+}
+.gc-answers dd {
+  margin: 4px 0 0;
+  font: 700 1.25rem/1.2 var(--cp-font-display);
+}
+
+/* Host */
+.gc-match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+.gc-match {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.gc-match p {
+  margin: 0;
+}
+.gc-match-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.gc-match-head h2,
+.gc-match-head h3 {
+  margin: 0;
+  margin-right: auto;
+}
+.gc-match-head .cp-timer {
+  flex: 1 1 100%;
+}
+.gc-teams {
+  display: grid;
+  /* Side by side on wide screens; stacked on a phone so long names and badges fit. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+}
+.gc-team .cp-team-badge,
+.gc-versus .cp-team-badge {
+  max-width: 100%;
+}
+.gc-icon {
+  flex: none;
+}
+.gc-team {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-sm);
+}
+.gc-team-asking {
+  border-color: var(--cp-accent);
+}
+.gc-team-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.gc-members {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gc-members li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.gc-member-speaking {
+  color: var(--cp-accent);
+  font-weight: 600;
+}
+.gc-offline {
+  flex: none;
+  color: var(--cp-ink-faint);
+}
+.gc-tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--cp-ink-muted);
+}
+.gc-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.gc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gc-result-line {
+  font-weight: 700;
+  color: var(--cp-accent);
+}
+.gc-match-ended .gc-result-line {
+  color: var(--cp-ink-muted);
+}
+.gc-match-finished {
+  border-color: var(--cp-success);
+}
+
+/* Projector */
+.gc-projector {
+  display: grid;
+  gap: 16px;
+}
+.gc-projector-title {
+  margin: 0;
+}
+.gc-projector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+}
+.gc-projector-dense {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+.gc-pmatch {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  font-size: 1.25rem;
+}
+.gc-pmatch .cp-team-badge {
+  font-size: 1.125rem;
+}
+.gc-pline {
+  margin: 0;
+}
+.gc-pspeaker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cp-accent);
+  font-weight: 700;
+}
+.gc-presult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 800 1.5rem/1.2 var(--cp-font-display);
+  color: var(--cp-success);
+}
+.gc-match-ended .gc-presult {
+  color: var(--cp-ink-muted);
+}
+.gc-ptimer .cp-timer-digits {
+  font-size: 2.5rem;
+}
+.gc-config-note p {
+  margin: 0;
+}
+.gc-projector-rule {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}

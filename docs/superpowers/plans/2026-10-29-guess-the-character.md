@@ -215,7 +215,7 @@ Host gets all privateMatches and individual votes. An eligible player gets only 
 
 **Interfaces:** Produces the content/config/help signatures above. `configSchema` is exported and parses defaults `{voteSeconds:30, turnSeconds:120, cooldownSeconds:5}`. No app registration yet.
 
-- [ ] **Step 1: Create the workspace manifest and meaningful failing content tests.** Follow Shark Tank's TS/JSX config and package scripts; root export points at src/index.ts, with the views export added in Task 6. Use existing core/ui/zod and React type dependencies, no confetti/motion dependency. Include these assertions:
+- [x] **Step 1: Create the workspace manifest and meaningful failing content tests.** Follow Shark Tank's TS/JSX config and package scripts; root export points at src/index.ts, with the views export added in Task 6. Use existing core/ui/zod and React type dependencies, no confetti/motion dependency. Include these assertions:
 
 ```ts
 expect(configSchema.parse({})).toEqual({ voteSeconds: 30, turnSeconds: 120, cooldownSeconds: 5 });
@@ -240,10 +240,10 @@ expect(matchesCharacter("Thanh Giong", "thanh-giong")).toBe(true);
 
 Also assert every ID resolves, no normalization-empty names or aliases, no alias maps to two different IDs in a category, and cross-listed Snow White/Cinderella/Rapunzel reuse their IDs. Test min/max boundaries for all settings. Use category IDs `superheroes`, `disney-princesses`, `classic-cartoons`, `animated-movies`, `anime-manga`, `video-game-characters`, `fairy-tales`, `vietnamese-folk-tales`, `famous-villains`.
 
-- [ ] **Step 2: Run `pnpm install`, then `pnpm --filter @cangsplayground/game-guess-the-character test -- test/content.test.ts`.** Expect failing content assertions or missing exports, not an unrelated environment failure.
-- [ ] **Step 3: Implement the interfaces and the exact nine pools from spec §5.1.** Use Unicode NFKC, lowercase and removal of all non-letter/non-number characters. Curate short English aliases and explicit Vietnamese unaccented aliases; aliases never cross different characters in the same category. Unknown internal IDs throw developer-facing content errors. `phrases.ts` must not import server content or candidate pools. Give all nine categories A1/A2 questions, answers, grammar and vocabulary.
-- [ ] **Step 4: Rerun the targeted test and package typecheck.** Both pass; content file itself remains server-only. Public options contain only category label/ID and 2–3 static examples.
-- [ ] **Step 5: Commit** the new package/content and lockfile: `feat: add Guess the Character content and English support`.
+- [x] **Step 2: Run `pnpm install`, then `pnpm --filter @cangsplayground/game-guess-the-character test -- test/content.test.ts`.** Expect failing content assertions or missing exports, not an unrelated environment failure.
+- [x] **Step 3: Implement the interfaces and the exact nine pools from spec §5.1.** Use Unicode NFKC, lowercase and removal of all non-letter/non-number characters. Curate short English aliases and explicit Vietnamese unaccented aliases; aliases never cross different characters in the same category. Unknown internal IDs throw developer-facing content errors. `phrases.ts` must not import server content or candidate pools. Give all nine categories A1/A2 questions, answers, grammar and vocabulary.
+- [x] **Step 4: Rerun the targeted test and package typecheck.** Both pass; content file itself remains server-only. Public options contain only category label/ID and 2–3 static examples.
+- [x] **Step 5: Commit** the new package/content and lockfile: `feat: add Guess the Character content and English support`.
 
 ### Task 2: Server-owned shared deadlines with lifecycle isolation
 
@@ -251,7 +251,7 @@ Also assert every ID resolves, no normalization-empty names or aliases, no alias
 
 **Interfaces:** Consumes existing SharedArgs/Session/TimerState. Produces the deadline hooks and three Lobby methods above; no existing module must implement the optional hooks.
 
-- [ ] **Step 1: Write failing server tests with fake time and a small shared test module.** Follow `shared-game.ts`, marking test players connected via socket sets. Use `lobby.onChange = () => timers.reconcile(lobby)` and clean up TimerService/registry/fake timers after each test. Required assertions:
+- [x] **Step 1: Write failing server tests with fake time and a small shared test module.** Follow `shared-game.ts`, marking test players connected via socket sets. Use `lobby.onChange = () => timers.reconcile(lobby)` and clean up TimerService/registry/fake timers after each test. Required assertions:
 
 ```ts
 // READY exports none; two matches can have distinct deadlines.
@@ -265,10 +265,10 @@ expect(testState(lobby).expiredKeys).toEqual([]);
 
 `testState(lobby)` is a typed fixture accessor defined in the new test fixture. Add tests for pause/cancellation, exit/re-Prepare with identical key AND endsAt, close/dispose cleanup, duplicate expiry, early/stale callbacks, and due settlement before a rejected player action still producing the expiry broadcast. Assert the replacement timer still fires exactly once after its predecessor's queued callback. Existing legacy/group/clock timers must still work.
 
-- [ ] **Step 2: Run `pnpm --filter @cangsplayground/server test -- test/shared-deadlines.test.ts`.** Expect missing hook/method or expiry assertions to fail.
-- [ ] **Step 3: Implement the optional hooks and scheduler.** Keep schedule records bound to both `endsAt` and the exact Session owner. A callback deletes its map record only if that record is still the one it scheduled, then rechecks its session. Namespace shared keys separately from group and clock keys. `expireSharedDeadline` is the only path that invokes the module hook and calls changed on a genuinely new result. Before player/host actions and permanent player removal/roster callbacks, settle deadlines after basic lobby/session/actor guards but before applying the command's rule mutation. Publish expiry even if the subsequently attempted action rejects. Do not replace existing `turn:done` routing or existing timer priorities.
-- [ ] **Step 4: Run the new file plus `test/shared-state.test.ts test/game-clock.test.ts test/turn-end.test.ts`, and core/server typechecks.** All pass; timer progression works with no clients polling.
-- [ ] **Step 5: Commit:** `feat: support server deadlines for shared-state games`.
+- [x] **Step 2: Run `pnpm --filter @cangsplayground/server test -- test/shared-deadlines.test.ts`.** Expect missing hook/method or expiry assertions to fail.
+- [x] **Step 3: Implement the optional hooks and scheduler.** Keep schedule records bound to both `endsAt` and the exact Session owner. A callback deletes its map record only if that record is still the one it scheduled, then rechecks its session. Namespace shared keys separately from group and clock keys. `expireSharedDeadline` is the only path that invokes the module hook and calls changed on a genuinely new result. Before player/host actions and permanent player removal/roster callbacks, settle deadlines after basic lobby/session/actor guards but before applying the command's rule mutation. Publish expiry even if the subsequently attempted action rejects. Do not replace existing `turn:done` routing or existing timer priorities.
+- [x] **Step 4: Run the new file plus `test/shared-state.test.ts test/game-clock.test.ts test/turn-end.test.ts`, and core/server typechecks.** All pass; timer progression works with no clients polling.
+- [x] **Step 5: Commit:** `feat: support server deadlines for shared-state games`.
 
 ### Task 3: Pairing, category voting and alternating timed turns
 
@@ -292,7 +292,7 @@ reduceAction(args: SharedArgs<GuessConfig, GuessShared> & { actor: Viewer; actio
 
 The deterministic test harness `start(sizes:number[], config?:Partial<GuessConfig>)` returns `{config, now getter, shared getter, act(actorIdOrHost,type,payload), tick(ms), expireDue(), setConnected(playerId,connected), leave(playerId)}`. Initialize connected roster IDs `g1p1`, etc., seed 1 and now=1000; `act` settles due deadlines before reducing. Add `guard(match):MatchGuard` and `controlGuard(match):ControlGuard` fixture helpers that capture the current round and versions.
 
-- [ ] **Step 1: Write failing `match.test.ts` tests.** Assert [1,1] works; [1,1,1] and a zero-sized group reject; [1,2,3,4] pairs every group exactly once. Start produces four independent voting teams in two matches and 30,000ms vote deadlines. Edited votes count once; vote closes only at expiry; ties/no votes choose only among tied candidates. Each pair receives two different category member IDs.
+- [x] **Step 1: Write failing `match.test.ts` tests.** Assert [1,1] works; [1,1,1] and a zero-sized group reject; [1,2,3,4] pairs every group exactly once. Start produces four independent voting teams in two matches and 30,000ms vote deadlines. Edited votes count once; vote closes only at expiry; ties/no votes choose only among tied candidates. Each pair receives two different category member IDs.
 
 ```ts
 expect(match.timer.durationMs).toBe(120_000);
@@ -305,10 +305,10 @@ expect(speakersAcrossSixTurns).toEqual(["A", "B", "A", "C", "A", "D"]);
 
 Build fixed-order match fixtures explicitly for those two order assertions; seeded pairing tests need not depend on a particular shuffled order. Assert wrong-speaker done, mismatched match/round/phase/turn IDs and stale timer callbacks do not advance. A timeout followed by the old done advances once, resets the next turn to a fresh 120s at current server time, and does not change the other pair. Vote at the exact deadline rejects after vote settlement.
 
-- [ ] **Step 2: Run the package's `test/match.test.ts`; expect failures for the absent rules.**
-- [ ] **Step 3: Implement the interfaces and guards above.** Generate match IDs from round and pair index. Randomize pairings/member order/start side using existing seeded RNG. `advanceTurn` selects the opposite team, creates a new turnId and fresh turn timer, and consumes its next connected member; if either team has none connected, pause for host intervention with speakerId=null, without consuming the waiting team's next candidate. `pauseMatch` saves remaining phase/cooldown milliseconds, clears endsAt values, sets paused/reason and increments phaseVersion. Add a test asserting this offline boundary retains the new turn's full configured time. Each exported deadline key includes round/match/phaseVersion/turnId; its endsAt is the match's current timer. Ensure the shared projection required by prepareShared exists before committing (a temporary `sharedViewFor:()=>null` is safe and replaced in Task 4).
-- [ ] **Step 4: Run `test/content.test.ts test/match.test.ts` and game typecheck.** Expect all pass with default and a custom 15s turn/10s vote.
-- [ ] **Step 5: Commit:** `feat: add paired character matches and timed speaking turns`.
+- [x] **Step 2: Run the package's `test/match.test.ts`; expect failures for the absent rules.**
+- [x] **Step 3: Implement the interfaces and guards above.** Generate match IDs from round and pair index. Randomize pairings/member order/start side using existing seeded RNG. `advanceTurn` selects the opposite team, creates a new turnId and fresh turn timer, and consumes its next connected member; if either team has none connected, pause for host intervention with speakerId=null, without consuming the waiting team's next candidate. `pauseMatch` saves remaining phase/cooldown milliseconds, clears endsAt values, sets paused/reason and increments phaseVersion. Add a test asserting this offline boundary retains the new turn's full configured time. Each exported deadline key includes round/match/phaseVersion/turnId; its endsAt is the match's current timer. Ensure the shared projection required by prepareShared exists before committing (a temporary `sharedViewFor:()=>null` is safe and replaced in Task 4).
+- [x] **Step 4: Run `test/content.test.ts test/match.test.ts` and game typecheck.** Expect all pass with default and a custom 15s turn/10s vote.
+- [x] **Step 5: Commit:** `feat: add paired character matches and timed speaking turns`.
 
 ### Task 4: Team guessing, cooldown and role-filtered views
 
@@ -316,7 +316,7 @@ Build fixed-order match fixtures explicitly for those two order assertions; seed
 
 **Interfaces:** Consumes Task 3 guards/match state and Task 1 matching. Produces `viewFor` / GuessView defined above and the completed `gc:guess` reduction branch. Validate names as trimmed strings of 1–80 Unicode code points before accepting the attempt; a normalization-empty name rejects without cooldown.
 
-- [ ] **Step 1: Write failing guessing/security tests.** In a playing fixture, set Red's character to Thor and Blue's to Spider-Man; ensure each actor guesses the opposite ID. Required assertions:
+- [x] **Step 1: Write failing guessing/security tests.** In a playing fixture, set Red's character to Thor and Blue's to Spider-Man; ensure each actor guesses the opposite ID. Required assertions:
 
 ```ts
 // A wrong accepted guess at now=1000:
@@ -335,10 +335,10 @@ Also test custom cooldown 9s; exactly-on-boundary release; invalid/empty/punctua
 
 Project host/player/projector for READY, vote, play, paused and terminal states. Assert opponent character IDs AND names/aliases are absent from unauthorized private fields; don't use a blanket string assertion that mistakes the allowed static category examples for leaked selected answers. Assert projection has no raw shared object, full characterIds pools, guess input/history or aliases. Host sees all, own player only own secret, terminal participants both secrets, other pairs/projector none. Mutating a returned view must not mutate the state.
 
-- [ ] **Step 2: Run `test/guess.test.ts test/view.test.ts`; expect new assertions to fail.**
-- [ ] **Step 3: Implement matching and projection.** Reject guesses while paused/terminal/cooling down or with stale guessVersion. Increment version only on an accepted attempt; charge only incorrect valid guesses. Clear active timer on win, reveal both only to eligible terminal participants. Build explicit objects in view.ts and deep-copy owned arrays/records. Project cached nextSpeakerId/connectedCounts maintained using the live roster by reducers; advance selection always rechecks the roster. Never send internal content pools to clients.
-- [ ] **Step 4: Run all game package tests and typecheck.** Test both short aliases such as Conan/Luffy and explicit unaccented Vietnamese aliases through the reducer, not just content lookup.
-- [ ] **Step 5: Commit:** `feat: add team guessing cooldowns and private match views`.
+- [x] **Step 2: Run `test/guess.test.ts test/view.test.ts`; expect new assertions to fail.**
+- [x] **Step 3: Implement matching and projection.** Reject guesses while paused/terminal/cooling down or with stale guessVersion. Increment version only on an accepted attempt; charge only incorrect valid guesses. Clear active timer on win, reveal both only to eligible terminal participants. Build explicit objects in view.ts and deep-copy owned arrays/records. Project cached nextSpeakerId/connectedCounts maintained using the live roster by reducers; advance selection always rechecks the roster. Never send internal content pools to clients.
+- [x] **Step 4: Run all game package tests and typecheck.** Test both short aliases such as Conan/Luffy and explicit unaccented Vietnamese aliases through the reducer, not just content lookup.
+- [x] **Step 5: Commit:** `feat: add team guessing cooldowns and private match views`.
 
 ### Task 5: Host controls, departures and round restart through Lobby
 
@@ -357,14 +357,14 @@ newRound(args: SharedArgs<GuessConfig, GuessShared>): GuessShared | null;
 
 Pause stores remaining ms for the active phase timer and each active cooldown, sets endsAt=null and records paused/reason; resume restores deadlines from now. New round uses the current roster grouped by the stored group IDs, validates no empty groups/even count, increments round and immediately starts category vote. Core Prepare creates READY for round 1; subsequent New round needs no extra Start press.
 
-- [ ] **Step 1: Write failing lifecycle and Lobby tests.** Assert pause after 2s of a 5s cooldown preserves exactly 3s through a minute paused, and resume restores that 3s plus the remaining vote/turn time. Assert player actions reject during pause, stale global guards don't pause a newer phase, and skip works only on a matching playing turn. End match sets ENDED/no winner and stops its timer. New round rejects while any match is active; after all terminal, reshuffle and reset votes/secrets/cooldowns/versions and start vote with new IDs.
+- [x] **Step 1: Write failing lifecycle and Lobby tests.** Assert pause after 2s of a 5s cooldown preserves exactly 3s through a minute paused, and resume restores that 3s plus the remaining vote/turn time. Assert player actions reject during pause, stale global guards don't pause a newer phase, and skip works only on a matching playing turn. End match sets ENDED/no winner and stops its timer. New round rejects while any match is active; after all terminal, reshuffle and reset votes/secrets/cooldowns/versions and start vote with new IDs.
 
 Permanent departure removes unclosed votes and turn membership; current-speaker leave advances once; an empty group ends only its match without awarding a win. Temporary disconnect retains the current turn until expiry, skips disconnected candidates at future selection and pauses when either side lacks any connected member at a new-turn boundary. If vote closes with one side offline, assign category/secrets then pause PLAYING with its full fresh turn time. Host resume requires both teams to have a connected member and selects a connected speaker when the current candidate is offline. Reconnect never auto-resumes a host/offline pause. A removed student who rejoins under a new ID remains a spectator; existing round members who reconnect retain their rights.
 
-- [ ] **Step 2: Run the new domain/server files and observe failures.** Register the game with an existing-pattern workspace dependency so Lobby tests can select it; run pnpm install to refresh workspace links.
-- [ ] **Step 3: Implement lifecycle/host actions and module registration.** Match guards are checked after deadline settlement. Late joiners remain outside the round snapshot; unassigned players still require host's existing grouping workflow before participation. Don't add a game-specific bypass to live group editing. Use module-owned UI status for matches; keep legacy runtimes PREPARED and their timers idle, as Shark Tank does.
-- [ ] **Step 4: Run all game tests, `test/shared-deadlines.test.ts test/guess-the-character.test.ts`, server/core/game typechecks.** Also assert setting changes reject once shared session is active and Prepare rejects odd groups with a clear message.
-- [ ] **Step 5: Commit:** `feat: add character match host controls and roster lifecycle`.
+- [x] **Step 2: Run the new domain/server files and observe failures.** Register the game with an existing-pattern workspace dependency so Lobby tests can select it; run pnpm install to refresh workspace links.
+- [x] **Step 3: Implement lifecycle/host actions and module registration.** Match guards are checked after deadline settlement. Late joiners remain outside the round snapshot; unassigned players still require host's existing grouping workflow before participation. Don't add a game-specific bypass to live group editing. Use module-owned UI status for matches; keep legacy runtimes PREPARED and their timers idle, as Shark Tank does.
+- [x] **Step 4: Run all game tests, `test/shared-deadlines.test.ts test/guess-the-character.test.ts`, server/core/game typechecks.** Also assert setting changes reject once shared session is active and Prepare rejects odd groups with a clear message.
+- [x] **Step 5: Commit:** `feat: add character match host controls and roster lifecycle`.
 
 ### Task 6: Player experience and protected secrets
 
@@ -372,7 +372,7 @@ Permanent departure removes unclosed votes and turn membership; current-speaker 
 
 **Interfaces:** `PlayerSessionScreen(props: SessionViewProps & {me:NonNullable<LobbyView['me']>}): ReactNode`; `LanguageHelp({categoryId, role, level, onLevelChange})` uses role `'question'|'answer'` and level `'A1'|'A2'`. `useGameAction(act:SessionViewProps['act'])` returns `{pending:boolean, error:string|null, send(action:GameAction):Promise<boolean>}`. Timeout is 5,000ms; rejection/false/timeout releases pending and shows a generic retry message. Ignore late completion after unmount or a newer send; do not auto-retry guesses. This is a planning choice for UI recovery consistent with existing shell behavior.
 
-- [ ] **Step 1: Write failing happy-dom behavior tests, using real SecretCard and fixture GuessView projections.** Assert nine category choices, change-vote payload, countdown derived from supplied serverNow and waiting-for-host state. During PLAYING, only current questioner has enabled “I'm done”; it sends `gc:done` with current guard/turnId. Other members can still submit guesses with their team's guessVersion. Cooldown/paused/terminal disable submission. No raw actor guess is broadcast through props; wrong-guess feedback is the group's cooldown state.
+- [x] **Step 1: Write failing happy-dom behavior tests, using real SecretCard and fixture GuessView projections.** Assert nine category choices, change-vote payload, countdown derived from supplied serverNow and waiting-for-host state. During PLAYING, only current questioner has enabled “I'm done”; it sends `gc:done` with current guard/turnId. Other members can still submit guesses with their team's guessVersion. Cooldown/paused/terminal disable submission. No raw actor guess is broadcast through props; wrong-guess feedback is the group's cooldown state.
 
 ```ts
 expect(container.textContent).not.toContain("Thor"); // Fixture's secret is not a public example on this screen.
@@ -383,10 +383,10 @@ expect(sentDone).toEqual({ type: "gc:done", payload: { ...guard, turnId } });
 
 Use existing React act/createRoot test helpers rather than adding a testing library. Test a fresh mount after viewing a secret is hidden, both asking/answering help, A1/A2 switching, stored preference, localStorage throwing, negative/rejected/no-ack responses and pending recovery at 5 seconds. The helper has to catch rejected requests; the package must not import the web application's Zustand store.
 
-- [ ] **Step 2: Run `pnpm --filter @cangsplayground/web test -- test/guess-character-player.test.tsx`; expect missing components or behavior assertions to fail.**
-- [ ] **Step 3: Implement the player states using existing UI components.** SecretCard mounts only eligible own-team face during play and terminal answers only after result; instructions always say “your character”, never include the secret outside the card. Render Timer with serverNow and use it for vote/turn/cooldown displays, no client phase-changing callbacks. Default A1 preference key `cangsplayground:gc-level`, catch storage errors. Current questioner sees question frames; responding team sees answer frames; other members of asking team see listen/wait and question support. Keep guess field reachable while the hold card and help remain above it; scroll normally, no fixed keyboard-obscured action. Use body/display fonts and token colors, with comfortable text and input sizes.
-- [ ] **Step 4: Run player tests and web/game typechecks.** Validate the content in nine-category voting and long Vietnamese-name fixtures; no undefined labels or clipped essential actions in markup. Actual viewport geometry is checked in Task 8.
-- [ ] **Step 5: Commit:** `feat: add character game player screens and hold-to-reveal cards`.
+- [x] **Step 2: Run `pnpm --filter @cangsplayground/web test -- test/guess-character-player.test.tsx`; expect missing components or behavior assertions to fail.**
+- [x] **Step 3: Implement the player states using existing UI components.** SecretCard mounts only eligible own-team face during play and terminal answers only after result; instructions always say “your character”, never include the secret outside the card. Render Timer with serverNow and use it for vote/turn/cooldown displays, no client phase-changing callbacks. Default A1 preference key `cangsplayground:gc-level`, catch storage errors. Current questioner sees question frames; responding team sees answer frames; other members of asking team see listen/wait and question support. Keep guess field reachable while the hold card and help remain above it; scroll normally, no fixed keyboard-obscured action. Use body/display fonts and token colors, with comfortable text and input sizes.
+- [x] **Step 4: Run player tests and web/game typechecks.** Validate the content in nine-category voting and long Vietnamese-name fixtures; no undefined labels or clipped essential actions in markup. Actual viewport geometry is checked in Task 8.
+- [x] **Step 5: Commit:** `feat: add character game player screens and hold-to-reveal cards`.
 
 ### Task 7: Host console, projector and view registration
 
@@ -394,7 +394,7 @@ Use existing React act/createRoot test helpers rather than adding a testing libr
 
 **Interfaces:** Exports `HostSessionPanel: ComponentType<SessionViewProps>`, `HostConfigNote: ComponentType<{lobby:LobbyView;session:GameSessionView}>`, `HostGroupPanel: ComponentType<GameViewProps>` (render null to avoid duplicate legacy runtime cards), `ProjectorScreen: ComponentType<SessionViewProps>`. Final default GameViews includes these plus `PlayerSessionScreen`, `PlayerScreen:()=>null`. Consume GuessView, MatchGuard/ControlGuard and categoryOptions already filtered by the server.
 
-- [ ] **Step 1: Write failing host/projector tests.** Default settings show 30/120/5 with correct limits; config note explains even groups and minimum one member, using draft config when present. READY host has Start round; each active match has pause/resume/skip/end controls guarded to that card. Global controls carry the displayed match guards. New round enables only when every match terminal. Paused cards name the pause reason, display stopped remaining time and don't enable impossible resume when a team has nobody online. Every control disables while busy.
+- [x] **Step 1: Write failing host/projector tests.** Default settings show 30/120/5 with correct limits; config note explains even groups and minimum one member, using draft config when present. READY host has Start round; each active match has pause/resume/skip/end controls guarded to that card. Global controls carry the displayed match guards. New round enables only when every match terminal. Paused cards name the pause reason, display stopped remaining time and don't enable impossible resume when a team has nobody online. Every control disables while busy.
 
 ```ts
 expect(hostText).toContain("Thor");
@@ -405,10 +405,10 @@ expect(projectorText).not.toContain("Spider-Man"); // Exclude static examples in
 
 Also assert terminal match results never expose either answer on projector while another pair is still playing. Test long Vietnamese names, multiple rows, and MatchPublicView lookup with changing pairing.
 
-- [ ] **Step 2: Run `test/guess-character-host-projector.test.tsx`; expect missing-slot/behavior failures.**
-- [ ] **Step 3: Implement and register the views.** Host console shows both characters and cooldowns; projector gets the public grid with category label, names, timer and winner. Use exact existing TeamBadge/PlayerIdentity and make names wrap rather than truncate. Only import server domain types with `import type`; production views import phrases and UI, never content.ts/data JSON or the module root. HostConfigNote supplies explicit odd-count warning; server remains authoritative. Existing core Prepare/Exit remain accessible; no duplicate generic start/done controls.
-- [ ] **Step 4: Run both new web files, existing `test/game-controls.test.ts test/session-slots.test.tsx test/host-console-controls.test.tsx`, and typechecks.** Verify the lazy route path resolves the registered views and existing games keep their slots.
-- [ ] **Step 5: Commit:** `feat: add character match host and projector views`.
+- [x] **Step 2: Run `test/guess-character-host-projector.test.tsx`; expect missing-slot/behavior failures.**
+- [x] **Step 3: Implement and register the views.** Host console shows both characters and cooldowns; projector gets the public grid with category label, names, timer and winner. Use exact existing TeamBadge/PlayerIdentity and make names wrap rather than truncate. Only import server domain types with `import type`; production views import phrases and UI, never content.ts/data JSON or the module root. HostConfigNote supplies explicit odd-count warning; server remains authoritative. Existing core Prepare/Exit remain accessible; no duplicate generic start/done controls.
+- [x] **Step 4: Run both new web files, existing `test/game-controls.test.ts test/session-slots.test.tsx test/host-console-controls.test.tsx`, and typechecks.** Verify the lazy route path resolves the registered views and existing games keep their slots.
+- [x] **Step 5: Commit:** `feat: add character match host and projector views`.
 
 ### Task 8: Full session verification and delivery
 
@@ -416,13 +416,13 @@ Also assert terminal match results never expose either answer on projector while
 
 **Interfaces:** Uses `createServer`, real Socket.IO clients, `state:sync`/`state:patch`, existing host commandId envelopes, and the public game actions above. Follow `integration.test.ts`/`shark-tank.test.ts`; no new protocol event names or new client-side authority.
 
-- [ ] **Step 1: Write the failing Socket.IO integration test.** Create four teams, attach host/projector and students, configure vote=10s, turn=15s, cooldown=1s, Prepare then Start. Choose different categories in the two pairs. Use the existing `createServer({now:()=>testNow, seed:3})`; advance `testNow` and invoke `server.manager.get(code).settleSharedDeadlines()` to process exact boundaries, then wait for real socket sync/patch delivery with expect.poll as existing integration tests do. Scheduler autonomy is separately proved with fake timers in Tasks 2–5; do not combine fake network timers or 10–120 second wall-clock sleeps. No server test-injection API change is required.
+- [x] **Step 1: Write the failing Socket.IO integration test.** Create four teams, attach host/projector and students, configure vote=10s, turn=15s, cooldown=1s, Prepare then Start. Choose different categories in the two pairs. Use the existing `createServer({now:()=>testNow, seed:3})`; advance `testNow` and invoke `server.manager.get(code).settleSharedDeadlines()` to process exact boundaries, then wait for real socket sync/patch delivery with expect.poll as existing integration tests do. Scheduler autonomy is separately proved with fake timers in Tasks 2–5; do not combine fake network timers or 10–120 second wall-clock sleeps. No server test-injection API change is required.
 
 Required assertions: filtered sync AND patches never leak the other team's secret; a correct non-speaker guess ends one match and leaves the other active; stale done and a guess replay do not change winners/turns; second match can finish independently; host New round produces new pairing/round/vote deadline and rejects previous-round actions. Disconnect/resume restores actual timer/cooldown in the permitted payload; Task 6's remount test proves the secret card starts hidden. Confirm ordinary players/projector cannot invoke host-only actions.
 
-- [ ] **Step 2: Run the targeted integration file and observe any failing acceptance assertions.** If the covered behavior already passes, record that; don't add an artificial failing assertion.
-- [ ] **Step 3: Fix only observed gaps and add a README note.** Mention even group count, single-player groups, 120s shared question/answer turns, I'm done and configurable team cooldown. Keep production defaults unchanged.
-- [ ] **Step 4: Run the repo checks once after integration fixes:**
+- [x] **Step 2: Run the targeted integration file and observe any failing acceptance assertions.** If the covered behavior already passes, record that; don't add an artificial failing assertion.
+- [x] **Step 3: Fix only observed gaps and add a README note.** Mention even group count, single-player groups, 120s shared question/answer turns, I'm done and configurable team cooldown. Keep production defaults unchanged.
+- [x] **Step 4: Run the repo checks once after integration fixes:**
 
 ```bash
 pnpm test
@@ -433,8 +433,8 @@ pnpm build
 
 Expect exit 0 for each. Diagnose failures before claiming success; record pre-existing failures separately if they cannot be attributed to this feature. Use `pnpm exec prettier --check` on changed TS/TSX/JSON/CSS/Markdown files, formatting only those files when necessary. No dependency/version upgrades as a side effect.
 
-- [ ] **Step 5: Validate the built UI in the browser with two simultaneous matches.** Start app using README commands on available ports. At 320px and a typical 390px phone width, inspect nine-category voting, holding/releasing/blur of the card, keyboard-open guess entry, visible 02:00 initial turn, done, cooldown, pause and terminal states; test long Vietnamese names. Inspect projector grid on desktop. Exercise at least one 1-vs-3 pair and one 1-vs-1 pair. Check the production network/bundle does not import the full characters/categories JSON into player views; curated category examples and the viewer's permitted secret are expected. Keep any screenshots as local review artifacts, not committed runtime assets.
-- [ ] **Step 6: Commit** the acceptance test, README and any validated integration corrections: `test: verify concurrent Guess the Character sessions`. Update this plan's checkboxes and report exact commands/results plus any limitations. Obtain the execution workflow's required whole-branch review before merge; no deployment or merge is implied by this plan.
+- [x] **Step 5: Validate the built UI in the browser with two simultaneous matches.** Start app using README commands on available ports. At 320px and a typical 390px phone width, inspect nine-category voting, holding/releasing/blur of the card, keyboard-open guess entry, visible 02:00 initial turn, done, cooldown, pause and terminal states; test long Vietnamese names. Inspect projector grid on desktop. Exercise at least one 1-vs-3 pair and one 1-vs-1 pair. Check the production network/bundle does not import the full characters/categories JSON into player views; curated category examples and the viewer's permitted secret are expected. Keep any screenshots as local review artifacts, not committed runtime assets.
+- [x] **Step 6: Commit** the acceptance test, README and any validated integration corrections: `test: verify concurrent Guess the Character sessions`. Update this plan's checkboxes and report exact commands/results plus any limitations. Obtain the execution workflow's required whole-branch review before merge; no deployment or merge is implied by this plan.
 
 ## Self-review and execution handoff
 

@@ -1,0 +1,155 @@
+[
+  { "id": "superman", "name": "Superman", "aliases": [] },
+  { "id": "batman", "name": "Batman", "aliases": ["Người Dơi", "Nguoi Doi"] },
+  { "id": "wonder-woman", "name": "Wonder Woman", "aliases": [] },
+  { "id": "spider-man", "name": "Spider-Man", "aliases": ["Người Nhện", "Nguoi Nhen"] },
+  { "id": "iron-man", "name": "Iron Man", "aliases": ["Người Sắt", "Nguoi Sat"] },
+  {
+    "id": "captain-america",
+    "name": "Captain America",
+    "aliases": ["Đội trưởng Mỹ", "Doi truong My"]
+  },
+  { "id": "thor", "name": "Thor", "aliases": [] },
+  { "id": "hulk", "name": "Hulk", "aliases": ["The Hulk"] },
+  { "id": "black-widow", "name": "Black Widow", "aliases": ["Góa phụ đen", "Goa phu den"] },
+  { "id": "black-panther", "name": "Black Panther", "aliases": ["Báo Đen", "Bao Den"] },
+  { "id": "the-flash", "name": "The Flash", "aliases": ["Flash"] },
+  { "id": "aquaman", "name": "Aquaman", "aliases": [] },
+
+  { "id": "snow-white", "name": "Snow White", "aliases": ["Bạch Tuyết", "Bach Tuyet"] },
+  { "id": "cinderella", "name": "Cinderella", "aliases": ["Lọ Lem", "Lo Lem"] },
+  { "id": "aurora", "name": "Aurora", "aliases": ["Sleeping Beauty"] },
+  {
+    "id": "ariel",
+    "name": "Ariel",
+    "aliases": ["The Little Mermaid", "Little Mermaid", "Nàng tiên cá", "Nang tien ca"]
+  },
+  { "id": "belle", "name": "Belle", "aliases": [] },
+  { "id": "jasmine", "name": "Jasmine", "aliases": [] },
+  {
+    "id": "mulan",
+    "name": "Mulan",
+    "aliases": ["Hoa Mộc Lan", "Hoa Moc Lan", "Mộc Lan", "Moc Lan"]
+  },
+  { "id": "tiana", "name": "Tiana", "aliases": [] },
+  { "id": "rapunzel", "name": "Rapunzel", "aliases": [] },
+  { "id": "merida", "name": "Merida", "aliases": [] },
+  { "id": "moana", "name": "Moana", "aliases": [] },
+  { "id": "pocahontas", "name": "Pocahontas", "aliases": [] },
+
+  {
+    "id": "mickey-mouse",
+    "name": "Mickey Mouse",
+    "aliases": ["Mickey", "Chuột Mickey", "Chuot Mickey"]
+  },
+  {
+    "id": "minnie-mouse",
+    "name": "Minnie Mouse",
+    "aliases": ["Minnie", "Chuột Minnie", "Chuot Minnie"]
+  },
+  { "id": "donald-duck", "name": "Donald Duck", "aliases": ["Donald", "Vịt Donald", "Vit Donald"] },
+  { "id": "goofy", "name": "Goofy", "aliases": [] },
+  { "id": "tom", "name": "Tom", "aliases": ["Tom Cat", "Mèo Tom", "Meo Tom"] },
+  { "id": "jerry", "name": "Jerry", "aliases": ["Jerry Mouse", "Chuột Jerry", "Chuot Jerry"] },
+  { "id": "bugs-bunny", "name": "Bugs Bunny", "aliases": ["Bugs"] },
+  { "id": "daffy-duck", "name": "Daffy Duck", "aliases": ["Daffy"] },
+  { "id": "scooby-doo", "name": "Scooby-Doo", "aliases": ["Scooby"] },
+  {
+    "id": "spongebob",
+    "name": "SpongeBob SquarePants",
+    "aliases": ["SpongeBob", "Bọt Biển", "Bot Bien"]
+  },
+  { "id": "patrick-star", "name": "Patrick Star", "aliases": ["Patrick"] },
+  { "id": "popeye", "name": "Popeye", "aliases": ["Thủy thủ Popeye", "Thuy thu Popeye"] },
+
+  { "id": "shrek", "name": "Shrek", "aliases": [] },
+  { "id": "donkey", "name": "Donkey", "aliases": [] },
+  { "id": "po", "name": "Po", "aliases": ["Kung Fu Panda"] },
+  { "id": "tigress", "name": "Tigress", "aliases": ["Master Tigress"] },
+  { "id": "woody", "name": "Woody", "aliases": ["Sheriff Woody"] },
+  { "id": "buzz-lightyear", "name": "Buzz Lightyear", "aliases": ["Buzz"] },
+  { "id": "nemo", "name": "Nemo", "aliases": [] },
+  { "id": "dory", "name": "Dory", "aliases": [] },
+  { "id": "lightning-mcqueen", "name": "Lightning McQueen", "aliases": ["McQueen"] },
+  { "id": "wall-e", "name": "WALL-E", "aliases": [] },
+  { "id": "baymax", "name": "Baymax", "aliases": [] },
+  { "id": "stitch", "name": "Stitch", "aliases": [] },
+
+  { "id": "doraemon", "name": "Doraemon", "aliases": ["Đô-rê-mon", "Doremon"] },
+  { "id": "nobita", "name": "Nobita", "aliases": ["Nô-bi-ta", "Nobi Nobita"] },
+  { "id": "shizuka", "name": "Shizuka", "aliases": ["Xuka"] },
+  { "id": "dorami", "name": "Dorami", "aliases": ["Đô-rê-mi", "Doremi"] },
+  { "id": "shin-chan", "name": "Shin-chan", "aliases": ["Shin", "Shinnosuke"] },
+  {
+    "id": "conan",
+    "name": "Conan Edogawa",
+    "aliases": ["Conan", "Edogawa Conan", "Detective Conan", "Thám tử Conan", "Tham tu Conan"]
+  },
+  { "id": "naruto", "name": "Naruto Uzumaki", "aliases": ["Naruto", "Uzumaki Naruto"] },
+  { "id": "luffy", "name": "Monkey D. Luffy", "aliases": ["Luffy"] },
+  { "id": "goku", "name": "Son Goku", "aliases": ["Goku", "Sôngôku"] },
+  {
+    "id": "sailor-moon",
+    "name": "Sailor Moon",
+    "aliases": ["Thủy thủ Mặt Trăng", "Thuy thu Mat Trang"]
+  },
+  { "id": "pikachu", "name": "Pikachu", "aliases": [] },
+  { "id": "totoro", "name": "Totoro", "aliases": [] },
+
+  { "id": "mario", "name": "Mario", "aliases": ["Super Mario"] },
+  { "id": "luigi", "name": "Luigi", "aliases": [] },
+  { "id": "princess-peach", "name": "Princess Peach", "aliases": ["Peach"] },
+  { "id": "bowser", "name": "Bowser", "aliases": [] },
+  { "id": "yoshi", "name": "Yoshi", "aliases": [] },
+  { "id": "donkey-kong", "name": "Donkey Kong", "aliases": ["DK"] },
+  { "id": "sonic", "name": "Sonic", "aliases": ["Sonic the Hedgehog"] },
+  { "id": "tails", "name": "Tails", "aliases": [] },
+  { "id": "kirby", "name": "Kirby", "aliases": [] },
+  { "id": "pac-man", "name": "Pac-Man", "aliases": [] },
+  { "id": "steve", "name": "Steve", "aliases": [] },
+  { "id": "link", "name": "Link", "aliases": [] },
+
+  {
+    "id": "little-red-riding-hood",
+    "name": "Little Red Riding Hood",
+    "aliases": ["Red Riding Hood", "Cô bé quàng khăn đỏ", "Co be quang khan do"]
+  },
+  { "id": "pinocchio", "name": "Pinocchio", "aliases": ["Pi-nô-ki-ô"] },
+  { "id": "peter-pan", "name": "Peter Pan", "aliases": [] },
+  { "id": "tinker-bell", "name": "Tinker Bell", "aliases": ["Tink"] },
+  { "id": "alice", "name": "Alice", "aliases": [] },
+  { "id": "aladdin", "name": "Aladdin", "aliases": [] },
+  { "id": "genie", "name": "Genie", "aliases": ["The Genie", "Thần đèn", "Than den"] },
+
+  { "id": "tam", "name": "Tấm", "aliases": ["Tam", "Cô Tấm", "Co Tam"] },
+  { "id": "cam", "name": "Cám", "aliases": ["Cam"] },
+  {
+    "id": "thanh-giong",
+    "name": "Thánh Gióng",
+    "aliases": ["Thanh Giong", "Gióng", "Giong", "Phù Đổng Thiên Vương", "Phu Dong Thien Vuong"]
+  },
+  { "id": "son-tinh", "name": "Sơn Tinh", "aliases": ["Son Tinh"] },
+  { "id": "thuy-tinh", "name": "Thủy Tinh", "aliases": ["Thuỷ Tinh", "Thuy Tinh"] },
+  { "id": "thach-sanh", "name": "Thạch Sanh", "aliases": ["Thach Sanh"] },
+  { "id": "ly-thong", "name": "Lý Thông", "aliases": ["Ly Thong"] },
+  { "id": "so-dua", "name": "Sọ Dừa", "aliases": ["So Dua"] },
+  { "id": "chu-cuoi", "name": "Chú Cuội", "aliases": ["Chu Cuoi", "Cuội", "Cuoi"] },
+  { "id": "chi-hang", "name": "Chị Hằng", "aliases": ["Chi Hang", "Hằng Nga", "Hang Nga"] },
+
+  { "id": "joker", "name": "Joker", "aliases": ["The Joker"] },
+  { "id": "harley-quinn", "name": "Harley Quinn", "aliases": ["Harley"] },
+  { "id": "thanos", "name": "Thanos", "aliases": [] },
+  { "id": "voldemort", "name": "Voldemort", "aliases": ["Lord Voldemort"] },
+  { "id": "maleficent", "name": "Maleficent", "aliases": [] },
+  { "id": "ursula", "name": "Ursula", "aliases": [] },
+  { "id": "jafar", "name": "Jafar", "aliases": [] },
+  { "id": "cruella", "name": "Cruella de Vil", "aliases": ["Cruella"] },
+  {
+    "id": "captain-hook",
+    "name": "Captain Hook",
+    "aliases": ["Hook", "Thuyền trưởng Hook", "Thuyen truong Hook"]
+  },
+  { "id": "scar", "name": "Scar", "aliases": [] },
+  { "id": "hades", "name": "Hades", "aliases": [] },
+  { "id": "evil-queen", "name": "Evil Queen", "aliases": ["The Evil Queen"] }
+]
