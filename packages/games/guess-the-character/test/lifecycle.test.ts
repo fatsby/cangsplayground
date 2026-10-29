@@ -10,9 +10,6 @@ function wrongGuess(h: Harness, side: 0 | 1) {
     name: "Nobody At All",
   });
 }
-function endAll(h: Harness) {
-  for (const m of h.shared.matches) h.act("host", "gc:end", controlGuard(h, m));
-}
 
 describe("pause and resume", () => {
   it("keeps exactly the remaining cooldown and turn time through a long pause", () => {
