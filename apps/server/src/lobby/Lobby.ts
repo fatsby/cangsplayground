@@ -20,6 +20,7 @@ import {
   type GameAction,
   type RosterEntry,
   type AvatarConfig,
+  type SharedDeadline,
 } from "@cangsplayground/core";
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
@@ -84,9 +85,66 @@ export class Lobby {
       connected: p.sockets.size > 0,
     }));
   }
+  /** Validated deadlines the active shared game wants the server to wake it for. */
+  sharedDeadlines(): SharedDeadline[] {
+    const game = this.game;
+    if (
+      this.status !== "open" ||
+      game?.stage !== "ACTIVE" ||
+      game.shared === null ||
+      !game.module.sharedDeadlines ||
+      !game.module.onSharedDeadline
+    )
+      return [];
+    const seen = new Set<string>();
+    const out: SharedDeadline[] = [];
+    for (const d of game.module.sharedDeadlines(this.sharedArgs(game))) {
+      if (typeof d?.key !== "string" || !d.key || !Number.isFinite(d.endsAt) || seen.has(d.key))
+        continue;
+      seen.add(d.key);
+      out.push({ key: d.key, endsAt: d.endsAt });
+    }
+    return out;
+  }
+  /**
+   * The only path into onSharedDeadline. A callback captured for an older session, a
+   * deadline no longer exported unchanged, or an early call has no effect.
+   */
+  expireSharedDeadline(expectedSession: Session, deadline: SharedDeadline): boolean {
+    const game = this.game;
+    if (game !== expectedSession || this.now() < deadline.endsAt) return false;
+    const current = this.sharedDeadlines().find((d) => d.key === deadline.key);
+    if (!current || current.endsAt !== deadline.endsAt || !game.module.onSharedDeadline)
+      return false;
+    const shared = game.module.onSharedDeadline({ ...this.sharedArgs(game), deadline: current });
+    if (shared === null || shared === game.shared) return false;
+    game.shared = shared;
+    this.changed();
+    return true;
+  }
+  /** Expire every due deadline (oldest first) before a command reads the shared state. */
+  settleSharedDeadlines(): void {
+    const game = this.game;
+    if (!game) return;
+    const now = this.now();
+    const due = this.sharedDeadlines()
+      .filter((d) => d.endsAt <= now)
+      .sort((a, b) => a.endsAt - b.endsAt || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+    for (const deadline of due) this.expireSharedDeadline(game, deadline);
+  }
+  private sharedArgs(game: Session) {
+    return {
+      config: game.config,
+      shared: game.shared,
+      roster: this.roster(),
+      now: this.now(),
+      rng: this.rng,
+    };
+  }
   connectionChanged(): void {
     const game = this.game;
     if (game?.stage !== "ACTIVE" || !game.module.onSharedRosterChange) return;
+    this.settleSharedDeadlines();
     game.shared = game.module.onSharedRosterChange({
       config: game.config,
       shared: game.shared,
@@ -170,6 +228,7 @@ export class Lobby {
     const player = this.players.get(playerId);
     if (!player) fail("NOT_FOUND", "Player not found.");
     if (this.game?.module.onSharedAction) {
+      if (this.game.stage === "ACTIVE") this.settleSharedDeadlines();
       if (this.game.stage === "ACTIVE" && this.game.module.onSharedPlayerLeft)
         this.game.shared = this.game.module.onSharedPlayerLeft({
           config: this.game.config,
@@ -596,6 +655,8 @@ export class Lobby {
         fail("UNAUTHORIZED", "Wait for your turn.");
       this.advance(group, "done");
     } else if (game.module.onSharedAction) {
+      // Due deadlines publish even when the action below is then rejected.
+      this.settleSharedDeadlines();
       const shared = game.module.onSharedAction({
         config: game.config,
         shared: game.shared,
@@ -626,6 +687,7 @@ export class Lobby {
     const game = this.game;
     if (game?.stage !== "ACTIVE" || !game.module.onSharedAction)
       fail("INVALID_STATE", "This action is not ready.");
+    this.settleSharedDeadlines();
     const shared = game.module.onSharedAction({
       config: game.config,
       shared: game.shared,
