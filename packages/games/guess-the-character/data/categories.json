@@ -1,0 +1,169 @@
+[
+  {
+    "id": "superheroes",
+    "name": "Superheroes",
+    "examples": ["superman", "iron-man", "wonder-woman"],
+    "characterIds": [
+      "superman",
+      "batman",
+      "wonder-woman",
+      "spider-man",
+      "iron-man",
+      "captain-america",
+      "thor",
+      "hulk",
+      "black-widow",
+      "black-panther",
+      "the-flash",
+      "aquaman"
+    ]
+  },
+  {
+    "id": "disney-princesses",
+    "name": "Disney Princesses",
+    "examples": ["ariel", "mulan", "moana"],
+    "characterIds": [
+      "snow-white",
+      "cinderella",
+      "aurora",
+      "ariel",
+      "belle",
+      "jasmine",
+      "mulan",
+      "tiana",
+      "rapunzel",
+      "merida",
+      "moana",
+      "pocahontas"
+    ]
+  },
+  {
+    "id": "classic-cartoons",
+    "name": "Classic Cartoons",
+    "examples": ["mickey-mouse", "tom", "spongebob"],
+    "characterIds": [
+      "mickey-mouse",
+      "minnie-mouse",
+      "donald-duck",
+      "goofy",
+      "tom",
+      "jerry",
+      "bugs-bunny",
+      "daffy-duck",
+      "scooby-doo",
+      "spongebob",
+      "patrick-star",
+      "popeye"
+    ]
+  },
+  {
+    "id": "animated-movies",
+    "name": "Animated Movies",
+    "examples": ["shrek", "woody", "nemo"],
+    "characterIds": [
+      "shrek",
+      "donkey",
+      "po",
+      "tigress",
+      "woody",
+      "buzz-lightyear",
+      "nemo",
+      "dory",
+      "lightning-mcqueen",
+      "wall-e",
+      "baymax",
+      "stitch"
+    ]
+  },
+  {
+    "id": "anime-manga",
+    "name": "Anime & Manga",
+    "examples": ["doraemon", "pikachu", "naruto"],
+    "characterIds": [
+      "doraemon",
+      "nobita",
+      "shizuka",
+      "dorami",
+      "shin-chan",
+      "conan",
+      "naruto",
+      "luffy",
+      "goku",
+      "sailor-moon",
+      "pikachu",
+      "totoro"
+    ]
+  },
+  {
+    "id": "video-game-characters",
+    "name": "Video Game Characters",
+    "examples": ["mario", "sonic", "pac-man"],
+    "characterIds": [
+      "mario",
+      "luigi",
+      "princess-peach",
+      "bowser",
+      "yoshi",
+      "donkey-kong",
+      "sonic",
+      "tails",
+      "kirby",
+      "pac-man",
+      "steve",
+      "link"
+    ]
+  },
+  {
+    "id": "fairy-tales",
+    "name": "Fairy Tales",
+    "examples": ["pinocchio", "peter-pan", "little-red-riding-hood"],
+    "characterIds": [
+      "little-red-riding-hood",
+      "pinocchio",
+      "peter-pan",
+      "tinker-bell",
+      "alice",
+      "aladdin",
+      "genie",
+      "rapunzel",
+      "snow-white",
+      "cinderella"
+    ]
+  },
+  {
+    "id": "vietnamese-folk-tales",
+    "name": "Vietnamese Folk Tales",
+    "examples": ["tam", "thanh-giong", "chu-cuoi"],
+    "characterIds": [
+      "tam",
+      "cam",
+      "thanh-giong",
+      "son-tinh",
+      "thuy-tinh",
+      "thach-sanh",
+      "ly-thong",
+      "so-dua",
+      "chu-cuoi",
+      "chi-hang"
+    ]
+  },
+  {
+    "id": "famous-villains",
+    "name": "Famous Villains",
+    "examples": ["joker", "maleficent", "captain-hook"],
+    "characterIds": [
+      "joker",
+      "harley-quinn",
+      "thanos",
+      "voldemort",
+      "maleficent",
+      "ursula",
+      "jafar",
+      "cruella",
+      "captain-hook",
+      "scar",
+      "hades",
+      "evil-queen"
+    ]
+  }
+]
