@@ -73,7 +73,7 @@ Shuffle độc lập mỗi round; có thể gặp lại đối thủ cũ **(Đ�
 ### 4.2 Vote category
 
 - Mỗi học sinh của hai nhóm trong cặp có một phiếu; các cặp vote độc lập.
-- Chọn trong danh mục category có sẵn. Bản đầu có Superheroes và Disney Princesses **(Đề xuất của Codex về danh mục ban đầu)**.
+- Chọn trong danh mục category có sẵn. Bản đầu mở rộng thành chín category theo §5.1, theo yêu cầu người dùng có thêm nhiều category; danh sách cụ thể là **đề xuất của Codex**.
 - Phiếu là lựa chọn một category; có thể đổi trước deadline, server giữ lựa chọn cuối cùng **(Đề xuất của Codex)**.
 - Chờ hết thời gian cấu hình rồi chốt, kể cả đã đủ phiếu.
 - Category có tổng phiếu lớn nhất thắng; nhiều category cùng cao nhất thì random trong các category hòa.
@@ -108,7 +108,7 @@ Normalization **(Đề xuất của Codex)**:
 
 1. Unicode NFKC; chuyển chữ thường.
 2. Loại dấu phân cách/khoảng trắng/dấu câu; giữ chữ và số. Ví dụ `Spider-Man`, `spider man`, `SPIDERMAN` cùng khớp.
-3. So exact với canonical name và aliases được ghi rõ trong dữ liệu. Bản đầu dùng tên tiếng Anh; không tự dịch hay fuzzy match. Chỉ thêm alias thật sự là biến thể tên của cùng nhân vật, được kiểm tra không trùng nhân vật khác trong category.
+3. So exact với canonical name và aliases được ghi rõ trong dữ liệu; không tự dịch hay fuzzy match. Ưu tiên tên tiếng Anh quen thuộc; category truyện dân gian Việt Nam dùng tên tiếng Việt gốc. Chỉ thêm alias thật sự là biến thể tên của cùng nhân vật, được kiểm tra không trùng nhân vật khác trong category. Với tên tiếng Việt, ghi rõ alias không dấu (ví dụ “Thánh Gióng” / “Thanh Giong”); không tự suy ra mọi biến thể bằng cách bỏ dấu toàn bộ danh mục.
 4. Sai chính tả như `Spidermen` vẫn sai. Không coi `Thor DC Comics` hoặc tên kèm franchise tùy ý là đúng.
 
 Tên trong thẻ là tên ngắn quen thuộc, chẳng hạn “Thor”, thay vì một chuỗi có nhãn franchise. Không gửi toàn bộ bộ đáp án tới client.
@@ -130,12 +130,25 @@ App có dữ liệu tĩnh được kiểm tra trước: category ID, nhãn hiể
 
 Nhân vật phải quen thuộc với học sinh phổ thông; Blue Beetle là ví dụ quá niche cần tránh. Mỗi category cần ít nhất hai nhân vật hợp lệ và nên có khoảng 10–12 nhân vật trong bản đầu **(Đề xuất của Codex về số lượng)**.
 
-**Danh mục bản đầu đề xuất của Codex:**
+**Danh mục mở rộng đề xuất của Codex:** chín category, mỗi category 10–12 nhân vật. Ưu tiên hoạt hình, phim, game và truyện quen thuộc với học sinh Việt Nam; không cần biết diễn viên, tác giả hoặc chi tiết cốt truyện sâu mới mô tả được.
 
-- Superheroes: Superman, Batman, Wonder Woman, Spider-Man, Iron Man, Captain America, Thor, Hulk, Black Widow, Black Panther, The Flash, Aquaman.
-- Disney Princesses: Snow White, Cinderella, Aurora, Ariel, Belle, Jasmine, Mulan, Tiana, Rapunzel, Merida, Moana, Pocahontas.
+| Category | Nhân vật trong bộ khởi đầu đề xuất |
+|---|---|
+| Superheroes | Superman, Batman, Wonder Woman, Spider-Man, Iron Man, Captain America, Thor, Hulk, Black Widow, Black Panther, The Flash, Aquaman |
+| Disney Princesses | Snow White, Cinderella, Aurora, Ariel, Belle, Jasmine, Mulan, Tiana, Rapunzel, Merida, Moana, Pocahontas |
+| Classic Cartoons | Mickey Mouse, Minnie Mouse, Donald Duck, Goofy, Tom, Jerry, Bugs Bunny, Daffy Duck, Scooby-Doo, SpongeBob SquarePants, Patrick Star, Popeye |
+| Animated Movies | Shrek, Donkey, Po, Tigress, Woody, Buzz Lightyear, Nemo, Dory, Lightning McQueen, WALL-E, Baymax, Stitch |
+| Anime & Manga | Doraemon, Nobita, Shizuka, Dorami, Shin-chan, Conan Edogawa, Naruto Uzumaki, Monkey D. Luffy, Son Goku, Sailor Moon, Pikachu, Totoro |
+| Video Game Characters | Mario, Luigi, Princess Peach, Bowser, Yoshi, Donkey Kong, Sonic, Tails, Kirby, Pac-Man, Steve, Link |
+| Fairy Tales | Little Red Riding Hood, Pinocchio, Peter Pan, Tinker Bell, Alice, Aladdin, Genie, Rapunzel, Snow White, Cinderella |
+| Vietnamese Folk Tales | Tấm, Cám, Thánh Gióng, Sơn Tinh, Thủy Tinh, Thạch Sanh, Lý Thông, Sọ Dừa, Chú Cuội, Chị Hằng |
+| Famous Villains | Joker, Harley Quinn, Thanos, Voldemort, Maleficent, Ursula, Jafar, Cruella de Vil, Captain Hook, Scar, Hades, Evil Queen |
 
-Danh mục này sẽ được người dùng duyệt cùng tài liệu. Canonical names/aliases phải normalization không rỗng và không mơ hồ trong category. Hai nhóm cùng trận không nhận cùng character ID; các cặp khác có thể trùng. Không thêm cơ chế tránh lặp nhân vật qua round ở bản đầu **(Đề xuất của Codex)**.
+Danh mục này sẽ được người dùng duyệt cùng tài liệu. Việc phổ biến phụ thuộc lớp cụ thể; bỏ hoặc thay nhân vật nào lớp không quen trước khi chốt bộ dữ liệu. Không lấp đủ số lượng bằng nhân vật phụ quá niche. Trong prep, mỗi category có nhãn dễ hiểu và ví dụ 2–3 nhân vật từ bộ trên để học sinh biết đang vote chủ đề nào **(Đề xuất của Codex)**.
+
+Category có thể giao nhau: Snow White có thể thuộc cả Disney Princesses và Fairy Tales. Dùng cùng character ID cho cùng một nhân vật trong nhiều category; category xác định pool để chọn và gợi ý học tập, không tạo một đáp án khác cho phiên bản khác. Alias quen thuộc cần được ghi rõ, chẳng hạn “Conan”, “Naruto”, “Luffy”, “Goku”, “SpongeBob”, “Cruella”, “Snow White” / “Bạch Tuyết” nếu hỗ trợ tên Việt tương ứng **(Đề xuất của Codex)**. Không bật alias tên Việt hàng loạt nếu chưa được biên soạn.
+
+Canonical names/aliases phải normalization không rỗng và không mơ hồ trong category. Hai nhóm cùng trận không nhận cùng character ID; các cặp khác có thể trùng. Không thêm cơ chế tránh lặp nhân vật qua round ở bản đầu **(Đề xuất của Codex)**.
 
 ### 5.2 Gợi ý tiếng Anh
 
@@ -148,7 +161,21 @@ Ví dụ A1: “Is your character ___?”, “Can your character ___?”, “Wha
 
 Ví dụ A2: “What does your character look like?”, “What is your character famous for?”, “My character uses ___ to ___.”
 
-Mẹo ngữ pháp ngắn như “can + động từ nguyên mẫu”; từ vựng Superheroes như fly/bay, strong/khỏe, mask/mặt nạ, cape/áo choàng, shield/khiên, power/sức mạnh. Người xây dựng hoàn thiện ngân hàng gợi ý tương tự cho Disney Princesses.
+Mẹo ngữ pháp ngắn như “can + động từ nguyên mẫu”. Mỗi category phải có bộ hỗ trợ A1/A2 riêng, gồm câu hỏi, câu trả lời, mẹo ngữ pháp và nghĩa tiếng Việt. Không dùng nguyên bộ từ Superheroes cho toàn bộ category. Từ vựng minh họa **(Đề xuất của Codex)**:
+
+| Category | Từ vựng gợi ý chung |
+|---|---|
+| Superheroes | fly/bay, strong/khỏe, mask/mặt nạ, cape/áo choàng, shield/khiên, power/sức mạnh |
+| Disney Princesses | dress/váy, castle/lâu đài, sing/hát, hair/tóc, brave/dũng cảm, kind/tốt bụng |
+| Classic Cartoons | animal/động vật, funny/hài hước, small/nhỏ, chase/đuổi theo, friend/bạn, hungry/đói |
+| Animated Movies | toy/đồ chơi, robot/người máy, fish/cá, car/xe hơi, family/gia đình, adventure/cuộc phiêu lưu |
+| Anime & Manga | student/học sinh, robot/người máy, detective/thám tử, ninja, pirate/cướp biển, magic/phép thuật |
+| Video Game Characters | jump/nhảy, run/chạy, collect/thu thập, build/xây, race/đua, rescue/giải cứu |
+| Fairy Tales | forest/rừng, magic/phép thuật, fairy/tiên, wish/điều ước, wooden/bằng gỗ, tower/tòa tháp |
+| Vietnamese Folk Tales | village/làng, bamboo/tre, moon/mặt trăng, mountain/núi, river/sông, brave/dũng cảm |
+| Famous Villains | powerful/mạnh mẽ, cruel/độc ác, jealous/ghen tị, trick/lừa, fight/chiến đấu, enemy/kẻ thù |
+
+Giữ bộ từ chung của category đủ rộng, không đưa từ riêng của đáp án đối phương hoặc tự động ưu tiên từ khớp đáp án. Câu mẫu bổ sung theo chủ đề, ví dụ “Is your character an animal?”, “Where does your character live?”, “What does your character want?”, cùng mẫu trả lời tương ứng. Với truyện dân gian Việt Nam, tên riêng giữ tiếng Việt nhưng phần hỏi đáp và gợi ý vẫn bằng tiếng Anh đơn giản kèm nghĩa Việt.
 
 ## 6. Giao diện và quyền xem
 
@@ -157,7 +184,7 @@ Style dùng đúng tokens/components của app: nền tím tối, accent cyan, n
 ### Player
 
 - READY: cặp đấu và lời nhắc chờ host.
-- CATEGORY_VOTE: đối thủ, category để vote, lựa chọn hiện tại, số người đã vote và timer. Chưa có thẻ nhân vật.
+- CATEGORY_VOTE: đối thủ, danh sách category kèm ví dụ ngắn, lựa chọn hiện tại, số người đã vote và timer. Chưa có thẻ nhân vật. Với chín category, danh sách cuộn được; timer và trạng thái phiếu vẫn dễ thấy, không thu nhỏ chữ để ép mọi category vào một màn **(Đề xuất của Codex)**.
 - PLAYING: nhóm/đối thủ, category, người đang hỏi và người hỏi tiếp theo, countdown lượt, thẻ bí mật, phần hỗ trợ tiếng Anh và ô đoán nhân vật đối phương.
 - Chỉ người đang hỏi thấy nút “I'm done” hoạt động. Người khác thấy mình đang chờ ai.
 - Cooldown khóa ô gửi đáp án cho cả nhóm và hiện thời gian còn lại.
@@ -255,4 +282,4 @@ TimerService hiện chỉ đặt deadline của group runtime và session clock.
 
 Người xây dựng quyết tên hook timer, tên action, cấu trúc file chi tiết, tổ chức reducer, giới hạn độ dài input hợp lý, bố trí màn hình chi tiết và nội dung gợi ý từng category trong các ràng buộc trên. Dùng UI component và conventions hiện có; không thêm dependency nếu thư viện sẵn có đáp ứng được.
 
-Các lựa chọn sản phẩm của Codex cần người dùng lưu ý khi duyệt: vote mặc định 30 giây; hai category và danh mục nhân vật ban đầu; chỉ người đang hỏi bấm I'm done; vòng xoay có thể kết thúc sớm khi đoán đúng; tên tiếng Anh exact sau normalization; host khởi động round chung khi các cặp đều kết thúc; End match khi cần; cách xử lý mất kết nối và rời nhóm.
+Các lựa chọn sản phẩm của Codex cần người dùng lưu ý khi duyệt: vote mặc định 30 giây; chín category và danh mục nhân vật mở rộng, đặc biệt những nhân vật có thể chưa quen với lớp; chỉ người đang hỏi bấm I'm done; vòng xoay có thể kết thúc sớm khi đoán đúng; tên quen thuộc exact sau normalization và alias ghi rõ (bao gồm tên Việt gốc cho truyện dân gian Việt Nam); host khởi động round chung khi các cặp đều kết thúc; End match khi cần; cách xử lý mất kết nối và rời nhóm.
