@@ -1,6 +1,6 @@
 # Guess the Character — thiết kế
 
-Trạng thái: chờ người dùng duyệt. Chưa triển khai game.
+Trạng thái: người dùng đã duyệt và yêu cầu lập kế hoạch ngày 2026-10-29, sau khi mở rộng thành chín category. Chưa triển khai game.
 
 Các mục ghi **(Đề xuất của Codex)** là chi tiết chưa được người dùng chốt riêng; được đưa vào tài liệu để duyệt cùng thiết kế.
 
