@@ -27,6 +27,13 @@
   gap: 8px;
   min-width: 0;
 }
+.gc-opponent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
 .gc-vs {
   font: 800 0.875rem/1 var(--cp-font-display);
   color: var(--cp-ink-muted);
@@ -273,11 +280,10 @@
 }
 .gc-guess-row {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
 }
 .gc-guess-row .cp-input {
-  flex: 1 1 160px;
+  flex: 1 1 0;
   min-width: 0;
   font-size: 1.0625rem;
 }
@@ -363,8 +369,16 @@
 }
 .gc-teams {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  /* Side by side on wide screens; stacked on a phone so long names and badges fit. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 12px;
+}
+.gc-team .cp-team-badge,
+.gc-versus .cp-team-badge {
+  max-width: 100%;
+}
+.gc-icon {
+  flex: none;
 }
 .gc-team {
   display: grid;
@@ -428,6 +442,9 @@
   font-weight: 700;
   color: var(--cp-accent);
 }
+.gc-match-ended .gc-result-line {
+  color: var(--cp-ink-muted);
+}
 .gc-match-finished {
   border-color: var(--cp-success);
 }
@@ -483,4 +500,9 @@
 }
 .gc-config-note p {
   margin: 0;
+}
+.gc-projector-rule {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
 }

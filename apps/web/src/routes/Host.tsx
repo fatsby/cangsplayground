@@ -37,7 +37,12 @@ import { connect, hostCommand, readToken, request, saveToken } from "../socket";
 import { useLobbyStore } from "../store";
 import { Loading, SessionBoundary, useRole } from "../components/session";
 import { HostGame } from "../components/HostGame";
-import { canControl, mainControl, type Control } from "../components/game-controls";
+import {
+  canControl,
+  mainControl,
+  supportsControl,
+  type Control,
+} from "../components/game-controls";
 import { gameViews } from "../games/registry";
 const claims = new Map<string, ReturnType<typeof request<"host:claim">>>();
 const hostTabs = ["players", "groups", "game", "secrets"] as const;
@@ -406,6 +411,7 @@ export default function Host() {
                       : "Start"}
                   </Button>
                   <Button
+                    hidden={!supportsControl("skip", game)}
                     aria-label="Skip turn for all groups"
                     disabled={busy || !canControl("skip", game)}
                     onClick={() => control("skip")}
@@ -413,6 +419,7 @@ export default function Host() {
                     <SkipForward strokeWidth={2.25} />
                   </Button>
                   <Button
+                    hidden={!supportsControl("extend", game)}
                     aria-label="Add 30 seconds to all groups"
                     disabled={busy || !canControl("extend", game)}
                     onClick={() => control("extend")}
@@ -421,7 +428,10 @@ export default function Host() {
                     30s
                   </Button>
                   <Button
-                    hidden={gameViews[game.gameId]?.controlLabels?.endRound === null}
+                    hidden={
+                      gameViews[game.gameId]?.controlLabels?.endRound === null ||
+                      !supportsControl("endRound", game)
+                    }
                     aria-label={`${gameViews[game.gameId]?.controlLabels?.endRound ?? "End round"} for all groups`}
                     disabled={busy || !canControl("endRound", game)}
                     onClick={() => control("endRound")}

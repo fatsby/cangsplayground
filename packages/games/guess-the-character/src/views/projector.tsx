@@ -90,3 +90,12 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
     </section>
   );
 }
+
+/** Fills the projector's public banner with the one rule everyone needs. */
+export function ProjectorHeader() {
+  return (
+    <p className="gc-projector-rule">
+      Ask questions in English. Guess the other team's secret character first!
+    </p>
+  );
+}

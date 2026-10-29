@@ -6,6 +6,7 @@ import {
   Chip,
   Panel,
   SecretCard,
+  TeamBadge,
   Timer,
   Waiting,
   type SessionViewProps,
@@ -14,7 +15,7 @@ import type { GuessView, MatchPrivateView, MatchPublicView } from "../types.js";
 import { LanguageHelp, useHelpLevel } from "./language-help.js";
 import {
   Person,
-  Versus,
+  teamIndex,
   categoryName,
   guessView,
   pauseText,
@@ -156,7 +157,7 @@ function GuessForm({
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="send"
-          placeholder="Character name"
+          placeholder="Type a name"
           onChange={(e) => {
             setName(e.target.value);
             setHint(null);
@@ -170,7 +171,7 @@ function GuessForm({
       <div id="gc-guess-status" className="gc-guess-status" aria-live="polite">
         {cooling && cooldown ? (
           <div className="gc-cooldown">
-            <span>Not this one. Your team can guess again in</span>
+            <span>Wrong guess! Your team can guess again in</span>
             <Timer timer={cooldown} serverNow={serverNow} />
           </div>
         ) : match.paused ? (
@@ -211,7 +212,8 @@ function Playing({
   const asking = match.askingGroupId === ownGroup;
   const mine = match.speakerId === me;
   const character = priv.characters.find((c) => c.groupId === ownGroup)?.character;
-  const lastTurn = useRef(match.turnId);
+  // Null on mount, so the first questioner's phone buzzes too.
+  const lastTurn = useRef<number | null>(null);
   useEffect(() => {
     if (mine && lastTurn.current !== match.turnId) navigator.vibrate?.(200);
     lastTurn.current = match.turnId;
@@ -287,12 +289,6 @@ function Playing({
           </span>
         </SecretCard>
       </div>
-      <LanguageHelp
-        categoryId={match.categoryId}
-        role={asking ? "question" : "answer"}
-        level={level}
-        onLevelChange={setLevel}
-      />
       <GuessForm
         view={view}
         match={match}
@@ -301,6 +297,12 @@ function Playing({
         send={action.send}
         pending={action.pending}
         error={action.failedType === "gc:guess" ? action.error : null}
+      />
+      <LanguageHelp
+        categoryId={match.categoryId}
+        role={asking ? "question" : "answer"}
+        level={level}
+        onLevelChange={setLevel}
       />
     </>
   );
@@ -326,7 +328,7 @@ function Result({
         {won
           ? "Your team guessed it!"
           : match.phase === "FINISHED"
-            ? "The other team guessed it."
+            ? `${lobby.groups.find((g) => g.id === match.winnerGroupId)?.name ?? "The other team"} guessed your character.`
             : resultText(lobby, match)}
       </h2>
       <dl className="gc-answers">
@@ -360,7 +362,11 @@ export function PlayerSessionScreen({ lobby, session, me, serverNow, act }: Play
   return (
     <div className="cp-stack gc-player">
       <header className="gc-player-head">
-        <Versus lobby={lobby} groupIds={match.groupIds} />
+        {/* The shell header already shows my team; name the opponent here. */}
+        <p className="gc-opponent">
+          <span className="gc-vs">vs</span>
+          <TeamBadge teamIndex={teamIndex(lobby, match.groupIds[side === 0 ? 1 : 0])} />
+        </p>
         <Chip>Round {view.round}</Chip>
       </header>
       {match.phase === "READY" && (

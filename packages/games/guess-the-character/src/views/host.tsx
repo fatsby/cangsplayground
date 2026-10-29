@@ -81,7 +81,9 @@ function TeamRow({
       </div>
       <p className="gc-character">
         <span className="cp-muted">Character:</span>{" "}
-        <strong>{character?.name ?? (match.phase === "PLAYING" ? "—" : "After the vote")}</strong>
+        <strong>
+          {character?.name ?? (match.phase === "PLAYING" ? "—" : "Chosen after the vote")}
+        </strong>
       </p>
       {cooling && team && (
         <div className="gc-cooldown">
@@ -95,7 +97,7 @@ function TeamRow({
           return (
             <li key={id} className={match.speakerId === id ? "gc-member-speaking" : ""}>
               {match.speakerId === id && (
-                <Mic size={18} strokeWidth={2.25} aria-label="Asking now" />
+                <Mic size={18} strokeWidth={2.25} aria-label="Asking now" className="gc-icon" />
               )}
               <Person lobby={lobby} id={id} size={24} />
               {player && !player.connected && (
@@ -105,6 +107,7 @@ function TeamRow({
           );
         })}
       </ul>
+      {members.length === 0 && <p className="cp-muted gc-small">No players left.</p>}
       {members.length > 0 && isOnline === 0 && (
         <p className="cp-error gc-small">Nobody in this team is online.</p>
       )}

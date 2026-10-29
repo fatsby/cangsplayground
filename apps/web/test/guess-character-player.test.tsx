@@ -69,8 +69,8 @@ it("registers the guess-the-character views", () => {
 describe("waiting and voting", () => {
   it("READY shows the pairing and waits for the teacher", async () => {
     await mount(props("p1", "READY"));
-    expect(text()).toContain("Team Red");
-    expect(text()).toContain("Team Blue");
+    // The shell header shows my team; the screen names the opponent.
+    expect(container.querySelector(".gc-opponent")!.textContent).toBe("vsTeam Blue");
     expect(text()).toMatch(/Wait for your teacher to start/);
     expect(card()).toBeNull();
   });
@@ -286,7 +286,7 @@ describe("results", () => {
     await act(async () => root.unmount());
     root = createRoot(container);
     await mount(props("p3", "FINISHED"));
-    expect(text()).toContain("The other team guessed it.");
+    expect(text()).toContain("Team Red guessed your character.");
   });
 
   it("an ended match says so without a winner", async () => {
