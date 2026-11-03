@@ -2,7 +2,10 @@
  * Public content faces: what players, host and projector are allowed to read about a case.
  * These carry no logic, seed or hidden truth; `Answer` is imported type-only for the reveal.
  */
-import type { Answer } from "./model.js";
+import type { GroupId, PlayerId } from "@cangsplayground/core";
+import type { Answer, CompiledCase, Field } from "./model.js";
+
+export type { MurderConfig } from "./config.js";
 
 /** A suspect, weapon or room as shown to people: opaque id, display name and a neutral blurb. */
 export type EntityFace = { id: string; name: string; description: string };
@@ -73,3 +76,67 @@ export type CaseReveal = {
   events: string[];
   testimonyExplanations: { cardId: string; explanation: string }[];
 };
+
+/** Phases of one case. Only INTRO, BRIEFING, SHARING, INVESTIGATION and CONCLUSION run a clock. */
+export type Phase =
+  | "READY"
+  | "INTRO"
+  | "BRIEFING"
+  | "SHARING"
+  | "INVESTIGATION"
+  | "CONCLUSION"
+  | "AWAITING_REVEAL"
+  | "REVEALED";
+
+/**
+ * The shared class clock of the current phase. Running: `endsAt` is set. Paused: `remainingMs`
+ * is set. Both are null when the phase has no clock. `durationMs` is the phase length including
+ * extensions, for progress rings.
+ */
+export type Clock = { endsAt: number | null; remainingMs: number | null; durationMs: number };
+
+/** Evidence cards chosen for each answer field; at most two per field. */
+export type ProofSelection = Record<Field, string[]>;
+
+/** A team's accusation: the three answers and their supporting evidence. */
+export type Conclusion = {
+  suspectId: string | null;
+  weaponId: string | null;
+  roomId: string | null;
+  evidence: ProofSelection;
+};
+
+/** One team's private progress through the shared case. */
+export type TeamState = {
+  groupId: GroupId;
+  /** Members frozen when the case was prepared. */
+  members: PlayerId[];
+  connected: PlayerId[];
+  /** Always four entries: who leads each of the four investigations, then submits. */
+  leadOrder: PlayerId[];
+  /** Which member holds every card the team has discovered, including transferred ones. */
+  owners: Record<string, PlayerId>;
+  history: { round: number; actionId: string; recipientId: PlayerId }[];
+  draft: Conclusion;
+  draftVersion: number;
+  submission: Conclusion | null;
+  active: boolean;
+};
+
+/** All shared state of one case. Server-only: it carries the compiled case and its truth. */
+export type MurderShared = {
+  caseNumber: number;
+  phase: Phase;
+  phaseVersion: number;
+  /** 0 before investigation, 1-4 during it, then retained. */
+  investigationRound: number;
+  paused: boolean;
+  clock: Clock;
+  /** Server time of the host's Reveal; null until then. */
+  revealedAt: number | null;
+  caseData: CompiledCase;
+  teams: TeamState[];
+};
+
+/** Binds a command to the case and phase it was issued in, so late commands are rejected. */
+export type PhaseGuard = { caseNumber: number; phaseVersion: number };
