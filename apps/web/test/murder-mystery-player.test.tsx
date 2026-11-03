@@ -54,10 +54,11 @@ const bodies = (p: Props, ids: string[]) => ids.map((id) => p.shared.caseData.ca
 describe("waiting screens", () => {
   it("READY shows the team and the rules, then waits for the teacher", async () => {
     await mount(props("p1", "READY"));
-    expect(text()).toMatch(/Your team solves one case together/);
+    expect(text()).toMatch(/Your case is ready/);
     expect(text()).toMatch(/Ada \(you\)/);
     expect(text()).toMatch(/Bo/);
-    expect(text()).toMatch(/Wait for your teacher to start/);
+    expect(text()).toMatch(/Each of you gets a private clue/);
+    expect(text()).toMatch(/Waiting for the host to start/);
     expect(all(".cp-secret-card")).toHaveLength(0);
   });
 

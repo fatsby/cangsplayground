@@ -99,15 +99,21 @@ A two-line hotel title also needed more separation from the question; both scene
 fullscreen, overlay-geometry and 320px overflow checks as repeatable regressions.
 
 Intentional differences from the [approved mockup](../../designs/murder-mystery-screens.html):
-the real projector keeps the platform's lobby header/footer, with a fitted scene; SVG art is composed
-from reusable schematic scene parts and generated labels rather than copying the sample manor/name.
-The hotel has its own building/palette/room shapes. The sample-only flash, haptic and confetti effects are omitted in favor of the specified shared timeline and readable staged content. Phone intro waiting, host Pause/Skip and phone
-Result/Solution/Scoreboard navigation use the specified existing components/tabs. Review-only replay
-buttons are absent. The game uses server elapsed time rather than replaying animations on reload.
+the intro is the D1b film itself (camera push-in, letterbox, rain, lamps, walking victim, anonymous
+attacker, chalk outline, police tape, spotlit suspects, title card) and covers the whole projector
+for its 13 seconds; every label, look, window shape and found-place foreground comes from the case
+data, and the hotel scene has its own building, neon sign and room windows in the same style. Found
+places read "found at the garden gate / old fountain / staff entrance / courtyard fountain" so the
+B1 sentence stays natural. A "Paused" badge shows while the host pauses the intro. The projector
+READY (D1), phone READY (P1) and BRIEFING (D2) screens follow the mockup inside the platform's
+lobby header/footer. The sample-only haptic and confetti effects are omitted. Phone intro waiting,
+host Pause/Skip and phone Result/Solution/Scoreboard navigation use the existing components/tabs.
+Review-only replay buttons are absent. The game uses server elapsed time rather than replaying
+animations on reload.
 
 The verified production views (generated case data, not mockup literals):
 
-![Projector intro for the hotel case](../../assets/screenshots/murder-mystery-intro.png)
+![Projector intro, final frame, hotel case](../../assets/screenshots/murder-mystery-intro.png)
 
 [320px player investigation screenshot](../../assets/screenshots/murder-mystery-player.png).
 
@@ -231,3 +237,37 @@ Complete execution decisions, including earlier-session rulings and their stated
 - Final: Ruling: real B1 discussion quality and pacing remain an explicitly documented teacher playtest — browser tests cannot establish spoken participation — cost: teaching effectiveness and approximately 24-minute timing remain unvalidated with a class.
 
 - Final: Ruling: add public caseInstanceId (independent crypto UUID) to every action guard/DTO and deadline key; displayed caseNumber and seeded content stay unchanged — repeated content seeds do not identify runtime sessions — cost: one 36-character public token in state/commands; older in-flight clients are rejected until reloaded.
+
+- Follow-up: Ruling: the Task 9 "fitted schematic scene art inside the shell" ruling is superseded — the teacher found the intro too far from D1b. The intro is now a port of D1b that covers the whole projector for 13 seconds, and every movement is a paused CSS animation sampled at `--mm-elapsed`, so the memoised scene renders once per case instead of once per frame — cost: the shell header/footer (and its fullscreen button) are hidden during the intro; teachers enter fullscreen before Start.
+
+## Intro rebuild and edge-case playtest (follow-up)
+
+Commands, all exit 0: `pnpm test` (all workspaces), `pnpm typecheck`, `pnpm lint`, `pnpm build`, and
+`CHROMIUM_PATH=/opt/pw-browsers/chromium pnpm --filter @cangsplayground/server exec tsx ../../scripts/acceptance-murder-mystery.mjs`
+(seeds 3 and 4, manor-night and hotel-night, both teams 10/10).
+
+An extra scripted browser playtest (projector, host, 7 phones at 320px including a long Vietnamese
+name, plus a late joiner) checked these edge cases:
+
+| Case                                                                      | Result                                                               |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Pause during intro, wait, reload projector                                | Frame frozen and identical after reload; "Paused" badge shown        |
+| Double-tap Skip intro while paused                                        | Exactly one phase advance; Briefing starts paused, as specified      |
+| Reload a phone and the host during intro                                  | Phone stays on "Watch the projector"; host shows Pause/Skip, no +30s |
+| Late joiner during intro                                                  | Waits for a group; sees no case data                                 |
+| Kick a player during intro                                                | Phone shows "removed" with Join again                                |
+| Exit mid-game, re-prepare, Start                                          | Overlay removed on exit; new intro starts on its black first frame   |
+| Intro at 1024×768, 1280×720, 2560×1080                                    | Letterboxed 16:9, no page scroll                                     |
+| Briefing/Sharing/Investigation at 1024×768, 1280×720, 1440×810, 1920×1080 | Case file fits without scrolling                                     |
+
+Defects found and fixed during the playtest:
+
+- Paused ring timers (shared `Timer`) drew the pause icon at full ring size over the digits
+  (`.cp-timer-ring svg` matched the icon); now only the ring's own SVG is positioned.
+- The projector drew an empty public-info banner for games whose `publicInfo` is `{}` (Murder
+  Mystery, Shark Tank, Guess the Character); it now appears only when there is something to show.
+- The Briefing case file pushed suspects, weapons and rooms below a 1440×810 projector, and team
+  progress was below the fold in later phases. The case file now uses the D2 two-column layout with a
+  compact "Time left" clock, and progress sits above it.
+- Intro captions overflowed onto the discovery time; captions are shorter, shrink to one line, and
+  the found places read naturally after "found at".

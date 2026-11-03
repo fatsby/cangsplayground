@@ -513,7 +513,7 @@ textarea.cp-input {
   --glow: var(--cp-accent-neon);
   box-shadow: var(--cp-glow-md);
 }
-.cp-timer-ring svg {
+.cp-timer-ring > svg {
   position: absolute;
   inset: 0;
   width: 100%;

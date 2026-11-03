@@ -29,6 +29,7 @@ about **24 minutes**. Keep phones private while sharing discoveries aloud.
    is prepared. The host can inspect the complete case privately; keep the host screen off the projector.
 2. Tap **Start** for a silent **13-second animated intro** on the projector. Phones say “Watch the
    projector.” **Pause/Resume** freezes/resumes the intro; **Skip intro** opens the briefing immediately.
+   The intro fills the whole projector, so enter fullscreen before you tap Start.
 3. Read the public case file (**2 minutes**): four suspects, three possible weapons and four rooms.
    The place where the victim was found is not necessarily the crime room.
 4. Share the four starting clues (**3 minutes**). Hold your card to read it and release to conceal it.

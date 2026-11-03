@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import type { GameAction } from "@cangsplayground/core";
 import type { LobbyView } from "@cangsplayground/core";
-import { Chip, Panel, Timer, Waiting, type SessionViewProps } from "@cangsplayground/ui";
+import { Projector, Search } from "lucide-react";
+import {
+  Chip,
+  EmptyState,
+  Panel,
+  Timer,
+  Waiting,
+  type SessionViewProps,
+} from "@cangsplayground/ui";
 import type { ActionOption, MurderView } from "../types.js";
 import { ClueCard } from "./clue-card.js";
 import { ConclusionPanel } from "./conclusion.js";
@@ -261,29 +269,50 @@ export function PlayerSessionScreen({ lobby, session, me, serverNow, act }: Play
         <ClockBar view={view} serverNow={serverNow} />
       )}
       {view.phase === "READY" && (
-        <Panel>
-          <h1>Murder Mystery</h1>
-          <p>
-            Your team solves one case together. Share your clues in English, investigate four times,
-            then explain one answer.
-          </p>
-          <h2>Your team</h2>
-          <ul className="mm-members">
-            {own.members.map((id) => (
-              <li key={id}>
-                {playerName(lobby, id)}
-                {id === me.playerId ? " (you)" : ""}
-              </li>
-            ))}
-          </ul>
-          <p className="cp-muted">Wait for your teacher to start.</p>
-        </Panel>
+        <>
+          <EmptyState
+            icon={<Search size={40} strokeWidth={2.25} />}
+            message="Waiting for the host to start."
+            waiting
+          >
+            <h1 className="mm-ready-title">Your case is ready</h1>
+          </EmptyState>
+          <Panel className="cp-stack">
+            <h2>Your team</h2>
+            <ul className="cp-members mm-members">
+              {own.members.map((id) => {
+                const player = lobby.players.find((p) => p.id === id);
+                const presence = !player?.connected ? "offline" : player.away ? "away" : "online";
+                return (
+                  <li key={id}>
+                    <span className={`cp-presence cp-presence-${presence}`} aria-hidden="true" />
+                    {id === me.playerId ? (
+                      <strong>{playerName(lobby, id)} (you)</strong>
+                    ) : (
+                      playerName(lobby, id)
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </Panel>
+          <Panel className="cp-stack">
+            <h2>How it works</h2>
+            <ol className="mm-how">
+              <li>Each of you gets a private clue. Keep it on your phone.</li>
+              <li>Tell your team in English. Take turns to lead the investigation.</li>
+              <li>Agree on culprit, weapon and room — with evidence.</li>
+            </ol>
+          </Panel>
+        </>
       )}
       {view.phase === "INTRO" && (
-        <Panel className="mm-watch">
-          <h1>Watch the projector</h1>
-          <p className="cp-muted">The case starts in a moment.</p>
-        </Panel>
+        <EmptyState
+          icon={<Projector size={40} strokeWidth={2.25} />}
+          message="The case starts in a moment."
+        >
+          <h1 className="mm-ready-title">Watch the projector</h1>
+        </EmptyState>
       )}
       {view.phase === "BRIEFING" && (
         <>

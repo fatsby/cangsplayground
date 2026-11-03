@@ -148,6 +148,13 @@ export default function Display() {
     if (result.ok) setPair(result.data);
     else setPairError(result.error.message);
   };
+  // A game without public text gets no empty banner above its screen.
+  const publicLines =
+    session?.publicInfo && typeof session.publicInfo === "object"
+      ? Object.entries(session.publicInfo).filter(
+          (entry): entry is [string, string] => typeof entry[1] === "string",
+        )
+      : [];
   const joinUrl = `${publicUrl}/join/${code}`,
     welcome = !!view && !ProjectorScreen && !view.groups.length;
   const columns = !view?.groups.length
@@ -194,15 +201,13 @@ export default function Display() {
         </header>
         <LayoutGroup>
           <div className="projector-content">
-            {session && (
+            {session && (Header || publicLines.length > 0) && (
               <div className="projector-public">
                 {Header ? (
                   <Header session={session} />
-                ) : session.publicInfo && typeof session.publicInfo === "object" ? (
-                  Object.entries(session.publicInfo)
-                    .filter(([, v]) => typeof v === "string")
-                    .map(([key, value]) => <p key={key}>{String(value)}</p>)
-                ) : null}
+                ) : (
+                  publicLines.map(([key, value]) => <p key={key}>{value}</p>)
+                )}
               </div>
             )}
             {!view ? (

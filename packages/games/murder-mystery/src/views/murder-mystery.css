@@ -839,21 +839,39 @@
   overflow: auto;
   display: grid;
   align-content: start;
-  gap: 16px;
-  padding: 16px 24px;
+  gap: 12px;
+  padding: 8px 24px 14px;
   font-size: clamp(1.1rem, 2vw, 1.75rem);
 }
-/* The shell reserves space for its header/footer. Keep the whole scene inside that space. */
+/*
+ * The intro is a 13-second film (mockup D1b): it covers the whole projector, shell included, and
+ * keeps 16:9 inside any window. The connection banner (z-index 50) still shows above it.
+ */
 .mm-projector-intro {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  background: #05061a;
 }
 .mm-projector-intro .mm-intro {
-  width: auto;
-  height: 100%;
-  max-width: 100%;
+  width: min(100vw, calc(100vh * 16 / 9));
+  border-radius: 0;
+}
+.mm-intro-paused {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  margin: 0;
+  padding: 8px 20px;
+  border: 2px solid var(--cp-warning, #ffb547);
+  border-radius: 999px;
+  background: rgba(5, 6, 26, 0.85);
+  color: var(--cp-warning, #ffb547);
+  font: 700 clamp(14px, 1.6vw, 24px) / 1.2 var(--cp-font-mono, monospace);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 .mm-projector-head {
   display: flex;
@@ -861,10 +879,27 @@
   justify-content: space-between;
   gap: 16px;
 }
-.mm-dossier-lists {
+.mm-projector-head h2 {
+  margin: 0;
+  font: 600 clamp(22px, 2.2vw, 34px) / 1.2 var(--cp-font-display, sans-serif);
+}
+.mm-projector-head p {
+  margin: 0;
+}
+.mm-pj-clock {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  justify-items: end;
+  margin-left: auto;
+}
+.mm-pj-clock small {
+  color: var(--cp-ink-muted);
+  font: clamp(11px, 0.9vw, 14px) var(--cp-font-mono, monospace);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.mm-pj-clock .cp-timer {
+  font-size: clamp(36px, 4.4vw, 64px);
+  line-height: 1;
 }
 .mm-progress {
   display: flex;
@@ -873,6 +908,102 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Public case file (mockup D2): case on the left, suspects, weapons and rooms on the right. */
+.mm-dossier {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  gap: 14px;
+  font-size: clamp(12px, min(1.15vw, 1.85vh), 18px);
+  line-height: 1.4;
+}
+.mm-pj-panel {
+  display: grid;
+  align-content: start;
+  gap: min(10px, 1.3vh);
+  padding: clamp(10px, min(1.2vw, 2vh), 20px);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r, 16px);
+  background: var(--cp-surface);
+}
+.mm-pj-panel .mm-eyebrow {
+  font-weight: 400;
+}
+.mm-dossier p {
+  margin: 0;
+}
+.mm-dossier-case h1 {
+  margin: 0;
+  font: 600 clamp(18px, min(2.1vw, 3.3vh), 32px) / 1.15 var(--cp-font-display, sans-serif);
+  letter-spacing: -0.02em;
+}
+.mm-dossier-found,
+.mm-dossier-goal {
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: var(--cp-r-sm, 10px);
+  background: var(--cp-surface-2);
+}
+.mm-dossier-found b {
+  color: var(--cp-accent);
+}
+.mm-dossier-goal {
+  display: block;
+  background: color-mix(in oklab, var(--cp-primary) 22%, var(--cp-surface));
+}
+.mm-dossier-side {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+.mm-dossier-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-dossier-people li {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-sm, 10px);
+  background: var(--cp-surface-2);
+}
+.mm-dossier-people span {
+  color: var(--cp-ink-muted);
+  font-size: 0.82em;
+  line-height: 1.35;
+}
+.mm-dossier-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.mm-dossier-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-dossier-chips li {
+  padding: 4px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 999px;
+  background: var(--cp-surface-2);
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .mm-dossier,
+  .mm-dossier-people {
+    grid-template-columns: 1fr;
+  }
 }
 .mm-stamp {
   display: inline-block;
@@ -891,4 +1022,99 @@
   .mm-stage[data-pending="true"] {
     visibility: visible;
   }
+}
+
+/* Projector READY (mockup D1): the case waits for the host. */
+.mm-projector-ready {
+  grid-template-rows: 1fr auto;
+  align-content: stretch;
+}
+.mm-ready-center {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  text-align: center;
+}
+.mm-eyebrow {
+  margin: 0;
+  color: var(--cp-ink-muted);
+  font: clamp(12px, 1vw, 15px) var(--cp-font-mono, monospace);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.mm-ready-center h1 {
+  margin: 0;
+  font: 600 clamp(40px, 4.6vw, 72px) / 1.15 var(--cp-font-display, sans-serif);
+  letter-spacing: -0.02em;
+}
+.mm-ready-sub {
+  margin: 0;
+  color: var(--cp-ink-muted);
+  font-size: clamp(18px, 1.9vw, 28px);
+}
+.mm-ready-teams {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-ready-teams li {
+  padding: 8px;
+  border: 1px solid var(--cp-border);
+  border-radius: 999px;
+  background: var(--cp-surface-2);
+}
+.mm-ready-teams .cp-team-badge {
+  font-size: clamp(16px, 1.4vw, 22px);
+  padding: 8px 16px;
+}
+.mm-ready-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding-top: 15px;
+  border-top: 1px solid var(--cp-border);
+  color: var(--cp-ink-muted);
+  font-size: 18px;
+}
+.mm-ready-foot span {
+  color: var(--cp-accent);
+  font-size: 22px;
+}
+
+/* Phone READY and INTRO (mockup P1). */
+.mm-ready-title {
+  margin: 0;
+  order: -1;
+}
+.mm-player .cp-empty {
+  gap: 12px;
+  padding: 8px 0;
+}
+.mm-player .cp-empty-icon {
+  order: -2;
+  width: 88px;
+  height: 88px;
+}
+.mm-members {
+  grid-template-columns: 1fr;
+}
+.mm-members li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.mm-how {
+  list-style: decimal;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--cp-ink-muted);
+  font-size: 14px;
+  line-height: 1.5;
 }

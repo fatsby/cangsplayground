@@ -1,7 +1,7 @@
 // Full classroom acceptance against the production build; no extra test framework.
 // pnpm build
 // pnpm --filter @cangsplayground/server exec tsx ../../scripts/acceptance-murder-mystery.mjs [output-dir]
-// Requires Chromium: pnpm exec playwright-core install chromium.
+// Requires Chromium: pnpm exec playwright-core install chromium, or set CHROMIUM_PATH.
 // API setup creates teams/case; every game control, investigation and submission uses browser UI.
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -15,7 +15,9 @@ import { availableActions, proofSets } from "../packages/games/murder-mystery/sr
 
 const out = resolve(process.argv[2] ?? "/tmp/cangsplayground-murder-mystery") + "/";
 await mkdir(out, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
+);
 const errors = [];
 const servers = [],
   sockets = [];
@@ -149,6 +151,8 @@ try {
     const c = state().caseData;
     assert.equal(c.sceneId, preview(seed));
     await host.goto(base + "/host/" + code);
+    await projector.getByRole("button", { name: "Enter fullscreen" }).click();
+    await projector.waitForFunction(() => !!document.fullscreenElement);
     await host.getByRole("button", { name: "Start", exact: true }).click();
     await expectVisible(projector.locator(".mm-intro"));
     await expectVisible(phones[0].getByText("Watch the projector", { exact: true }));
@@ -156,10 +160,12 @@ try {
     await until(() => state().paused, "intro paused");
     await projector.reload();
     await expectVisible(projector.locator(".mm-intro"));
+    await expectVisible(projector.getByRole("status").filter({ hasText: "Paused" }));
     const frozen = state().clock.remainingMs;
     assert(frozen > 0 && frozen < 13000);
-    await projector.getByRole("button", { name: "Enter fullscreen" }).click();
-    await projector.waitForFunction(() => !!document.fullscreenElement);
+    // The intro covers the whole projector, shell included, at a 16:9 frame.
+    const cover = await projector.locator(".mm-projector-intro").boundingBox();
+    assert(cover.width >= 1440 && cover.height >= 810, "intro covers the projector");
     await projector.emulateMedia({ reducedMotion: "reduce" });
     await expectVisible(projector.locator(".mm-intro-title h1"));
     assert.equal(await projector.locator(".mm-intro-title h1").innerText(), c.briefing.title);
