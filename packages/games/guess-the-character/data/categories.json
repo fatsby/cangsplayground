@@ -15,7 +15,15 @@
       "black-widow",
       "black-panther",
       "the-flash",
-      "aquaman"
+      "aquaman",
+      "deadpool",
+      "doctor-strange",
+      "shazam",
+      "green-lantern",
+      "ant-man",
+      "scarlet-witch",
+      "hawkeye",
+      "invincible"
     ]
   },
   {
@@ -34,7 +42,15 @@
       "rapunzel",
       "merida",
       "moana",
-      "pocahontas"
+      "pocahontas",
+      "elsa",
+      "anna",
+      "raya",
+      "vanellope",
+      "kida",
+      "giselle",
+      "eilonwy",
+      "sofia"
     ]
   },
   {
@@ -53,7 +69,15 @@
       "scooby-doo",
       "spongebob",
       "patrick-star",
-      "popeye"
+      "popeye",
+      "pink-panther",
+      "road-runner",
+      "wile-e-coyote",
+      "tweety",
+      "sylvester",
+      "porky-pig",
+      "fred-flintstone",
+      "woody-woodpecker"
     ]
   },
   {
@@ -72,7 +96,15 @@
       "lightning-mcqueen",
       "wall-e",
       "baymax",
-      "stitch"
+      "stitch",
+      "toothless",
+      "hiccup",
+      "gru",
+      "mike-wazowski",
+      "sulley",
+      "remy",
+      "judy-hopps",
+      "nick-wilde"
     ]
   },
   {
@@ -91,7 +123,15 @@
       "goku",
       "sailor-moon",
       "pikachu",
-      "totoro"
+      "totoro",
+      "gojo",
+      "tanjiro",
+      "nezuko",
+      "saitama",
+      "vegeta",
+      "zoro",
+      "chaien",
+      "suneo"
     ]
   },
   {
@@ -110,7 +150,15 @@
       "kirby",
       "pac-man",
       "steve",
-      "link"
+      "link",
+      "crash-bandicoot",
+      "isabelle",
+      "kratos",
+      "master-chief",
+      "sans",
+      "samus",
+      "lara-croft",
+      "mega-man"
     ]
   },
   {
@@ -127,7 +175,15 @@
       "genie",
       "rapunzel",
       "snow-white",
-      "cinderella"
+      "cinderella",
+      "goldilocks",
+      "hansel",
+      "gretel",
+      "puss-in-boots",
+      "gingerbread-man",
+      "rumpelstiltskin",
+      "big-bad-wolf",
+      "thumbelina"
     ]
   },
   {
@@ -144,7 +200,15 @@
       "ly-thong",
       "so-dua",
       "chu-cuoi",
-      "chi-hang"
+      "chi-hang",
+      "trang-quynh",
+      "bom",
+      "mai-an-tiem",
+      "chu-dong-tu",
+      "lac-long-quan",
+      "au-co",
+      "truong-chi",
+      "my-chau"
     ]
   },
   {
@@ -163,7 +227,90 @@
       "captain-hook",
       "scar",
       "hades",
-      "evil-queen"
+      "evil-queen",
+      "doofenshmirtz",
+      "gaston",
+      "prince-hans",
+      "shere-khan",
+      "dr-facilier",
+      "frollo",
+      "sauron",
+      "darth-vader"
+    ]
+  },
+  {
+    "id": "modern-cartoons",
+    "name": "Modern Cartoons",
+    "examples": ["finn", "mordecai", "gumball"],
+    "characterIds": [
+      "finn",
+      "jake",
+      "princess-bubblegum",
+      "marceline",
+      "ice-king",
+      "bmo",
+      "mordecai",
+      "rigby",
+      "benson",
+      "gumball",
+      "darwin",
+      "steven-universe",
+      "dexter",
+      "ben-tennyson",
+      "ice-bear",
+      "grizzly-bear",
+      "samurai-jack",
+      "courage"
+    ]
+  },
+  {
+    "id": "fantasy-sci-fi",
+    "name": "Fantasy & Sci-Fi",
+    "examples": ["gandalf", "harry-potter", "yoda"],
+    "characterIds": [
+      "gandalf",
+      "frodo",
+      "gollum",
+      "aragorn",
+      "legolas",
+      "harry-potter",
+      "hermione",
+      "dumbledore",
+      "hagrid",
+      "yoda",
+      "darth-vader",
+      "luke-skywalker",
+      "chewbacca",
+      "r2-d2",
+      "groot",
+      "rocket",
+      "et",
+      "grogu"
+    ]
+  },
+  {
+    "id": "cute-mascots",
+    "name": "Cute Mascots",
+    "examples": ["hello-kitty", "snoopy", "kumamon"],
+    "characterIds": [
+      "hello-kitty",
+      "my-melody",
+      "kuromi",
+      "cinnamoroll",
+      "pompompurin",
+      "rilakkuma",
+      "gudetama",
+      "kumamon",
+      "pusheen",
+      "snoopy",
+      "winnie-the-pooh",
+      "badtz-maru",
+      "keroppi",
+      "pochacco",
+      "molang",
+      "miffy",
+      "pingu",
+      "chococat"
     ]
   }
 ]

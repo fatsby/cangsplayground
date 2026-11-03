@@ -75,11 +75,11 @@ describe("waiting and voting", () => {
     expect(card()).toBeNull();
   });
 
-  it("lists all nine categories with examples, a countdown and the vote count", async () => {
+  it("lists all twelve categories with examples, a countdown and the vote count", async () => {
     const p = props("p1", "CATEGORY_VOTE");
     await mount(p);
     const options = container.querySelectorAll(".gc-category");
-    expect(options).toHaveLength(9);
+    expect(options).toHaveLength(12);
     for (const option of options) expect(option.textContent).toMatch(/e\.g\. \S/);
     expect(text()).not.toContain("undefined");
     expect(container.querySelector('[role="timer"]')!.getAttribute("aria-label")).toBe("0:30");

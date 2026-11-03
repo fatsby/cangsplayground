@@ -538,6 +538,171 @@ const HELP: Record<string, Record<HelpLevel, LevelHelp>> = {
       ],
     },
   },
+  "modern-cartoons": {
+    A1: {
+      questions: [
+        p("Is your character a human or an animal?", "Nhân vật của bạn là người hay con vật?"),
+        p("Does your character wear a hat?", "Nhân vật của bạn có đội mũ không?"),
+        p("Does your character have a best friend?", "Nhân vật của bạn có bạn thân không?"),
+      ],
+      answers: [
+        p("My character is a ___.", "Nhân vật của tôi là một ___."),
+        p("My character wears a ___ hat.", "Nhân vật của tôi đội mũ màu ___."),
+        p("My character's best friend is a ___.", "Bạn thân của nhân vật tôi là một ___."),
+      ],
+      grammar: p(
+        "a / an: “a hat”, “an animal” (an before a, e, i, o, u sounds).",
+        "a / an: dùng “an” trước âm a, e, i, o, u.",
+      ),
+      vocabulary: [
+        p("human", "con người"),
+        p("hat", "cái mũ"),
+        p("bird", "con chim"),
+        p("bear", "con gấu"),
+        p("candy", "kẹo"),
+        p("cartoon", "phim hoạt hình"),
+      ],
+    },
+    A2: {
+      questions: [
+        p("What is your character's job?", "Công việc của nhân vật bạn là gì?"),
+        p("Where does your character live?", "Nhân vật của bạn sống ở đâu?"),
+        p("What is your character afraid of?", "Nhân vật của bạn sợ điều gì?"),
+      ],
+      answers: [
+        p("My character's job is ___.", "Công việc của nhân vật tôi là ___."),
+        p("My character lives in a ___.", "Nhân vật của tôi sống trong một ___."),
+        p("My character is afraid of ___.", "Nhân vật của tôi sợ ___."),
+      ],
+      grammar: p(
+        "afraid of + noun or verb-ing: “He is afraid of ghosts.”",
+        "afraid of + danh từ hoặc động từ thêm -ing.",
+      ),
+      vocabulary: [
+        p("job", "công việc"),
+        p("treehouse", "nhà trên cây"),
+        p("vampire", "ma cà rồng"),
+        p("laboratory", "phòng thí nghiệm"),
+        p("gem", "viên ngọc"),
+        p("sword fight", "đấu kiếm"),
+      ],
+    },
+  },
+  "fantasy-sci-fi": {
+    A1: {
+      questions: [
+        p("Is your character a wizard?", "Nhân vật của bạn có phải phù thủy không?"),
+        p("Can your character use magic?", "Nhân vật của bạn có dùng phép thuật được không?"),
+        p("Is your character from a movie?", "Nhân vật của bạn có đến từ một bộ phim không?"),
+      ],
+      answers: [
+        p("Yes, my character is a ___.", "Đúng, nhân vật của tôi là một ___."),
+        p("My character has a ___.", "Nhân vật của tôi có một ___."),
+        p("No, my character is not a ___.", "Không, nhân vật của tôi không phải là ___."),
+      ],
+      grammar: p(
+        "a / an: “a wizard”, “an elf” (an before a, e, i, o, u sounds).",
+        "a / an: dùng “an” trước âm a, e, i, o, u.",
+      ),
+      vocabulary: [
+        p("wizard", "phù thủy"),
+        p("elf", "tiên tộc"),
+        p("planet", "hành tinh"),
+        p("spaceship", "tàu vũ trụ"),
+        p("beard", "râu"),
+        p("ring", "chiếc nhẫn"),
+      ],
+    },
+    A2: {
+      questions: [
+        p(
+          "Does your character come from another planet?",
+          "Nhân vật của bạn có đến từ hành tinh khác không?",
+        ),
+        p(
+          "Does your character go on a long journey?",
+          "Nhân vật của bạn có đi một hành trình dài không?",
+        ),
+        p(
+          "Does your character have a special weapon?",
+          "Nhân vật của bạn có vũ khí đặc biệt không?",
+        ),
+      ],
+      answers: [
+        p("My character comes from ___.", "Nhân vật của tôi đến từ ___."),
+        p("My character travels with ___.", "Nhân vật của tôi đi cùng ___."),
+        p("My character fights with a ___.", "Nhân vật của tôi chiến đấu bằng ___."),
+      ],
+      grammar: p(
+        "come from + place: “He comes from a small village.”",
+        "come from + nơi chốn: “He comes from a small village.”",
+      ),
+      vocabulary: [
+        p("journey", "hành trình"),
+        p("weapon", "vũ khí"),
+        p("school", "trường học"),
+        p("droid", "người máy"),
+        p("treasure", "kho báu"),
+        p("wise", "thông thái"),
+      ],
+    },
+  },
+  "cute-mascots": {
+    A1: {
+      questions: [
+        p("Is your character an animal?", "Nhân vật của bạn có phải con vật không?"),
+        p("Is your character pink or white?", "Nhân vật của bạn màu hồng hay màu trắng?"),
+        p("Does your character have a bow?", "Nhân vật của bạn có đeo nơ không?"),
+      ],
+      answers: [
+        p("Yes, my character is a ___.", "Đúng, nhân vật của tôi là một ___."),
+        p("My character has a ___ on its head.", "Nhân vật của tôi có ___ trên đầu."),
+        p("My character is small and cute.", "Nhân vật của tôi nhỏ và dễ thương."),
+      ],
+      grammar: p(
+        "Use “it” or “its” for animals and things: “It has big ears.”",
+        "Dùng “it / its” cho con vật và đồ vật: “It has big ears.”",
+      ),
+      vocabulary: [
+        p("cute", "dễ thương"),
+        p("bow", "cái nơ"),
+        p("ear", "cái tai"),
+        p("round", "tròn"),
+        p("egg", "quả trứng"),
+        p("pudding", "bánh flan"),
+      ],
+    },
+    A2: {
+      questions: [
+        p("Which country is your character from?", "Nhân vật của bạn đến từ nước nào?"),
+        p(
+          "Is your character from a brand or a book?",
+          "Nhân vật của bạn đến từ một thương hiệu hay một cuốn sách?",
+        ),
+        p("What does your character like to do?", "Nhân vật của bạn thích làm gì?"),
+      ],
+      answers: [
+        p("My character is from ___.", "Nhân vật của tôi đến từ ___."),
+        p("My character likes eating ___.", "Nhân vật của tôi thích ăn ___."),
+        p(
+          "My character is very ___ (shy / lazy / naughty).",
+          "Nhân vật của tôi rất ___ (nhút nhát / lười / nghịch).",
+        ),
+      ],
+      grammar: p(
+        "Comparatives: “cuter than”, “rounder than”.",
+        "So sánh hơn: “cuter than”, “rounder than”.",
+      ),
+      vocabulary: [
+        p("Japan", "Nhật Bản"),
+        p("brand", "thương hiệu"),
+        p("comic strip", "truyện tranh ngắn"),
+        p("penguin", "chim cánh cụt"),
+        p("shy", "nhút nhát"),
+        p("naughty", "nghịch ngợm"),
+      ],
+    },
+  },
 };
 
 export const HELP_CATEGORY_IDS = Object.keys(HELP);

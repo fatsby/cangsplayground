@@ -20,6 +20,9 @@ const CATEGORY_IDS = [
   "fairy-tales",
   "vietnamese-folk-tales",
   "famous-villains",
+  "modern-cartoons",
+  "fantasy-sci-fi",
+  "cute-mascots",
 ];
 
 describe("config", () => {
@@ -46,12 +49,12 @@ describe("config", () => {
 });
 
 describe("content", () => {
-  it("has the nine approved categories with 10–12 unique characters", () => {
+  it("has the twelve approved categories with 10–20 unique characters", () => {
     expect(categories().map((c) => c.id)).toEqual(CATEGORY_IDS);
-    expect(categories()).toHaveLength(9);
+    expect(categories()).toHaveLength(12);
     for (const c of categories()) {
       expect(c.characterIds.length).toBeGreaterThanOrEqual(10);
-      expect(c.characterIds.length).toBeLessThanOrEqual(12);
+      expect(c.characterIds.length).toBeLessThanOrEqual(20);
       expect(new Set(c.characterIds).size).toBe(c.characterIds.length);
       for (const id of c.characterIds) expect(() => characterById(id)).not.toThrow();
     }
@@ -107,13 +110,31 @@ describe("content", () => {
     expect(matchesCharacter("Sơn Tình", "son-tinh")).toBe(false);
   });
 
+  it.each([
+    ["Usagi", "sailor-moon"],
+    ["Usagi Tsukino", "sailor-moon"],
+    ["Tsukino Usagi", "sailor-moon"],
+    ["Moon Sailor", "sailor-moon"],
+    ["Shinnosuke", "shin-chan"],
+    ["Shinnosuke Nohara", "shin-chan"],
+    ["Nohara Shinnosuke", "shin-chan"],
+    ["Bruce Wayne", "batman"],
+    ["Peter Parker", "spider-man"],
+    ["Shinichi Kudo", "conan"],
+    ["Tom Riddle", "voldemort"],
+    ["Bonnibel Bubblegum", "princess-bubblegum"],
+    ["Mị Châu", "my-chau"],
+  ])("accepts the real name or alternate spelling %j for %s", (guess, characterId) => {
+    expect(matchesCharacter(guess, characterId)).toBe(true);
+  });
+
   it("throws a developer error for an unknown ID", () => {
     expect(() => characterById("nobody")).toThrow(/Unknown character/);
   });
 
   it("offers each category with two or three static examples from its own pool", () => {
     const options = categoryOptions();
-    expect(options).toHaveLength(9);
+    expect(options).toHaveLength(12);
     for (const option of options) {
       expect(Object.keys(option).sort()).toEqual(["examples", "id", "name"]);
       expect(option.examples.length).toBeGreaterThanOrEqual(2);

@@ -174,7 +174,7 @@ describe("category vote", () => {
       expect(pool).toContain(m.teams[1].characterId);
       expect(m.teams[0].characterId).not.toBe(m.teams[1].characterId);
     }
-    expect(seen.size).toBe(9);
+    expect(seen.size).toBe(12);
   });
 
   it("pauses voting and resumes with the remaining time", () => {
