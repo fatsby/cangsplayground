@@ -159,7 +159,7 @@ export type ScenePreset = {
   /** Maps a suspect role to the badge drawn on its silhouette. */
   badgeByRole: Record<string, SuspectBadge>;
   discoveredTimes: string[];
-  /** Caption templates; `{victim}`, `{place}`, `{title}` and `{time}` are replaced. */
+  /** Caption templates; `{victim}`, `{place}`, `{venue}`, `{title}` and `{time}` are replaced. */
   captionTemplates: Record<keyof IntroCaptions, string[]>;
 };
 

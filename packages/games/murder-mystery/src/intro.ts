@@ -62,6 +62,7 @@ export function buildIntro(args: {
 
   const values = {
     title: briefing.title,
+    venue: scene.venue,
     victim: briefing.victim.name,
     place: place.label,
     time: discoveredAt,

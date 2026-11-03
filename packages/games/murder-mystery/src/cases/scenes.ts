@@ -30,17 +30,16 @@ export const INTRO_BANNED_TERMS: readonly string[] = [
   "murdered",
 ];
 
+/**
+ * Subtitles of the four intro beats, kept short enough for one line on the projector. `{venue}`
+ * is the building noun, `{victim}` the victim and `{place}` where the body was found; the time is
+ * shown on its own beside the found caption.
+ */
 const CAPTIONS = {
-  setting: [
-    "{title}. One night, four rooms and four suspects.",
-    "{title}: one house, many secrets.",
-  ],
-  walk: ["{victim} walks through the building.", "{victim} is alone for a few minutes."],
-  blackout: ["The lights go out. Nobody sees what happens.", "Suddenly, everything goes dark."],
-  found: [
-    "At {time}, {victim} is found at {place}.",
-    "{victim} is found at {place}. The time is {time}",
-  ],
+  setting: ["A quiet, rainy night at the {venue}.", "It is a dark and rainy night at the {venue}."],
+  walk: ["{victim} goes outside alone.", "{victim} steps out for some air."],
+  blackout: ["Then… the lights go out.", "Suddenly, everything goes dark."],
+  found: ["{victim} is found at {place}.", "Later, {victim} is found at {place}."],
 };
 
 const MANOR: ScenePreset = {
@@ -107,8 +106,8 @@ const MANOR: ScenePreset = {
     { name: "Ms. Lane", role: "lawyer", description: "The family lawyer. Visits for business." },
   ],
   foundPlaces: [
-    { kind: "garden-path", label: "the garden path" },
-    { kind: "courtyard", label: "the stone courtyard" },
+    { kind: "garden-path", label: "the garden gate" },
+    { kind: "courtyard", label: "the old fountain" },
   ],
   victimLooks: [
     { hair: "white", coat: "indigo", accessory: "bowtie" },
@@ -200,8 +199,8 @@ const HOTEL: ScenePreset = {
     { name: "Ms. Alder", role: "author", description: "A writer who is staying for the month." },
   ],
   foundPlaces: [
-    { kind: "service-corridor", label: "the service corridor" },
-    { kind: "courtyard", label: "the back courtyard" },
+    { kind: "service-corridor", label: "the staff entrance" },
+    { kind: "courtyard", label: "the courtyard fountain" },
   ],
   victimLooks: [
     { hair: "grey", coat: "charcoal", accessory: "glasses" },

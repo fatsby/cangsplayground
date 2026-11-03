@@ -66,7 +66,7 @@ try {
     "utf8",
   );
   await probe.setContent(
-    `<style>${css}</style><div style="--mm-elapsed:3.6"><div class="mm-stage mm-walk" style="--d:3.4">Victim</div></div>`,
+    `<style>${css}</style><div class="mm-intro" style="--mm-elapsed:2"><svg viewBox="0 0 1440 810"><g class="cn-hale t"><rect width="10" height="10"/></g></svg></div>`,
   );
   const frames = await probe.evaluate(async () => {
     const waitFrames = (count) =>
@@ -74,7 +74,7 @@ try {
         const next = () => (--count > 0 ? window.requestAnimationFrame(next) : resolve());
         window.requestAnimationFrame(next);
       });
-    const el = document.querySelector(".mm-walk");
+    const el = document.querySelector(".cn-hale");
     const read = () => ({
       transform: window.getComputedStyle(el).transform,
       opacity: window.getComputedStyle(el).opacity,
@@ -83,7 +83,7 @@ try {
     const first = read();
     await waitFrames(20);
     const frozen = read();
-    el.parentElement.style.setProperty("--mm-elapsed", "4.2");
+    document.querySelector(".mm-intro").style.setProperty("--mm-elapsed", "3");
     await waitFrames(2);
     return { first, frozen, sought: read() };
   });
@@ -166,7 +166,7 @@ try {
     assert.equal(await projector.locator('[data-part="title"]').getAttribute("data-pending"), null);
     await projector.evaluate(() => document.fonts.ready);
     const boxes = await projector.evaluate(() =>
-      [".mm-intro-title", ".mm-intro-question", ".mm-caption"].map((s) => {
+      [".mm-intro-title h1", ".mm-intro-question", ".mm-caption"].map((s) => {
         const b = document.querySelector(s).getBoundingClientRect();
         return { top: b.top, bottom: b.bottom };
       }),
