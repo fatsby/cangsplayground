@@ -363,3 +363,48 @@ describe("scheduling and protocol", () => {
     expect(schemas["gameVote:cast"].safeParse({ gameId: "" }).success).toBe(false);
   });
 });
+
+describe("Murder Mystery on the ballot", () => {
+  const MM_BALLOT = ["murder-mystery", "whos-the-spy", "guess-the-character"];
+
+  it("is offered to the host as a ballot option", () => {
+    const { lobby } = setup();
+    expect(buildView(lobby, { kind: "host" }).catalog.map((g) => g.id)).toContain("murder-mystery");
+  });
+
+  it("can win the vote, then be chosen and prepared, which clears the vote", () => {
+    const { lobby, players, advance } = setup(7);
+    lobby.startGameVote(MM_BALLOT);
+    expect(asPlayer(lobby, players[0]!.id)!.options[0]).toMatchObject({
+      gameId: "murder-mystery",
+      name: "Murder Mystery",
+    });
+    for (const p of players.slice(0, 4)) lobby.castGameVote(p.id, "murder-mystery");
+    for (const p of players.slice(4)) lobby.castGameVote(p.id, "whos-the-spy");
+    advance(GAME_VOTE_DURATION_MS);
+    lobby.expireGameVote(lobby.gameVote!.endsAt);
+    expect(asProjector(lobby)).toMatchObject({ status: "CLOSED", winnerId: "murder-mystery" });
+
+    lobby.selectGame("murder-mystery");
+    lobby.assign("count", 2);
+    // Choosing the game keeps the result on screen until the case is prepared.
+    expect(asProjector(lobby)!.winnerId).toBe("murder-mystery");
+    lobby.control("prepare");
+    expect(asProjector(lobby)).toBeNull();
+    expect(lobby.game!.stage).toBe("ACTIVE");
+    expect((lobby.game!.shared as { phase: string }).phase).toBe("READY");
+  });
+
+  it("opens a new vote once the host exits a Murder Mystery case", () => {
+    const { lobby } = setup(7);
+    lobby.assign("count", 2);
+    lobby.selectGame("murder-mystery");
+    lobby.control("prepare");
+    expect(() => lobby.startGameVote(MM_BALLOT)).toThrow(
+      expect.objectContaining({ code: "INVALID_STATE" }),
+    );
+    lobby.control("exit");
+    lobby.startGameVote(MM_BALLOT);
+    expect(asProjector(lobby)!.status).toBe("OPEN");
+  });
+});

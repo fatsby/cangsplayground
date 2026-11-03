@@ -148,6 +148,7 @@ export function lobbyFor(
     code: "ABC234",
     status: "open",
     locked: false,
+    gameVote: null,
     hostConnected: true,
     createdAt: 0,
     maxPlayers: 60,

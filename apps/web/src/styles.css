@@ -986,15 +986,18 @@
 .gv-bar-winner .gv-bar-name {
   color: var(--cp-accent);
 }
+/* Projector: two columns once the ballot is long, sized by height so six games still fit. */
 .gv-bars-large {
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: clamp(8px, 1.8vh, 24px) 48px;
 }
 .gv-bars-large .gv-bar-name,
 .gv-bars-large .gv-bar-count {
-  font-size: 32px;
+  font-size: clamp(18px, min(2.2vw, 3.3vh), 32px);
 }
 .gv-bars-large .gv-bar-track {
-  height: 20px;
+  height: clamp(10px, 1.6vh, 20px);
 }
 .gv-choices {
   display: flex;
@@ -1040,17 +1043,19 @@
 }
 .gv-winner-large h2 {
   font-family: var(--cp-font-display);
-  font-size: 64px;
+  font-size: clamp(40px, min(4.4vw, 8vh), 64px);
   line-height: 1.1;
 }
 .gv-projector {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 32px;
+  /* "safe" keeps an overflowing ballot below the header instead of pushing it up under it. */
+  justify-content: safe center;
+  gap: clamp(8px, 2vh, 32px);
   min-height: 0;
   flex: 1;
-  max-width: 1100px;
+  overflow: auto;
+  max-width: 1280px;
   width: 100%;
   margin-inline: auto;
 }
@@ -1062,8 +1067,15 @@
 }
 .gv-projector-head h2 {
   margin: 0;
-  font-size: 48px;
+  font-size: clamp(32px, min(3.3vw, 6vh), 48px);
+}
+.gv-projector-head .cp-timer-ring {
+  width: clamp(100px, 14vh, 220px);
+  height: clamp(100px, 14vh, 220px);
+  flex-shrink: 0;
+  font-size: clamp(24px, 4vh, 52px);
 }
 .gv-projector-count {
-  font-size: 24px;
+  margin: 0;
+  font-size: clamp(18px, 3vh, 24px);
 }
