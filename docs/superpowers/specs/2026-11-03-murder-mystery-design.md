@@ -1,6 +1,6 @@
 # Murder Mystery — thiết kế minigame
 
-Trạng thái: bản thiết kế chờ người dùng duyệt. Chưa lập kế hoạch hay triển khai game.
+Trạng thái: người dùng đã duyệt toàn bộ bản thiết kế bằng “Ok duyệt” ngày 2026-11-03. Bước tiếp theo là lập kế hoạch triển khai; chưa triển khai game.
 
 Tên làm việc: **Murder Mystery**. Bối cảnh gợi tinh thần cộng sự Holmes & Watson; tên thương mại và tên trong code để người làm quyết.
 
@@ -20,7 +20,7 @@ Trải nghiệm người dùng muốn nhất từ Clue/Cluedo là **ngồi xuố
 - Bốn lượt điều tra là bốn quyết định chung. Người dẫn điều tra đổi lượt; mỗi người trong đội bốn người dẫn một lần.
 - Đích cuối là hung thủ, hung khí và địa điểm gây án, cùng chứng cứ hỗ trợ. Một lần nộp kết luận cuối; ưu tiên đáp án và bằng chứng.
 
-**Những chi tiết mang nhãn “Đề xuất của Codex” bên dưới là quyết định bổ sung để bản thiết kế có thể lập kế hoạch được; cần được duyệt cùng tài liệu.** Chúng chưa được người dùng xác nhận riêng.
+**Những chi tiết mang nhãn “Đề xuất của Codex” bên dưới ghi lại nguồn gốc các quyết định bổ sung.** Chúng đã được người dùng duyệt cùng toàn bộ tài liệu, dù không được xác nhận riêng từng mục trước đó.
 
 ## 2. Các hướng đã cân nhắc
 
