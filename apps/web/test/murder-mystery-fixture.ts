@@ -175,6 +175,7 @@ export function lobbyFor(
       name: "Murder Mystery",
       stage: "ACTIVE",
       clock: null,
+      unsupportedControls: game.unsupportedControls,
       config: viewer.kind === "host" ? game.defaultConfig : null,
       publicInfo: {},
       groups: [],

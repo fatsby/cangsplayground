@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { MurderView } from "../types.js";
 import { nameOf } from "./shared.js";
+import { Stage } from "./stage.js";
 import {
   REVEAL_BOARD_START_MS,
   REVEAL_TOTAL_MS,
   countUpValue,
   elapsedStyle,
-  isStaged,
   useElapsedMs,
   usePrefersReducedMotion,
 } from "./timeline.js";
@@ -18,39 +18,110 @@ const TOTAL_START_MS = 3_000;
 const TOTAL_COUNT_MS = 1_200;
 const EVENT_STEP_S = 3.2;
 const BOARD_STEP_S = 1.4;
+const BOARD_COUNT_MS = 1_000;
 
-/** Staged element: `--d` is its delay in seconds on the shared timeline. */
-function Stage({
-  d,
-  elapsed,
-  reduced,
-  as: Tag = "li",
-  children,
-  className = "",
-}: {
-  d: number;
-  elapsed: number | null;
-  reduced: boolean;
-  as?: "li" | "div" | "p" | "dd";
-  children: React.ReactNode;
-  className?: string;
-}) {
-  const pending = !isStaged(d, elapsed, reduced);
+/** "2=" for a shared rank, otherwise the plain number. */
+export function rankLabel(rank: number, all: { rank: number }[]): string {
+  return all.filter((r) => r.rank === rank).length > 1 ? `${rank}=` : String(rank);
+}
+
+type Timeline = { elapsed: number | null; reduced: boolean };
+
+/**
+ * The solution story: events one by one, then the culprit, weapon and room flip over and the
+ * misleading statements are struck through. Used on the projector and on phones.
+ */
+export function SolutionStory({ view, elapsed, reduced }: { view: MurderView } & Timeline) {
+  const reveal = view.reveal;
+  if (!reveal) return null;
+  const answersAt = 1 + reveal.events.length * EVENT_STEP_S;
   return (
-    <Tag
-      className={`mm-stage ${className}`}
-      style={{ ["--d" as string]: d } as React.CSSProperties}
-      data-pending={pending ? "true" : undefined}
-      aria-hidden={pending ? true : undefined}
-    >
-      {children}
-    </Tag>
+    <section className="cp-panel mm-solution" aria-label="The solution">
+      <ol className="mm-events">
+        {reveal.events.map((event, i) => (
+          <Stage key={event} d={1 + i * EVENT_STEP_S} elapsed={elapsed} reduced={reduced}>
+            {event}
+          </Stage>
+        ))}
+      </ol>
+      <dl className="mm-answers">
+        {(
+          [
+            ["Culprit", reveal.answer.suspectId],
+            ["Weapon", reveal.answer.weaponId],
+            ["Room", reveal.answer.roomId],
+          ] as const
+        ).map(([label, id], i) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <Stage
+              as="dd"
+              d={answersAt + i * 0.6}
+              elapsed={elapsed}
+              reduced={reduced}
+              className="mm-flip"
+            >
+              {nameOf(view, id)}
+            </Stage>
+          </div>
+        ))}
+      </dl>
+      <Stage as="p" d={answersAt + 2} elapsed={elapsed} reduced={reduced} className="mm-stamp">
+        Case solved
+      </Stage>
+      {reveal.testimonyExplanations.length > 0 && (
+        <ul className="mm-struck">
+          {reveal.testimonyExplanations.map((e) => (
+            <Stage key={e.cardId} d={answersAt + 2.5} elapsed={elapsed} reduced={reduced}>
+              {e.explanation}
+            </Stage>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
-/** "2=" for a shared rank, otherwise the plain number. */
-function rankLabel(rank: number, all: { rank: number }[]): string {
-  return all.filter((r) => r.rank === rank).length > 1 ? `${rank}=` : String(rank);
+/** The scoreboard: last place appears first, tied teams together, totals counting up. */
+export function Scoreboard({
+  view,
+  elapsed,
+  reduced,
+  teamName = (groupId) => groupId,
+}: { view: MurderView; teamName?: (groupId: string) => string } & Timeline) {
+  const results = view.results ?? [];
+  const ordered = [...results].sort(
+    (a, b) => b.rank - a.rank || a.groupId.localeCompare(b.groupId),
+  );
+  // Tied teams appear together: stage by distinct rank, last place first.
+  const place = (rank: number) => [...new Set(ordered.map((r) => r.rank))].indexOf(rank);
+  const at = elapsed ?? 0;
+  return (
+    <section className="cp-panel mm-board" aria-label="Scoreboard">
+      <ol className="mm-rows">
+        {ordered.map((row) => {
+          const startS = REVEAL_BOARD_START_MS / 1000 + place(row.rank) * BOARD_STEP_S;
+          return (
+            <Stage
+              key={row.groupId}
+              d={startS}
+              elapsed={elapsed}
+              reduced={reduced}
+              className={row.rank === 1 ? "mm-row mm-first" : "mm-row"}
+            >
+              <span className="mm-rank">{rankLabel(row.rank, results)}</span>
+              <span className="mm-team">{teamName(row.groupId)}</span>
+              <strong>
+                {reduced
+                  ? row.score.total
+                  : countUpValue(row.score.total, at, startS * 1000, BOARD_COUNT_MS)}
+              </strong>
+            </Stage>
+          );
+        })}
+      </ol>
+    </section>
+  );
 }
 
 /**
@@ -79,22 +150,16 @@ export function RevealSections({
     startedAt: view.revealStartedAt,
     serverNow,
   });
-  const reveal = view.reveal;
   const results = view.results ?? [];
   const mine = results.find((r) => r.groupId === view.ownTeam?.groupId);
   const [tab, setTab] = useState<Tab>(mine ? "result" : "solution");
-  if (!reveal) return null;
+  if (!view.reveal) return null;
   const at = elapsed ?? 0;
   const tabs: { value: Tab; label: string }[] = [
     ...(mine ? [{ value: "result" as const, label: "Result" }] : []),
     { value: "solution", label: "Solution" },
     { value: "board", label: "Scoreboard" },
   ];
-  const ordered = [...results].sort(
-    (a, b) => b.rank - a.rank || a.groupId.localeCompare(b.groupId),
-  );
-  // Tied teams appear together: stage by distinct rank, last place first.
-  const place = (rank: number) => [...new Set(ordered.map((r) => r.rank))].indexOf(rank);
 
   return (
     <div className="cp-stack mm-reveal" style={elapsedStyle(elapsed, reduced)}>
@@ -150,82 +215,9 @@ export function RevealSections({
           <p>Rank {rankLabel(mine.rank, results)}</p>
         </section>
       )}
-
-      {tab === "solution" && (
-        <section className="cp-panel mm-solution" aria-label="The solution">
-          <ol className="mm-events">
-            {reveal.events.map((event, i) => (
-              <Stage key={event} d={1 + i * EVENT_STEP_S} elapsed={elapsed} reduced={reduced}>
-                {event}
-              </Stage>
-            ))}
-          </ol>
-          <dl className="mm-answers">
-            {(
-              [
-                ["Culprit", reveal.answer.suspectId],
-                ["Weapon", reveal.answer.weaponId],
-                ["Room", reveal.answer.roomId],
-              ] as const
-            ).map(([label, id], i) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <Stage
-                  as="dd"
-                  d={1 + reveal.events.length * EVENT_STEP_S + i * 0.6}
-                  elapsed={elapsed}
-                  reduced={reduced}
-                  className="mm-flip"
-                >
-                  {nameOf(view, id)}
-                </Stage>
-              </div>
-            ))}
-          </dl>
-          {reveal.testimonyExplanations.length > 0 && (
-            <ul className="mm-struck">
-              {reveal.testimonyExplanations.map((e) => (
-                <Stage
-                  key={e.cardId}
-                  d={1 + reveal.events.length * EVENT_STEP_S + 2}
-                  elapsed={elapsed}
-                  reduced={reduced}
-                >
-                  {e.explanation}
-                </Stage>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-
+      {tab === "solution" && <SolutionStory view={view} elapsed={elapsed} reduced={reduced} />}
       {tab === "board" && (
-        <section className="cp-panel mm-board" aria-label="Scoreboard">
-          <ol className="mm-rows">
-            {ordered.map((row) => (
-              <Stage
-                key={row.groupId}
-                d={REVEAL_BOARD_START_MS / 1000 + place(row.rank) * BOARD_STEP_S}
-                elapsed={elapsed}
-                reduced={reduced}
-                className={row.rank === 1 ? "mm-row mm-first" : "mm-row"}
-              >
-                <span className="mm-rank">{rankLabel(row.rank, results)}</span>
-                <span className="mm-team">{teamName(row.groupId)}</span>
-                <strong>
-                  {reduced
-                    ? row.score.total
-                    : countUpValue(
-                        row.score.total,
-                        at,
-                        REVEAL_BOARD_START_MS + place(row.rank) * BOARD_STEP_S * 1000,
-                        1_000,
-                      )}
-                </strong>
-              </Stage>
-            ))}
-          </ol>
-        </section>
+        <Scoreboard view={view} elapsed={elapsed} reduced={reduced} teamName={teamName} />
       )}
     </div>
   );
