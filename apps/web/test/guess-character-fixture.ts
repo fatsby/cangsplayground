@@ -99,6 +99,7 @@ export function lobbyFor(viewer: Viewer, shared: unknown, groups: 2 | 4 = 2): Lo
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     groupsVersion: 1,

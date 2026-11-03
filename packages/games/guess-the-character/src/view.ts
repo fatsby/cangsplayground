@@ -1,5 +1,5 @@
 import type { GroupId, PlayerId, TimerState, Viewer } from "@cangsplayground/core";
-import { categoryOptions, characterById } from "./content.js";
+import { categoryById, categoryOptions, characterById } from "./content.js";
 import { isTerminal, teamOf } from "./match.js";
 import { canStartRound } from "./actions.js";
 import { validateGroups } from "./round.js";
@@ -49,12 +49,19 @@ function publicMatch(match: GuessMatch): MatchPublicView {
   };
 }
 
+/** Host picker list: the whole category of a playing match, otherwise null. */
+function characterPool(match: GuessMatch): CharacterFace[] | null {
+  if (match.phase !== "PLAYING" || !match.categoryId) return null;
+  return categoryById(match.categoryId).characterIds.map((id) => face(id)!);
+}
+
 function privateMatch(match: GuessMatch, viewer: Viewer): MatchPrivateView | null {
   if (viewer.kind === "host")
     return {
       matchId: match.id,
       characters: match.teams.map((t) => ({ groupId: t.groupId, character: face(t.characterId) })),
       votes: { ...match.votes },
+      characterPool: characterPool(match),
       teams: match.teams.map((t) => ({
         groupId: t.groupId,
         cooldown: timer(t.cooldown),
@@ -74,6 +81,7 @@ function privateMatch(match: GuessMatch, viewer: Viewer): MatchPrivateView | nul
         revealAll || (i === side && match.phase === "PLAYING") ? face(t.characterId) : null,
     })),
     votes: null,
+    characterPool: null,
     teams: [
       { groupId: own.groupId, cooldown: timer(own.cooldown), guessVersion: own.guessVersion },
     ],

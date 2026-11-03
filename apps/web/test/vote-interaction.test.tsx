@@ -53,6 +53,7 @@ it("unlocks the ballot when the server clears myVote after its target leaves", a
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     players: ["Ada", "Bo", "Cy", "Dee"].map((name, i) => ({

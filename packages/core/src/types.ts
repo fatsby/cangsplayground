@@ -6,6 +6,7 @@
 
 import type { C2SPayload } from "./events.js";
 import type { AvatarConfig } from "./avatar.js";
+import type { GameVoteView } from "./gameVote.js";
 
 export type PlayerId = string;
 export type GroupId = string;
@@ -149,6 +150,8 @@ export interface LobbyView {
   /** Increments on every groups:assign — clients can replay the shuffle animation (GRP-07). */
   groupsVersion: number;
   game: GameSessionView | null;
+  /** The lobby's "which minigame?" vote, once the host has opened one; null before that. */
+  gameVote: GameVoteView | null;
   /** Host only (empty for others). */
   catalog: GameCatalogEntry[];
   /** Player only. */

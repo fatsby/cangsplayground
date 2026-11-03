@@ -56,6 +56,7 @@ export function fixture(
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: Date.now(),
     maxPlayers: 60,
     players,

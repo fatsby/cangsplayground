@@ -18,6 +18,7 @@ function hostView(module: GameModule, phase: GroupGameView["phase"]): LobbyView 
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     players: [],

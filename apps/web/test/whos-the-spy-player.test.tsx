@@ -12,6 +12,7 @@ function playerView(phase: GroupGameView["phase"], data: Partial<WhosTheSpyGroup
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     groupsVersion: 1,

@@ -320,6 +320,10 @@ export default function Host() {
                   configure={(config) => execute(() => hostCommand("game:configure", { config }))}
                   control={control}
                   hostAct={(a) => execute(() => hostCommand("game:hostAction", a))}
+                  startGameVote={(gameIds) =>
+                    void execute(() => hostCommand("gameVote:start", { gameIds }))
+                  }
+                  clearGameVote={() => void execute(() => hostCommand("gameVote:clear", {}))}
                 />
               )}
               {tab === "secrets" && (
