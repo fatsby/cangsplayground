@@ -84,8 +84,42 @@ describe("catalogue", () => {
     for (const template of caseTemplates()) {
       const logic = toLogic(template);
       const truth = logic.worlds.find((w) => w.id === logic.actualWorldId)!;
-      expect(truth.answer).toEqual({ suspectId: "s3", weaponId: "w2", roomId: "r4" });
+      expect(truth.answer).toEqual(template.truth);
       expect(evalExpr(logic.publicConstraint, truth)).toBe(true);
+    }
+  });
+
+  it("declares a different truth in different templates, for every field", () => {
+    for (const field of ["suspectId", "weaponId", "roomId"] as const) {
+      expect(new Set(caseTemplates().map((t) => t.truth[field])).size).toBeGreaterThan(1);
+    }
+  });
+
+  it("names the guilty suspect in a house rule in some templates and an innocent one in others", () => {
+    const named = (expr: Expr): string[] =>
+      expr.kind === "answer" && expr.field === "suspectId"
+        ? [expr.id]
+        : expr.kind === "not"
+          ? named(expr.expr)
+          : expr.kind === "all" || expr.kind === "any"
+            ? expr.items.flatMap(named)
+            : [];
+    const guiltyNamed = caseTemplates().filter((t) =>
+      named(t.publicConstraint).includes(t.truth.suspectId),
+    );
+    const innocentNamed = caseTemplates().filter((t) =>
+      named(t.publicConstraint).some((slot) => slot !== t.truth.suspectId),
+    );
+    expect(guiltyNamed.length).toBeGreaterThan(0);
+    expect(innocentNamed.length).toBeGreaterThan(0);
+  });
+
+  it("does not repeat identical cards, facts or reveal between the two variants of a family", () => {
+    for (const family of FAMILIES) {
+      const [a, b] = caseTemplates().filter((t) => t.familyId === family);
+      expect(JSON.stringify(a!.reveal)).not.toEqual(JSON.stringify(b!.reveal));
+      expect(JSON.stringify(a!.cards)).not.toEqual(JSON.stringify(b!.cards));
+      expect(a!.truth).not.toEqual(b!.truth);
     }
   });
 });
@@ -129,6 +163,38 @@ describe("generateCase", () => {
     }
     expect(positions.size).toBeGreaterThan(1);
     expect(culprits.size).toBeGreaterThan(2);
+  });
+
+  it("does not name the true entity second in the starting clues", () => {
+    const positions: Record<string, Set<number>> = {
+      suspectId: new Set(),
+      weaponId: new Set(),
+      roomId: new Set(),
+    };
+    for (let seed = 1; seed <= 60; seed++) {
+      const c = generateCase(seed);
+      const names = new Map(
+        [...c.briefing.suspects, ...c.briefing.weapons, ...c.briefing.rooms].map((e) => [
+          e.id,
+          e.name,
+        ]),
+      );
+      for (const cardId of c.logic.initialCardIds) {
+        const card = c.logic.cards.find((x) => x.id === cardId)!;
+        const claim = card.claims[0]!;
+        if (claim.kind !== "any") continue;
+        const [first] = claim.items;
+        if (first?.kind !== "answer") continue;
+        const field = first.field;
+        const truthName = names.get(c.reveal.answer[field])!;
+        const body = c.cards[cardId]!.body;
+        const others = claim.items
+          .map((item) => (item.kind === "answer" ? names.get(item.id)! : ""))
+          .filter((n) => n !== truthName);
+        positions[field]!.add(body.indexOf(truthName) < body.indexOf(others[0]!) ? 0 : 1);
+      }
+    }
+    for (const field of Object.keys(positions)) expect(positions[field]!.size, field).toBe(2);
   });
 
   it("uses every family and variant over a sample of seeds", () => {

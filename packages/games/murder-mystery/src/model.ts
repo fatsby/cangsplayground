@@ -124,6 +124,11 @@ export type CaseTemplate = {
   familyId: "alibi" | "access" | "exchange";
   variantId: string;
   factIds: string[];
+  /**
+   * The true answer as slots. It varies between templates (a suspect named in a house rule is
+   * guilty in some and innocent in others) so position and rule text never reveal the answer.
+   */
+  truth: Answer;
   /** Truth value of every fact in the true world. */
   truthFacts: Record<string, boolean>;
   publicConstraint: Expr;

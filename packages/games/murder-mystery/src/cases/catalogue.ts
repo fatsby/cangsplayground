@@ -10,13 +10,12 @@ import { accessTemplates } from "./access.js";
 import { alibiTemplates } from "./alibi.js";
 import { exchangeTemplates } from "./exchange.js";
 
-/** Slot ids shared by every template; the truth is always `s3` / `w2` / `r4`. */
+/** Slot ids shared by every template; each template declares which slots are true. */
 const SLOT_DOMAINS = {
   suspectIds: ["s1", "s2", "s3", "s4"],
   weaponIds: ["w1", "w2", "w3"],
   roomIds: ["r1", "r2", "r3", "r4"],
 };
-const TRUTH_SLOTS = { suspectId: "s3", weaponId: "w2", roomId: "r4" } as const;
 
 /** Difficult words with Vietnamese meanings; cards show the ones their text contains. */
 export const GLOSSARY: readonly { en: string; vi: string }[] = [
@@ -76,9 +75,9 @@ export function toLogic(template: CaseTemplate): CaseLogic {
   const worlds = enumerateWorlds(domains, template.publicConstraint);
   const actual = worlds.find(
     (world) =>
-      world.answer.suspectId === TRUTH_SLOTS.suspectId &&
-      world.answer.weaponId === TRUTH_SLOTS.weaponId &&
-      world.answer.roomId === TRUTH_SLOTS.roomId &&
+      world.answer.suspectId === template.truth.suspectId &&
+      world.answer.weaponId === template.truth.weaponId &&
+      world.answer.roomId === template.truth.roomId &&
       template.factIds.every((id) => world.facts[id] === template.truthFacts[id]),
   );
   if (!actual)

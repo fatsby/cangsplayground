@@ -110,7 +110,9 @@ function describeClaim(expr: Expr, template: CaseTemplate, names: Names): string
   if (expr.kind === "any" && expr.items.length === 2) {
     const [a, b] = expr.items;
     if (a?.kind === "answer" && b?.kind === "answer" && a.field === b.field) {
-      return phrase(SUBJECTS[a.field].oneOf, nameOf(a.id), nameOf(b.id));
+      // Alphabetical, never slot order: the true entity must not always come second.
+      const [first, second] = [nameOf(a.id), nameOf(b.id)].sort((x, y) => x.localeCompare(y));
+      return phrase(SUBJECTS[a.field].oneOf, first!, second!);
     }
   }
   throw new Error(`cannot describe claim ${JSON.stringify(expr)} in ${template.variantId}`);
@@ -320,7 +322,11 @@ export function generateCase(seed: number, selection?: CaseSelection): CompiledC
   }
 
   const reveal: CaseReveal = {
-    answer: { suspectId: idOf("s3"), weaponId: idOf("w2"), roomId: idOf("r4") },
+    answer: {
+      suspectId: idOf(template.truth.suspectId),
+      weaponId: idOf(template.truth.weaponId),
+      roomId: idOf(template.truth.roomId),
+    },
     events: template.reveal.events.map((line) => fill(line, names)),
     testimonyExplanations: Object.entries(template.reveal.explanations).map(([cardId, text]) => ({
       cardId: idOf(cardId),
