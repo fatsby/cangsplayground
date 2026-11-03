@@ -96,3 +96,26 @@ export function prepareCase(groups: GroupContext[], caseNumber: number, rng: Rng
     teams: groups.map((group) => buildTeam(group, caseData, rng)),
   };
 }
+
+/** Index in `leadOrder` of the member who submits the final accusation (the last lead). */
+export const SUBMITTER_INDEX = 3;
+
+/**
+ * The team whose frozen membership contains `playerId`. Display names never matter: a kicked
+ * student who rejoins gets a new id and therefore belongs to no team.
+ *
+ * @returns the team, or undefined for a late joiner or removed player.
+ */
+export function teamOfPlayer(shared: MurderShared, playerId: PlayerId): TeamState | undefined {
+  return shared.teams.find((team) => team.members.includes(playerId));
+}
+
+/** The member who may save drafts and confirm the accusation for `team`. */
+export function submitterOf(team: TeamState): PlayerId {
+  return team.leadOrder[SUBMITTER_INDEX]!;
+}
+
+/** Every card the team holds: starting cards plus investigation results. */
+export function discoveredCardIds(team: TeamState): string[] {
+  return Object.keys(team.owners);
+}

@@ -138,5 +138,14 @@ export type MurderShared = {
   teams: TeamState[];
 };
 
+/** Points a team earned: 3 culprit, 2 weapon, 2 room, plus 1 per valid evidence selection. */
+export type ScoreBreakdown = {
+  suspect: number;
+  weapon: number;
+  room: number;
+  evidence: Record<Field, number>;
+  total: number;
+};
+
 /** Binds a command to the case and phase it was issued in, so late commands are rejected. */
 export type PhaseGuard = { caseNumber: number; phaseVersion: number };
