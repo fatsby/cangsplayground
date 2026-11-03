@@ -191,6 +191,7 @@ describe("investigation", () => {
     expect(p.act).toHaveBeenCalledWith({
       type: "mm:investigate",
       payload: {
+        caseInstanceId: p.view.caseInstanceId,
         caseNumber: p.view.caseNumber,
         phaseVersion: p.view.phaseVersion,
         round: 1,
@@ -272,6 +273,32 @@ describe("investigation", () => {
 });
 
 describe("conclusion", () => {
+  it("matches distinct visible clue references to evidence choices from the same source", async () => {
+    const base = props("p1", "CONCLUSION");
+    const p = props(submitterOf(base.shared, "g1"), "CONCLUSION");
+    const own = p.view.ownTeam!;
+    const cards = own.sharedCards!.slice(0, 2).map((card) => ({
+      ...card,
+      sourceLabel: "Confirmed — The cook",
+    }));
+    p.session = { ...p.session, shared: { ...p.view, ownTeam: { ...own, sharedCards: cards } } };
+    await mount(p);
+    const evidence = all('[role="group"][aria-label="With what? evidence"] button');
+    expect(evidence[0]!.textContent).toContain("Clue 1");
+    expect(evidence[1]!.textContent).toContain("Clue 2");
+    for (const [i, card] of cards.entries()) {
+      const article = container.querySelector(`article[data-clue="${card.id}"]`)!;
+      expect(article.textContent).toContain(`Clue ${i + 1}`);
+      expect(article.textContent).toContain(card.body);
+    }
+    await click(evidence[1]!);
+    await click(buttons("Save draft")[0]!);
+    expect(p.act.mock.calls[0]![0]).toMatchObject({
+      type: "mm:saveDraft",
+      payload: { conclusion: { evidence: { weaponId: [cards[1]!.id] } } },
+    });
+  });
+
   it("shows every team clue, lets only the submitter edit, and caps evidence at two cards", async () => {
     const base = props("p1", "CONCLUSION");
     const submitter = submitterOf(base.shared, "g1");
@@ -309,7 +336,11 @@ describe("conclusion", () => {
     expect(p.act).toHaveBeenCalledTimes(1);
     const call = p.act.mock.calls[0]![0] as { type: string; payload: Record<string, unknown> };
     expect(call.type).toBe("mm:saveDraft");
-    expect(call.payload).toMatchObject({ draftVersion: 0, caseNumber: p.view.caseNumber });
+    expect(call.payload).toMatchObject({
+      draftVersion: 0,
+      caseInstanceId: p.view.caseInstanceId,
+      caseNumber: p.view.caseNumber,
+    });
 
     const saved = props(submitter, "CONCLUSION", { draftSaved: true });
     await mount(saved);
@@ -321,6 +352,7 @@ describe("conclusion", () => {
     expect(saved.act).toHaveBeenCalledWith({
       type: "mm:submit",
       payload: {
+        caseInstanceId: saved.view.caseInstanceId,
         caseNumber: saved.view.caseNumber,
         phaseVersion: saved.view.phaseVersion,
         draftVersion: 1,

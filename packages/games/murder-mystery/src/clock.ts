@@ -101,7 +101,7 @@ export function advancePhase(
 /**
  * The deadline the server must wake the module for, if a clock is running.
  *
- * The key encodes case, phase version, phase and round, so a callback from an earlier phase,
+ * The key encodes the case instance, case number, phase version, phase and round, so a callback from an earlier phase,
  * round or case can never be mistaken for the current one.
  *
  * @param shared the current state.
@@ -111,7 +111,7 @@ export function deadlines(shared: MurderShared): SharedDeadline[] {
   if (shared.clock.endsAt === null) return [];
   return [
     {
-      key: `mm:${shared.caseNumber}:${shared.phaseVersion}:${shared.phase}:${shared.investigationRound}`,
+      key: `mm:${shared.caseInstanceId}:${shared.caseNumber}:${shared.phaseVersion}:${shared.phase}:${shared.investigationRound}`,
       endsAt: shared.clock.endsAt,
     },
   ];

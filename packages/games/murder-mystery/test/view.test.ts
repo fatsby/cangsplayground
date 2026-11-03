@@ -28,6 +28,7 @@ function view(h: Harness, viewer: Viewer, viewerGroupId?: string | null): Murder
 
 const VIEW_KEYS = [
   "briefing",
+  "caseInstanceId",
   "caseNumber",
   "clock",
   "hostDetails",

@@ -44,7 +44,7 @@ about **24 minutes**. Keep phones private while sharing discoveries aloud.
    was investigated, without receiving the private result text.
 6. Agree on the culprit, weapon and crime room (**4 minutes**). All discovered team clues become
    readable to the team. The designated submitter (round four's lead) selects answers and **up to two
-   discovered clues per answer**, taps **Save draft**, then **Review and submit → Yes, submit**.
+   discovered clues per answer**, uses the numbered clue references to match each evidence button to its card, taps **Save draft**, then **Review and submit → Yes, submit**.
    The team gets one confirmed submission; the deadline closes editing without submitting a draft.
 7. After time expires or the host advances, everyone waits. Only the host's **Reveal** opens the
    solution and scores. The projector stages the solution story and automatically changes to the

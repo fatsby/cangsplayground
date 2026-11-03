@@ -121,6 +121,7 @@ function TeamPanel({
             void send({
               type: "mm:transfer",
               payload: {
+                caseInstanceId: view.caseInstanceId,
                 caseNumber: view.caseNumber,
                 phaseVersion: view.phaseVersion,
                 groupId: team.groupId,
@@ -153,10 +154,14 @@ export function HostSessionPanel({
   const view = murderView(session);
   const run = useGameAction(hostAct);
   const [confirming, setConfirming] = useState(false);
-  useEffect(() => setConfirming(false), [view?.phaseVersion]);
+  useEffect(() => setConfirming(false), [view?.caseInstanceId, view?.phaseVersion]);
   if (!view) return null;
   const disabled = busy || run.pending || !hostAct;
-  const guard = { caseNumber: view.caseNumber, phaseVersion: view.phaseVersion };
+  const guard = {
+    caseInstanceId: view.caseInstanceId,
+    caseNumber: view.caseNumber,
+    phaseVersion: view.phaseVersion,
+  };
   const send = (type: string, extra: Record<string, unknown> = {}) =>
     run.send({ type, payload: { ...guard, ...extra } });
   const phase = view.phase;

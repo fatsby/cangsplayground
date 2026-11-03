@@ -35,6 +35,7 @@ function setup(players = 7, groups = 2) {
 }
 const shared = (lobby: Lobby) => lobby.game!.shared as MurderShared;
 const guard = (lobby: Lobby) => ({
+  caseInstanceId: shared(lobby).caseInstanceId,
   caseNumber: shared(lobby).caseNumber,
   phaseVersion: shared(lobby).phaseVersion,
 });
@@ -370,4 +371,58 @@ describe("a whole class case", () => {
     expect(() => lobby.action(leadId, { type: "mm:investigate", payload: replay })).toThrow();
     expect(JSON.stringify(shared(lobby))).toBe(snapshot);
   });
+});
+
+describe("replacement session command guards", () => {
+  it.each(["player submit", "host pause"])(
+    "rejects a stale %s after Exit and re-Prepare",
+    (kind) => {
+      const { lobby } = setup(3, 1);
+      const reachConclusion = () => {
+        host(lobby, "mm:start");
+        for (let step = 0; step < 7; step++) host(lobby, "mm:next");
+        expect(shared(lobby).phase).toBe("CONCLUSION");
+      };
+      lobby.control("prepare");
+      reachConclusion();
+      const oldGuard = guard(lobby);
+      const oldSubmitter = team(lobby).leadOrder[3]!;
+      lobby.control("exit");
+      lobby.selectGame("murder-mystery");
+      lobby.control("prepare");
+      reachConclusion();
+      const replacementSubmitter = team(lobby).leadOrder[3]!;
+      if (replacementSubmitter !== oldSubmitter)
+        host(lobby, "mm:transfer", {
+          groupId: team(lobby).groupId,
+          fromPlayerId: replacementSubmitter,
+          toPlayerId: oldSubmitter,
+        });
+      const firstCard = Object.keys(team(lobby).owners)[0]!;
+      act(lobby, oldSubmitter, "mm:saveDraft", {
+        draftVersion: 0,
+        conclusion: {
+          ...shared(lobby).caseData.reveal.answer,
+          evidence: { suspectId: [firstCard], weaponId: [firstCard], roomId: [firstCard] },
+        },
+      });
+      expect(shared(lobby).caseNumber).toBe(oldGuard.caseNumber);
+      expect(shared(lobby).phaseVersion).toBe(oldGuard.phaseVersion);
+      const before = JSON.stringify(shared(lobby));
+      if (kind === "player submit") {
+        expect(() =>
+          lobby.action(oldSubmitter, {
+            type: "mm:submit",
+            payload: { ...oldGuard, draftVersion: 1 },
+          }),
+        ).toThrow();
+      } else {
+        expect(() => lobby.hostAction({ type: "mm:pause", payload: oldGuard })).toThrow();
+      }
+      expect(JSON.stringify(shared(lobby))).toBe(before);
+      // A fresh request from the active submitter still works.
+      act(lobby, oldSubmitter, "mm:submit", { draftVersion: 1 });
+      expect(team(lobby).submission).not.toBeNull();
+    },
+  );
 });

@@ -44,7 +44,11 @@ const buttons = (label: string | RegExp) =>
     typeof label === "string" ? b.textContent === label : label.test(b.textContent ?? ""),
   );
 const click = (element: Element) => act(async () => (element as HTMLElement).click());
-const guard = (p: Props) => ({ caseNumber: p.view.caseNumber, phaseVersion: p.view.phaseVersion });
+const guard = (p: Props) => ({
+  caseInstanceId: p.view.caseInstanceId,
+  caseNumber: p.view.caseNumber,
+  phaseVersion: p.view.phaseVersion,
+});
 
 /** A copy of the props whose shared view is patched, for states the reducers cannot reach. */
 function patched(p: Props, patch: Record<string, unknown>): Props {

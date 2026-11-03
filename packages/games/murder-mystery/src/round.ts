@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { shuffle, type GroupContext, type PlayerId, type Rng } from "@cangsplayground/core";
 import { INVESTIGATION_ROUNDS, NO_CLOCK } from "./clock.js";
 import { drawCaseSeed, generateCase } from "./generate.js";
@@ -85,6 +86,7 @@ export function prepareCase(groups: GroupContext[], caseNumber: number, rng: Rng
   if (issue) throw new RangeError(issue);
   const caseData = generateCase(drawCaseSeed(rng));
   return {
+    caseInstanceId: randomUUID(),
     caseNumber,
     phase: "READY",
     phaseVersion: 0,

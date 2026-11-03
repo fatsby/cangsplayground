@@ -56,7 +56,12 @@ export function buildShared(phase: Phase, options: BuildOptions = {}) {
       actor,
       action: {
         type,
-        payload: { caseNumber: shared.caseNumber, phaseVersion: shared.phaseVersion, ...payload },
+        payload: {
+          caseInstanceId: shared.caseInstanceId,
+          caseNumber: shared.caseNumber,
+          phaseVersion: shared.phaseVersion,
+          ...payload,
+        },
       },
     });
     if (!result) throw new Error(`fixture command ${type} was rejected`);

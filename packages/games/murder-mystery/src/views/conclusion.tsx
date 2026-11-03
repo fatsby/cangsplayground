@@ -59,8 +59,12 @@ export function ConclusionPanel({
   useEffect(() => {
     setEdit(server);
     setConfirming(false);
-  }, [own.draftVersion, view.phaseVersion]);
-  const guard = { caseNumber: view.caseNumber, phaseVersion: view.phaseVersion };
+  }, [own.draftVersion, view.caseInstanceId, view.phaseVersion]);
+  const guard = {
+    caseInstanceId: view.caseInstanceId,
+    caseNumber: view.caseNumber,
+    phaseVersion: view.phaseVersion,
+  };
   const dirty = !sameConclusion(edit, server);
   const cards = own.sharedCards ?? [];
 
@@ -80,8 +84,8 @@ export function ConclusionPanel({
       <h1>Your final answer</h1>
       <section aria-label="Your team's clues" className="cp-stack">
         <h2>Your team's clues</h2>
-        {cards.map((card) => (
-          <ClueCard key={card.id} card={card} />
+        {cards.map((card, index) => (
+          <ClueCard key={card.id} card={card} reference={`Clue ${index + 1}`} />
         ))}
       </section>
 
@@ -119,7 +123,7 @@ export function ConclusionPanel({
               </div>
               <p className="cp-muted">Choose up to {MAX_EVIDENCE} clues that prove it.</p>
               <div className="mm-choices" role="group" aria-label={`${legend} evidence`}>
-                {cards.map((card) => {
+                {cards.map((card, index) => {
                   const picked = edit.evidence[field].includes(card.id);
                   const full = !picked && edit.evidence[field].length >= MAX_EVIDENCE;
                   return (
@@ -132,7 +136,7 @@ export function ConclusionPanel({
                       data-clue={card.id}
                       onClick={() => toggle(field, card.id)}
                     >
-                      {card.sourceLabel}
+                      Clue {index + 1} · {card.sourceLabel}
                     </button>
                   );
                 })}

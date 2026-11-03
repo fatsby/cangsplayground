@@ -4,8 +4,9 @@
 // Requires Chromium: pnpm exec playwright-core install chromium.
 // API setup creates teams/case; every game control, investigation and submission uses browser UI.
 import assert from "node:assert/strict";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { URL } from "node:url";
 import { chromium } from "playwright-core";
 import { io } from "socket.io-client";
 import { createServer } from "../apps/server/src/index.ts";
@@ -57,6 +58,39 @@ const secondSeed = Array.from({ length: 20 }, (_, i) => i + 4).find(
 assert(secondSeed);
 const report = [];
 try {
+  // A frozen server timestamp must render exactly the same frame on later browser frames.
+  // Sample the real stylesheet rather than mirroring animation math in a unit test.
+  const probe = await newPage();
+  const css = await readFile(
+    new URL("../packages/games/murder-mystery/src/views/murder-mystery.css", import.meta.url),
+    "utf8",
+  );
+  await probe.setContent(
+    `<style>${css}</style><div style="--mm-elapsed:3.6"><div class="mm-stage mm-walk" style="--d:3.4">Victim</div></div>`,
+  );
+  const frames = await probe.evaluate(async () => {
+    const waitFrames = (count) =>
+      new Promise((resolve) => {
+        const next = () => (--count > 0 ? window.requestAnimationFrame(next) : resolve());
+        window.requestAnimationFrame(next);
+      });
+    const el = document.querySelector(".mm-walk");
+    const read = () => ({
+      transform: window.getComputedStyle(el).transform,
+      opacity: window.getComputedStyle(el).opacity,
+    });
+    await waitFrames(2);
+    const first = read();
+    await waitFrames(20);
+    const frozen = read();
+    el.parentElement.style.setProperty("--mm-elapsed", "4.2");
+    await waitFrames(2);
+    return { first, frozen, sought: read() };
+  });
+  assert.deepEqual(frames.frozen, frames.first, "frozen elapsed must freeze transform and opacity");
+  assert.notDeepEqual(frames.sought, frames.first, "changing elapsed must seek to a new frame");
+  await probe.context().close();
+  console.log("FROZEN_FRAME_PASS");
   for (const [run, seed] of [firstSeed, secondSeed].entries()) {
     const server = await createServer({ seed, production: true, publicUrl: "http://127.0.0.1" });
     servers.push(server);

@@ -85,7 +85,12 @@ export function start(
     expireDue();
     const action: GameAction = {
       type,
-      payload: { caseNumber: shared.caseNumber, phaseVersion: shared.phaseVersion, ...payload },
+      payload: {
+        caseInstanceId: shared.caseInstanceId,
+        caseNumber: shared.caseNumber,
+        phaseVersion: shared.phaseVersion,
+        ...payload,
+      },
     };
     const result = reduceAction(shared, { config, roster, now, rng }, actor, action);
     if (!result) return false;

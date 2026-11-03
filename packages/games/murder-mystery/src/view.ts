@@ -124,6 +124,7 @@ export function viewFor(args: {
   const faces: ClueFace[] = Object.values(caseData.cards);
 
   return {
+    caseInstanceId: shared.caseInstanceId,
     caseNumber: shared.caseNumber,
     phaseVersion: shared.phaseVersion,
     phase: shared.phase,

@@ -2,7 +2,7 @@ import { MessageSquareQuote, ShieldCheck } from "lucide-react";
 import { SecretCard } from "@cangsplayground/ui";
 import type { ClueFace } from "../types.js";
 
-function ClueBody({ card }: { card: ClueFace }) {
+function ClueBody({ card, reference }: { card: ClueFace; reference?: string }) {
   const verified = card.sourceKind === "verified";
   return (
     <article className="mm-clue" data-kind={card.sourceKind} data-clue={card.id}>
@@ -13,6 +13,7 @@ function ClueBody({ card }: { card: ClueFace }) {
         ) : (
           <MessageSquareQuote size={18} aria-hidden="true" />
         )}
+        {reference && <span className="mm-clue-reference">{reference}</span>}
         <strong>{card.sourceLabel}</strong>
         <span className="mm-clue-kind">{verified ? "Confirmed" : "Unverified"}</span>
       </header>
@@ -40,13 +41,22 @@ function ClueBody({ card }: { card: ClueFace }) {
  *
  * @param card the card text and source.
  * @param concealed hide the text behind the hold-to-see card.
+ * @param reference visible team-clue reference matching the conclusion evidence controls.
  */
-export function ClueCard({ card, concealed = false }: { card: ClueFace; concealed?: boolean }) {
+export function ClueCard({
+  card,
+  concealed = false,
+  reference,
+}: {
+  card: ClueFace;
+  concealed?: boolean;
+  reference?: string;
+}) {
   return concealed ? (
     <SecretCard>
-      <ClueBody card={card} />
+      <ClueBody card={card} reference={reference} />
     </SecretCard>
   ) : (
-    <ClueBody card={card} />
+    <ClueBody card={card} reference={reference} />
   );
 }

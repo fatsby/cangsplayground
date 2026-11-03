@@ -125,6 +125,8 @@ export type TeamState = {
 
 /** All shared state of one case. Server-only: it carries the compiled case and its truth. */
 export type MurderShared = {
+  /** Public opaque identity of this runtime case, independent of reproducible content. */
+  caseInstanceId: string;
   caseNumber: number;
   phase: Phase;
   phaseVersion: number;
@@ -148,7 +150,7 @@ export type ScoreBreakdown = {
 };
 
 /** Binds a command to the case and phase it was issued in, so late commands are rejected. */
-export type PhaseGuard = { caseNumber: number; phaseVersion: number };
+export type PhaseGuard = { caseInstanceId: string; caseNumber: number; phaseVersion: number };
 
 /** Registry id of the game. */
 export const GAME_ID = "murder-mystery";

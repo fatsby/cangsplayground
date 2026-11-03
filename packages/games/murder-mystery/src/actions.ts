@@ -31,7 +31,7 @@ const MAX_ID_LENGTH = 64;
 
 const int = z.number().int().min(0);
 const id = z.string().min(1).max(MAX_ID_LENGTH);
-const guard = { caseNumber: int, phaseVersion: int };
+const guard = { caseInstanceId: id, caseNumber: int, phaseVersion: int };
 const cardIds = z.array(id).max(2);
 const conclusionSchema = z.strictObject({
   suspectId: id.nullable(),
@@ -263,7 +263,7 @@ const COMMANDS: Record<string, Command> = {
 /**
  * Applies one player or host command to the shared state.
  *
- * Every command carries the `caseNumber` and `phaseVersion` it was issued in; a mismatch rejects
+ * Every command carries the `caseInstanceId`, `caseNumber` and `phaseVersion` it was issued in; a mismatch rejects
  * it, so a late or retried request can never spend the next round or submit a newer draft.
  * Payloads are strict (unknown keys are rejected). Rejections return null and leave `shared`
  * untouched; none of them reveals the answer, and accepted results carry no correctness.
@@ -297,6 +297,7 @@ export function reduceAction(
   const parsed = command.schema.safeParse(action.payload);
   if (!parsed.success) return null;
   if (
+    parsed.data.caseInstanceId !== shared.caseInstanceId ||
     parsed.data.caseNumber !== shared.caseNumber ||
     parsed.data.phaseVersion !== shared.phaseVersion
   ) {

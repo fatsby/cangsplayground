@@ -117,6 +117,7 @@ it.each(["manor-night", "hotel-night"] as const)(
     const internal = () => lobby.game!.shared as MurderShared;
     const byId = (id: string) => students.find((s) => s.id === id)!;
     const guard = () => ({
+      caseInstanceId: internal().caseInstanceId,
       caseNumber: internal().caseNumber,
       phaseVersion: internal().phaseVersion,
     });
@@ -318,7 +319,12 @@ it("restores private cards on resume, transfers an offline lead and excludes sam
   const hostCmd = (type: string, extra: Record<string, unknown> = {}) =>
     ok(host, "game:hostAction", {
       type,
-      payload: { caseNumber: state().caseNumber, phaseVersion: state().phaseVersion, ...extra },
+      payload: {
+        caseInstanceId: state().caseInstanceId,
+        caseNumber: state().caseNumber,
+        phaseVersion: state().phaseVersion,
+        ...extra,
+      },
       commandId: cmd(),
     });
   await hostCmd("mm:start");
@@ -370,6 +376,7 @@ it("restores private cards on resume, transfers an offline lead and excludes sam
       await send(replacement, "game:action", {
         type: "mm:investigate",
         payload: {
+          caseInstanceId: state().caseInstanceId,
           caseNumber: state().caseNumber,
           phaseVersion: state().phaseVersion,
           round: 1,
@@ -382,6 +389,7 @@ it("restores private cards on resume, transfers an offline lead and excludes sam
   await ok(target.conn, "game:action", {
     type: "mm:investigate",
     payload: {
+      caseInstanceId: state().caseInstanceId,
       caseNumber: state().caseNumber,
       phaseVersion: state().phaseVersion,
       round: 1,

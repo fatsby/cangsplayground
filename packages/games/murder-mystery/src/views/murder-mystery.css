@@ -134,6 +134,8 @@
    mount seeks to the right frame. Reduced motion shows the final frame at once. */
 .mm-stage {
   animation: mm-stage-in 0.4s ease both;
+  /* Sampling a paused animation avoids adding browser playback time to server elapsed time. */
+  animation-play-state: paused;
   animation-delay: calc((var(--d, 0) - var(--mm-elapsed, 0)) * 1s);
 }
 .mm-stage[data-pending="true"] {

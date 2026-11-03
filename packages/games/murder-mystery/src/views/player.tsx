@@ -90,7 +90,10 @@ function Investigation({
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   // A phase or round change clears a selection that was never confirmed.
-  useEffect(() => setSelected(null), [view.phaseVersion, view.investigationRound]);
+  useEffect(
+    () => setSelected(null),
+    [view.caseInstanceId, view.phaseVersion, view.investigationRound],
+  );
   const choice = own.options.find((o) => o.id === selected) ?? null;
   const lead = playerName(lobby, own.leadId);
   const acted = own.history.some((h) => h.round === view.investigationRound);
@@ -99,6 +102,7 @@ function Investigation({
     send({
       type: "mm:investigate",
       payload: {
+        caseInstanceId: view.caseInstanceId,
         caseNumber: view.caseNumber,
         phaseVersion: view.phaseVersion,
         round: view.investigationRound,

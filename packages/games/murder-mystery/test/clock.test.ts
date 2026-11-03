@@ -8,6 +8,20 @@ import { groupsOf, start } from "./helpers.js";
 const SECOND = 1000;
 
 describe("phase clock", () => {
+  it("keeps repeated case content reproducible while separating commands and deadline instances", () => {
+    const first = start([3], {}, 7);
+    const replacement = start([3], {}, 7);
+    expect(replacement.shared.caseData).toEqual(first.shared.caseData);
+    expect(replacement.shared.caseInstanceId).not.toBe(first.shared.caseInstanceId);
+    first.begin();
+    replacement.begin();
+    const old = deadlines(first.shared)[0]!;
+    replacement.tick(INTRO_MS);
+    expect(expireDeadline(replacement.shared, old, replacement.config, replacement.now)).toBeNull();
+    replacement.expireDue();
+    expect(replacement.shared.phase).toBe("BRIEFING");
+  });
+
   it("has no deadline in READY and no timers once the case awaits reveal", () => {
     const h = start([3]);
     expect(h.shared.phase).toBe("READY");

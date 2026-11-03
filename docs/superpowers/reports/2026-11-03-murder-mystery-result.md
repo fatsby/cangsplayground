@@ -23,14 +23,14 @@ context; its session was not resumed. Unrelated main-checkout Guess the Characte
 
 Commands run in the feature worktree with Node 24.21.0 and pnpm 12.14.0:
 
-| Command                                                                                                              | Result                                                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm --filter @cangsplayground/server test murder-mystery shared-deadlines`                                         | 28 tests passed across four files                                                                                                       |
-| `pnpm test`                                                                                                          | 908 passed: core 9; Free Talk 6; Secret Word 5; Spy 16; Shark Tank 169; Guess the Character 80; Murder Mystery 171; server 130; web 322 |
-| `pnpm typecheck`                                                                                                     | All workspaces passed                                                                                                                   |
-| `pnpm lint`                                                                                                          | Passed                                                                                                                                  |
-| `pnpm build`                                                                                                         | Production build passed                                                                                                                 |
-| `pnpm --filter @cangsplayground/server exec tsx ../../scripts/acceptance-murder-mystery.mjs /tmp/mm-live-acceptance` | Both scenes passed; four teams total, all scoring 10/10                                                                                 |
+| Command                                                                                                                    | Result                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm --filter @cangsplayground/server test murder-mystery shared-deadlines`                                               | 30 tests passed across four files                                                                                                       |
+| `pnpm test`                                                                                                                | 912 passed: core 9; Free Talk 6; Secret Word 5; Spy 16; Shark Tank 169; Guess the Character 80; Murder Mystery 172; server 132; web 323 |
+| `pnpm typecheck`                                                                                                           | All workspaces passed                                                                                                                   |
+| `pnpm lint`                                                                                                                | Passed                                                                                                                                  |
+| `pnpm build`                                                                                                               | Production build passed                                                                                                                 |
+| `pnpm --filter @cangsplayground/server exec tsx ../../scripts/acceptance-murder-mystery.mjs /tmp/mm-live-acceptance-final` | Both scenes passed; four teams total, all scoring 10/10                                                                                 |
 
 One initial full-suite run exceeded the five-second timeout of a single test covering every scoring
 route of every configuration while other verification processes ran. The test now runs once per
@@ -110,6 +110,28 @@ The verified production views (generated case data, not mockup literals):
 ![Projector intro for the hotel case](../../assets/screenshots/murder-mystery-intro.png)
 
 [320px player investigation screenshot](../../assets/screenshots/murder-mystery-player.png).
+
+## Final review and regression fixes
+
+A fresh whole-branch review found three Important issues; all three were reproduced with failing
+checks and fixed in one pass. There were no Critical or deferred Minor findings.
+
+- Commands now carry an independent public `caseInstanceId` UUID in addition to case/phase versions.
+  Exit/re-Prepare cannot make an old player submission or host command match a replacement case.
+  Deadline keys carry the same identity. Repeating a content seed still recreates identical content,
+  while runtime identities differ. Replacement-session player/host regressions failed before the fix
+  and pass afterwards; a fresh submission still succeeds.
+- Conclusion clues and their evidence controls share distinct numbered references, so two different
+  statements from the same NPC can be distinguished. The regression selects the intended card by its
+  visible reference and confirms the submitted card ID.
+- CSS animations are paused and sampled only by server elapsed time. A real Chromium probe initially
+  measured changing transform/opacity at an identical frozen elapsed value; it now reports
+  `FROZEN_FRAME_PASS`, and changing elapsed seeks to another frame. Both complete browser classroom
+  flows passed again after these fixes, with unchanged seeds and 10/10 totals for both teams.
+
+The existing whole-app token-storage authentication behavior was outside this game's preference
+storage change. If the browser denies all token storage, authentication can still fail. No real B1
+classroom observations were inferred from browser testing.
 
 ## Classroom acceptance still required
 
@@ -203,3 +225,9 @@ Complete execution decisions, including earlier-session rulings and their stated
 - Task 9: Ruling: retain the live browser acceptance as scripts/acceptance-murder-mystery.mjs using existing playwright-core/tsx — the observed fullscreen defect needs a repeatable real-layout regression check; no new framework or production API added — cost: one maintained acceptance script.
 
 - Task 9: Ruling: preserve the platform projector header/footer and use fitted schematic scene art; omit sample-only flash/haptic/confetti, while keeping staged story/scoreboard and required dynamic labels/parts — favors readable content and existing shell integration — cost: less cinematic polish than the static mockup.
+
+- Final: Ruling: authentication when token storage throws stays with the existing app socket/session boundary; this branch only promised preference-storage tolerance — outside this game change — cost: users whose browser blocks all token storage still cannot authenticate.
+
+- Final: Ruling: real B1 discussion quality and pacing remain an explicitly documented teacher playtest — browser tests cannot establish spoken participation — cost: teaching effectiveness and approximately 24-minute timing remain unvalidated with a class.
+
+- Final: Ruling: add public caseInstanceId (independent crypto UUID) to every action guard/DTO and deadline key; displayed caseNumber and seeded content stay unchanged — repeated content seeds do not identify runtime sessions — cost: one 36-character public token in state/commands; older in-flight clients are rejected until reloaded.
