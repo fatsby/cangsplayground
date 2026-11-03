@@ -2,8 +2,10 @@ import type { GameAction, GroupContext, SharedArgs, Viewer } from "@cangsplaygro
 import { z } from "zod";
 import { NO_CLOCK, advancePhase } from "./clock.js";
 import type { MurderConfig } from "./config.js";
+import { transferResponsibilities } from "./lifecycle.js";
 import {
   discoveredCardIds,
+  isDraftComplete,
   prepareCase,
   submitterOf,
   teamOfPlayer,
@@ -46,6 +48,12 @@ const saveDraftSchema = z.strictObject({
   conclusion: conclusionSchema,
 });
 const submitSchema = z.strictObject({ ...guard, draftVersion: int });
+const transferSchema = z.strictObject({
+  ...guard,
+  groupId: id,
+  fromPlayerId: id,
+  toPlayerId: id,
+});
 const extendSchema = z.strictObject({ ...guard, seconds: z.literal(EXTEND_MS / 1000) });
 
 type Who = "host" | "player";
@@ -82,13 +90,6 @@ function isValidConclusion(shared: MurderShared, team: TeamState, conclusion: Co
     (cards) => new Set(cards).size === cards.length && cards.every((card) => known.includes(card)),
   );
 }
-
-/** A draft that may be confirmed: all three answers chosen and each proof slot holds 1-2 cards. */
-const isComplete = (draft: Conclusion): boolean =>
-  draft.suspectId !== null &&
-  draft.weaponId !== null &&
-  draft.roomId !== null &&
-  Object.values(draft.evidence).every((cards) => cards.length >= 1);
 
 /** The submitter of the actor's team during the live CONCLUSION phase, or null. */
 function submitterTeam(shared: MurderShared, ctx: ActionContext, actor: Viewer): TeamState | null {
@@ -178,7 +179,8 @@ const COMMANDS: Record<string, Command> = {
     schema: submitSchema,
     run: (shared, ctx, actor, data: z.infer<typeof submitSchema>) => {
       const team = submitterTeam(shared, ctx, actor);
-      if (!team || data.draftVersion !== team.draftVersion || !isComplete(team.draft)) return null;
+      if (!team || data.draftVersion !== team.draftVersion || !isDraftComplete(team.draft))
+        return null;
       return withTeam(shared, { ...team, submission: structuredClone(team.draft) });
     },
   },
@@ -248,6 +250,12 @@ const COMMANDS: Record<string, Command> = {
             clock: NO_CLOCK,
           }
         : null,
+  },
+  "mm:transfer": {
+    who: "host",
+    schema: transferSchema,
+    run: (shared, _ctx, _actor, data: z.infer<typeof transferSchema>) =>
+      transferResponsibilities(shared, data.groupId, data.fromPlayerId, data.toPlayerId),
   },
   "mm:newCase": { who: "host", schema: guardOnly, run: (shared, ctx) => newCase(shared, ctx) },
 };

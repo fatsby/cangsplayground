@@ -115,6 +115,13 @@ export function submitterOf(team: TeamState): PlayerId {
   return team.leadOrder[SUBMITTER_INDEX]!;
 }
 
+/** A draft the submitter may confirm: all answers chosen and 1-2 cards in every proof slot. */
+export const isDraftComplete = (draft: Conclusion): boolean =>
+  draft.suspectId !== null &&
+  draft.weaponId !== null &&
+  draft.roomId !== null &&
+  Object.values(draft.evidence).every((cards) => cards.length >= 1);
+
 /** Every card the team holds: starting cards plus investigation results. */
 export function discoveredCardIds(team: TeamState): string[] {
   return Object.keys(team.owners);

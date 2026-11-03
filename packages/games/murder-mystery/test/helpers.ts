@@ -8,6 +8,7 @@ import {
 import { reduceAction } from "../src/actions.js";
 import { advancePhase, deadlines, expireDeadline } from "../src/clock.js";
 import { configSchema, type MurderConfig } from "../src/config.js";
+import { handlePlayerLeft, handleRosterChange } from "../src/lifecycle.js";
 import type { CaseLogic } from "../src/model.js";
 import { prepareCase } from "../src/round.js";
 import { availableActions } from "../src/solver.js";
@@ -30,6 +31,12 @@ export type Harness = {
   expireDue(): void;
   /** Sends a host command; the current PhaseGuard is attached unless `payload` overrides it. */
   host(type: string, payload?: Record<string, unknown>): boolean;
+  /** Marks a player offline in the roster and runs the roster-change hook. */
+  disconnect(id: PlayerId): void;
+  /** Marks a player online again and runs the roster-change hook. */
+  reconnect(id: PlayerId): void;
+  /** Removes a player for good (leave or kick) and runs the player-left hook. */
+  leave(id: PlayerId): void;
   /** Sends a player command with the same defaults. */
   player(id: PlayerId, type: string, payload?: Record<string, unknown>): boolean;
 };
@@ -104,6 +111,20 @@ export function start(
       now += ms;
     },
     expireDue,
+    disconnect(id) {
+      roster.find((entry) => entry.playerId === id)!.connected = false;
+      shared = handleRosterChange({ config, shared, roster, now, rng });
+    },
+    reconnect(id) {
+      roster.find((entry) => entry.playerId === id)!.connected = true;
+      shared = handleRosterChange({ config, shared, roster, now, rng });
+    },
+    leave(id) {
+      const index = roster.findIndex((entry) => entry.playerId === id);
+      const groupId = roster[index]?.groupId ?? null;
+      if (index >= 0) roster.splice(index, 1);
+      shared = handlePlayerLeft({ config, shared, roster, now, rng, playerId: id, groupId });
+    },
     host: (type, payload = {}) => send({ kind: "host" }, type, payload),
     player: (id, type, payload = {}) => send({ kind: "player", playerId: id }, type, payload),
   };

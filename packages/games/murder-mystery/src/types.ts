@@ -149,3 +149,69 @@ export type ScoreBreakdown = {
 
 /** Binds a command to the case and phase it was issued in, so late commands are rejected. */
 export type PhaseGuard = { caseNumber: number; phaseVersion: number };
+
+/** Registry id of the game. */
+export const GAME_ID = "murder-mystery";
+
+/** One selectable investigation, with labels only: no predicates, results or counts. */
+export type ActionOption = {
+  id: string;
+  kind: "alibi" | "relationship" | "inspect" | "challenge";
+  targetId: string;
+  targetLabel: string;
+  /** Sample English question or instruction for the team to say. */
+  prompt: string;
+  /** Cards a challenge uses, by source label only (never the card text). */
+  evidence: { id: string; label: string }[];
+};
+
+/**
+ * What one device may see. Built field by field (never by spreading state) so nothing private
+ * can leak: no seed, logic, worlds, answer or unrevealed result.
+ */
+export type MurderView = PhaseGuard & {
+  phase: Phase;
+  paused: boolean;
+  clock: Clock;
+  investigationRound: number;
+  /** Host from READY, projector from INTRO, players from BRIEFING; null before. */
+  briefing: CaseBriefing | null;
+  /** Host and projector only, from INTRO; players never receive it. */
+  intro: IntroDescriptor | null;
+  introMs: number;
+  /** Server time of Reveal once REVEALED; null before. */
+  revealStartedAt: number | null;
+  progress: { groupId: GroupId; active: boolean; acted: boolean; submitted: boolean }[];
+  ownTeam: null | {
+    groupId: GroupId;
+    members: PlayerId[];
+    connected: PlayerId[];
+    leadId: PlayerId | null;
+    submitterId: PlayerId | null;
+    options: ActionOption[];
+    history: { round: number; label: string }[];
+    myCards: ClueFace[];
+    sharedCards: ClueFace[] | null;
+    draft: Conclusion | null;
+    draftVersion: number;
+    submission: Conclusion | null;
+    canInvestigate: boolean;
+    canEdit: boolean;
+    canSubmit: boolean;
+  };
+  hostDetails: null | {
+    solution: CaseReveal;
+    cards: ClueFace[];
+    teams: {
+      groupId: GroupId;
+      members: PlayerId[];
+      connected: PlayerId[];
+      leadOrder: PlayerId[];
+      owners: Record<string, PlayerId>;
+      draft: Conclusion;
+      submission: Conclusion | null;
+    }[];
+  };
+  reveal: CaseReveal | null;
+  results: { groupId: GroupId; rank: number; score: ScoreBreakdown }[] | null;
+};
