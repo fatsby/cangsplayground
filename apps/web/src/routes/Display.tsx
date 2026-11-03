@@ -19,6 +19,7 @@ import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
 import { gameViews } from "../games/registry";
+import { ProjectorGameVote } from "../components/game-vote/ProjectorGameVote";
 export function projectorBody(
   session: GameSessionView | null | undefined,
   views: GameViews | undefined,
@@ -148,8 +149,16 @@ export default function Display() {
     if (result.ok) setPair(result.data);
     else setPairError(result.error.message);
   };
+  // A game without public text gets no empty banner above its screen.
+  const publicLines =
+    session?.publicInfo && typeof session.publicInfo === "object"
+      ? Object.entries(session.publicInfo).filter(
+          (entry): entry is [string, string] => typeof entry[1] === "string",
+        )
+      : [];
   const joinUrl = `${publicUrl}/join/${code}`,
-    welcome = !!view && !ProjectorScreen && !view.groups.length;
+    voting = !!view?.gameVote && !ProjectorScreen,
+    welcome = !!view && !ProjectorScreen && !view.groups.length && !voting;
   const columns = !view?.groups.length
     ? 2
     : view.groups.length <= 4
@@ -194,21 +203,21 @@ export default function Display() {
         </header>
         <LayoutGroup>
           <div className="projector-content">
-            {session && (
+            {session && (Header || publicLines.length > 0) && (
               <div className="projector-public">
                 {Header ? (
                   <Header session={session} />
-                ) : session.publicInfo && typeof session.publicInfo === "object" ? (
-                  Object.entries(session.publicInfo)
-                    .filter(([, v]) => typeof v === "string")
-                    .map(([key, value]) => <p key={key}>{String(value)}</p>)
-                ) : null}
+                ) : (
+                  publicLines.map(([key, value]) => <p key={key}>{value}</p>)
+                )}
               </div>
             )}
             {!view ? (
               <Waiting message="Opening your lobby" />
             ) : session && ProjectorScreen ? (
               <ProjectorScreen lobby={view} session={session} serverNow={serverNow} />
+            ) : voting && view.gameVote ? (
+              <ProjectorGameVote vote={view.gameVote} serverNow={serverNow} />
             ) : !view.groups.length ? (
               <section className="projector-lobby">
                 <div className="lobby-welcome">

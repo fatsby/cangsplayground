@@ -99,6 +99,12 @@ export function buildView(lobby: Lobby, viewer: Viewer): LobbyView {
             })),
         }
       : null,
+    gameVote:
+      lobby.gameVote?.view({
+        viewerPlayerId: own?.id ?? null,
+        eligibleCount: lobby.players.size,
+        nameOf: (gameId) => registry.get(gameId)?.name ?? gameId,
+      }) ?? null,
     catalog: host ? [...registry.values()].map(catalogEntry) : [],
     me: own ? { playerId: own.id, name: own.name, groupId: own.groupId } : null,
     warnings: host ? warnings : [],

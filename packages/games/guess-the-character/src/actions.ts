@@ -10,6 +10,7 @@ import {
   isTerminal,
   pauseMatch,
   refreshAll,
+  replaceCharacter,
   resumeMatch,
   startVote,
   teamOf,
@@ -29,6 +30,10 @@ const roundPayload = z.object({ round: int });
 const votePayload = matchGuard.extend({ categoryId: z.string().min(1).max(64) });
 const donePayload = matchGuard.extend({ turnId: int });
 const guessPayload = matchGuard.extend({ guessVersion: int, name: z.string().max(400) });
+const setCharacterPayload = matchGuard.extend({
+  groupId: z.string().min(1).max(64),
+  characterId: z.string().min(1).max(64).nullable(),
+});
 const allPayload = z.object({ round: int, matches: z.array(controlGuard).min(1).max(64) });
 
 /** Start is for round 1: some match READY and none voting or playing. */
@@ -197,6 +202,14 @@ export const ACTIONS: Record<string, Reducer> = {
     finishMatch(match, { reason: "host" });
     return true;
   }),
+  "gc:setCharacter": (shared, ctx, payload) => {
+    const parsed = setCharacterPayload.safeParse(payload);
+    if (ctx.actor.kind !== "host" || !parsed.success) return null;
+    const match = findMatch(shared, parsed.data);
+    const side = match?.teams.findIndex((t) => t.groupId === parsed.data.groupId);
+    if (!match || side === undefined || side < 0) return null;
+    return replaceCharacter(match, side as 0 | 1, parsed.data.characterId, ctx.rng) ? shared : null;
+  },
   "gc:pauseAll": allMatches(pause),
   "gc:resumeAll": allMatches(resume),
   "gc:newRound": (shared, ctx, payload) => {

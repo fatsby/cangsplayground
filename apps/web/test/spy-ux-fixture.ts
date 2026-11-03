@@ -7,6 +7,7 @@ export function spyLobby(phase: GroupGameView["phase"] = "RUNNING"): LobbyView {
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     groupsVersion: 1,

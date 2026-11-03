@@ -1,0 +1,1120 @@
+/* Murder Mystery — layout on top of the shared Arcade Night tokens. */
+.mm-player,
+.mm-host,
+.mm-projector {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.mm-player h1,
+.mm-player h2,
+.mm-player h3 {
+  margin: 0;
+}
+
+/* Clue cards: source kind is shown by icon, border style and a word, never by colour alone. */
+.mm-clue {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--cp-radius, 12px);
+  background: var(--cp-surface, transparent);
+  text-align: left;
+}
+.mm-clue[data-kind="verified"] {
+  border: 2px solid var(--cp-ink, currentColor);
+}
+.mm-clue[data-kind="testimony"] {
+  border: 2px dashed var(--cp-ink-muted, currentColor);
+}
+.mm-clue-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.mm-clue-kind {
+  margin-left: auto;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mm-clue-body {
+  margin: 0;
+  line-height: 1.5;
+}
+.mm-vocab dl {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+}
+.mm-vocab dl div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-vocab dt {
+  font-weight: 700;
+}
+.mm-vocab dd {
+  margin: 0;
+  color: var(--cp-ink-muted, inherit);
+}
+
+/* Language help */
+.mm-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mm-phrases {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.mm-phrases li {
+  display: grid;
+  gap: 2px;
+}
+.mm-vi {
+  font-size: 0.875rem;
+  color: var(--cp-ink-muted, inherit);
+}
+
+/* Choices wrap and stack on a 320px phone. */
+.mm-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-choice,
+.mm-evidence,
+.mm-option {
+  flex: 1 1 140px;
+  min-height: 44px;
+  text-align: left;
+  white-space: normal;
+}
+.mm-option {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+}
+.mm-choice[aria-pressed="true"],
+.mm-evidence[aria-pressed="true"],
+.mm-option[aria-pressed="true"] {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+.mm-evidence[aria-disabled="true"] {
+  opacity: 0.5;
+}
+.mm-summary {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.mm-summary div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-summary dd {
+  margin: 0;
+  font-weight: 700;
+}
+.mm-round-head {
+  display: grid;
+  gap: 8px;
+}
+
+/* Staged sequences: every element delays by calc(var(--d) - var(--mm-elapsed)) seconds, so a late
+   mount seeks to the right frame. Reduced motion shows the final frame at once. */
+.mm-stage {
+  animation: mm-stage-in 0.4s ease both;
+  /* Sampling a paused animation avoids adding browser playback time to server elapsed time. */
+  animation-play-state: paused;
+  animation-delay: calc((var(--d, 0) - var(--mm-elapsed, 0)) * 1s);
+}
+.mm-stage[data-pending="true"] {
+  visibility: hidden;
+}
+@keyframes mm-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mm-score-lines,
+.mm-events,
+.mm-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-score-line,
+.mm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mm-row .mm-team {
+  flex: 1;
+}
+.mm-first {
+  font-weight: 800;
+}
+.mm-answers {
+  display: grid;
+  gap: 8px;
+}
+.mm-struck li {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.mm-total strong {
+  font-size: 1.75rem;
+}
+
+/*
+ * Projector intro (mockup D1b). The base style of every element is the FINAL frame; each
+ * animation runs from its opening state into that frame. All animations are paused and sampled
+ * at `--mm-elapsed` (seconds) through `.mm-intro .t` below, so a reload, a pause or reduced
+ * motion lands on the right frame. `--u` is one mockup pixel of the 1440x810 stage.
+ */
+.mm-intro {
+  --u: calc(100cqw / 1440);
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #05061a;
+  color: #fff;
+}
+.mm-intro-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mm-intro .cn-hale {
+  transform: translate(760px, 640px);
+}
+.mm-intro .cn-body {
+  transform: rotate(-84deg);
+}
+.mm-intro .cn-leg-l {
+  transform-origin: -9px -44px;
+}
+.mm-intro .cn-leg-r {
+  transform-origin: 9px -44px;
+}
+.mm-intro .cn-arm-l {
+  transform-origin: -22px -86px;
+}
+.mm-intro .cn-arm-r {
+  transform-origin: 22px -86px;
+}
+.mm-intro .cn-eyes-o,
+.mm-intro .cn-impact,
+.mm-intro .cn-atk,
+.mm-intro .cn-dark,
+.mm-intro .cn-flash,
+.mm-intro .cn-lbl {
+  opacity: 0;
+}
+.mm-intro .cn-rain {
+  opacity: 0.6;
+}
+.mm-intro .cn-impact {
+  transform: translate(760px, 566px);
+}
+.mm-intro .cn-atk {
+  transform: translate(930px, 640px);
+}
+.mm-intro .cn-chalk > * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.mm-intro .cn-sus {
+  transform: translate(var(--x), 0);
+}
+.mm-intro .cn-cone {
+  opacity: 0.07;
+}
+.mm-intro .cn-sus-name {
+  text-transform: uppercase;
+}
+.mm-intro .cn-topshade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(470 * var(--u));
+  background: linear-gradient(rgba(3, 4, 16, 0.93), transparent);
+  pointer-events: none;
+}
+.mm-intro .cn-title {
+  position: absolute;
+  left: calc(80 * var(--u));
+  right: calc(80 * var(--u));
+  top: calc(64 * var(--u));
+  text-align: center;
+  text-shadow: 0 6px 40px #000;
+}
+.mm-intro .cn-title small {
+  display: block;
+  font: calc(15 * var(--u)) var(--cp-font-mono, monospace);
+  letter-spacing: calc(8 * var(--u));
+  text-transform: uppercase;
+  color: var(--cp-accent, #00e5c7);
+}
+.mm-intro .cn-title h1 {
+  margin: calc(12 * var(--u)) auto calc(14 * var(--u));
+  max-width: calc(1180 * var(--u));
+  font: 700 calc(80 * var(--u)) / 1.08 var(--cp-font-display, sans-serif);
+  letter-spacing: calc(-2 * var(--u));
+  text-wrap: balance;
+}
+.mm-intro .cn-title p {
+  margin: 0;
+  font: 600 calc(32 * var(--u)) / 1.2 var(--cp-font-display, sans-serif);
+  color: #ffd08a;
+}
+.mm-intro .cap {
+  position: absolute;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.mm-intro .cn-cap {
+  left: 0;
+  right: 0;
+  bottom: calc(104 * var(--u));
+  margin: 0 auto;
+  width: max-content;
+  max-width: calc(1200 * var(--u));
+  padding: calc(10 * var(--u)) calc(32 * var(--u));
+  border-radius: 999px;
+  background: rgba(5, 6, 26, 0.62);
+  font: 600 calc(40 * var(--fit, 1) * var(--u)) / 1.3 var(--cp-font-display, sans-serif);
+  text-align: center;
+  text-shadow: 0 2px 12px #000;
+}
+.mm-intro .cn-cap-top {
+  top: calc(112 * var(--u));
+  bottom: auto;
+}
+.mm-intro .cn-namecard {
+  left: calc(96 * var(--u));
+  top: calc(130 * var(--u));
+  display: grid;
+  gap: calc(2 * var(--u));
+  max-width: calc(560 * var(--u));
+  padding: calc(16 * var(--u)) calc(24 * var(--u));
+  border: calc(2 * var(--u)) solid var(--cp-accent, #00e5c7);
+  border-radius: calc(16 * var(--u));
+  background: rgba(5, 6, 26, 0.78);
+  box-shadow: 0 0 calc(40 * var(--u)) calc(-8 * var(--u)) var(--cp-accent, #00e5c7);
+}
+.mm-intro .cn-namecard small {
+  font: calc(13 * var(--u)) var(--cp-font-mono, monospace);
+  letter-spacing: calc(4 * var(--u));
+  text-transform: uppercase;
+  color: var(--cp-accent, #00e5c7);
+}
+.mm-intro .cn-namecard b {
+  font: 700 calc(34 * var(--u)) / 1.2 var(--cp-font-display, sans-serif);
+}
+.mm-intro .cn-namecard span {
+  color: var(--cp-ink-muted, #cfcdf0);
+  font-size: calc(22 * var(--u));
+}
+.mm-intro .cn-time {
+  left: calc(96 * var(--u));
+  top: calc(190 * var(--u));
+  font: 700 calc(64 * var(--u)) var(--cp-font-mono, monospace);
+  color: var(--cp-accent, #00e5c7);
+  text-shadow: 0 0 calc(30 * var(--u)) var(--cp-accent, #00e5c7);
+  letter-spacing: calc(-2 * var(--u));
+}
+.mm-intro .cn-bar,
+.mm-intro .cn-black {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #000;
+  pointer-events: none;
+}
+.mm-intro .cn-bar {
+  height: calc(78 * var(--u));
+}
+.mm-intro .cn-bar-t {
+  top: 0;
+  transform: translateY(-100%);
+}
+.mm-intro .cn-bar-b {
+  bottom: 0;
+  transform: translateY(100%);
+}
+.mm-intro .cn-black {
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+}
+.mm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The 13-second timeline. `--d` is each element's start in seconds. */
+.mm-intro .cn-black {
+  --d: 0;
+  animation: mmcn-black 1.4s ease both;
+}
+.mm-intro .cn-cam {
+  --d: 0;
+  animation: mmcn-cam 13s ease-in-out both;
+}
+.mm-intro .cn-shake {
+  --d: 5.95;
+  animation: mmcn-shake 0.55s linear both;
+}
+.mm-intro .cn-hale {
+  --d: 1;
+  animation: mmcn-walk 2.6s cubic-bezier(0.3, 0.5, 0.5, 1) backwards;
+}
+.mm-intro .cn-bob {
+  --d: 1;
+  animation: mmcn-bob 0.325s ease-in-out 8 alternate backwards;
+}
+.mm-intro .cn-leg-l {
+  --d: 1;
+  animation: mmcn-step 0.65s ease-in-out 4 alternate backwards;
+}
+.mm-intro .cn-leg-r {
+  --d: 1;
+  animation: mmcn-step 0.65s ease-in-out 4 alternate-reverse backwards;
+}
+.mm-intro .cn-body {
+  --d: 5.95;
+  animation: mmcn-fall 1s ease-in backwards;
+}
+.mm-intro .cn-arm-l {
+  --d: 5.9;
+  animation: mmcn-arm-l 1.1s ease backwards;
+}
+.mm-intro .cn-arm-r {
+  --d: 5.9;
+  animation: mmcn-arm-r 1.1s ease backwards;
+}
+.mm-intro .cn-eyes-o {
+  --d: 0;
+  animation: mmcn-hold-on 5.95s linear;
+}
+.mm-intro .cn-eyes-x {
+  --d: 0;
+  animation: mmcn-hold-off 5.95s linear;
+}
+.mm-intro .cn-impact {
+  --d: 5.95;
+  animation: mmcn-impact 0.8s ease-out;
+}
+.mm-intro .cn-atk {
+  --d: 5.1;
+  animation: mmcn-atk 2s ease;
+}
+.mm-intro .cn-dark {
+  --d: 5;
+  animation: mmcn-dark 1.9s ease;
+}
+.mm-intro .cn-flash {
+  --d: 5.95;
+  animation: mmcn-flash 0.6s ease-out;
+}
+.mm-intro .cn-win {
+  animation: mmcn-lit 0.5s ease backwards;
+}
+.mm-intro .cn-lbl {
+  animation: mmcn-lbl var(--len) ease;
+}
+.mm-intro .cn-chalk > * {
+  --d: 7;
+  animation: mmcn-draw 1s ease-in-out backwards;
+}
+.mm-intro .cn-tape {
+  --d: 7.6;
+  animation: mmcn-tape 0.8s cubic-bezier(0.2, 1.2, 0.3, 1) backwards;
+}
+.mm-intro .cn-sus {
+  animation: mmcn-sus 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+}
+.mm-intro .cn-cone {
+  --d: 9.6;
+  animation: mmcn-fadein 0.8s ease backwards;
+}
+.mm-intro .cn-floorbg {
+  --d: 9.4;
+  animation: mmcn-fadein 0.9s ease backwards;
+}
+.mm-intro .cn-topshade {
+  --d: 10.9;
+  animation: mmcn-fadein 0.8s ease backwards;
+}
+.mm-intro .cn-title {
+  animation: mmcn-title 1.1s var(--cp-ease-out, ease-out) backwards;
+}
+.mm-intro .cn-bar-t {
+  --d: 0;
+  animation: mmcn-bar-t 11.6s ease both;
+}
+.mm-intro .cn-bar-b {
+  --d: 0;
+  animation: mmcn-bar-b 11.6s ease both;
+}
+.mm-intro .cap {
+  animation: mmcn-cap var(--len) ease both;
+}
+.mm-intro .cn-rain line {
+  animation: mmcn-rain 0.6s linear infinite;
+}
+.mm-intro .cn-stars circle {
+  animation: mmcn-twinkle 3s ease-in-out infinite;
+}
+.mm-intro .cn-lamp {
+  animation: mmcn-flick 2.2s steps(1) infinite;
+}
+/* Must follow every rule above: sample each animation at the shared elapsed time. */
+.mm-intro .t {
+  animation-play-state: paused;
+  animation-delay: calc((var(--d, 0) - var(--mm-elapsed, 0)) * 1s);
+}
+.mm-intro[data-reduced] .t {
+  animation: none;
+}
+.mm-intro[data-reduced] .cn-rain {
+  display: none;
+}
+@keyframes mmcn-black {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-cam {
+  0%,
+  20% {
+    transform: none;
+  }
+  29.2%,
+  70.8% {
+    transform: translate(-724px, -746px) scale(1.9);
+  }
+  78.5%,
+  100% {
+    transform: none;
+  }
+}
+@keyframes mmcn-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  15% {
+    transform: translate(-9px, 4px);
+  }
+  30% {
+    transform: translate(8px, -5px);
+  }
+  50% {
+    transform: translate(-6px, -3px);
+  }
+  70% {
+    transform: translate(4px, 3px);
+  }
+}
+@keyframes mmcn-walk {
+  from {
+    transform: translate(300px, 640px);
+  }
+  to {
+    transform: translate(760px, 640px);
+  }
+}
+@keyframes mmcn-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+@keyframes mmcn-step {
+  from {
+    transform: rotate(-20deg);
+  }
+  to {
+    transform: rotate(20deg);
+  }
+}
+@keyframes mmcn-fall {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(12deg);
+  }
+  65% {
+    transform: rotate(-92deg);
+  }
+  82% {
+    transform: rotate(-79deg);
+  }
+  100% {
+    transform: rotate(-84deg);
+  }
+}
+@keyframes mmcn-arm-l {
+  0% {
+    transform: rotate(0);
+  }
+  22%,
+  78% {
+    transform: rotate(170deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+@keyframes mmcn-arm-r {
+  0% {
+    transform: rotate(0);
+  }
+  22%,
+  78% {
+    transform: rotate(-170deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+@keyframes mmcn-hold-on {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mmcn-hold-off {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-impact {
+  0% {
+    opacity: 1;
+    transform: translate(760px, 566px) scale(0.1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(760px, 566px) scale(1.25) rotate(8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(760px, 566px) scale(1.7) rotate(-6deg);
+  }
+}
+@keyframes mmcn-atk {
+  0% {
+    opacity: 0;
+    transform: translate(1070px, 640px);
+  }
+  15%,
+  38% {
+    opacity: 1;
+    transform: translate(930px, 640px);
+  }
+  46%,
+  70% {
+    opacity: 1;
+    transform: translate(880px, 640px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(960px, 640px);
+  }
+}
+@keyframes mmcn-dark {
+  0% {
+    opacity: 0;
+  }
+  14%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-flash {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-lit {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-lbl {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  14% {
+    opacity: 1;
+    transform: none;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Hidden until the stroke starts, or the round caps of an empty dash show as dots. */
+@keyframes mmcn-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+}
+@keyframes mmcn-tape {
+  from {
+    opacity: 0;
+    transform: translateX(1100px);
+  }
+}
+@keyframes mmcn-sus {
+  from {
+    opacity: 0;
+    transform: translate(var(--x), 220px);
+  }
+}
+@keyframes mmcn-fadein {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-title {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    filter: blur(10px);
+  }
+}
+@keyframes mmcn-bar-t {
+  0%,
+  92% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+@keyframes mmcn-bar-b {
+  0%,
+  92% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+@keyframes mmcn-cap {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  12% {
+    opacity: 1;
+    transform: none;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes mmcn-rain {
+  from {
+    transform: translate(0, -80px);
+  }
+  to {
+    transform: translate(-30px, 120px);
+  }
+}
+@keyframes mmcn-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes mmcn-flick {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 0.55;
+  }
+  52% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0.75;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-intro .t {
+    animation: none;
+  }
+  .mm-intro .cn-rain {
+    display: none;
+  }
+}
+
+/* Host and projector */
+.mm-reassign {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-host-members {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-host-results {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.mm-projector {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 8px 24px 14px;
+  font-size: clamp(1.1rem, 2vw, 1.75rem);
+}
+/*
+ * The intro is a 13-second film (mockup D1b): it covers the whole projector, shell included, and
+ * keeps 16:9 inside any window. The connection banner (z-index 50) still shows above it.
+ */
+.mm-projector-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  background: #05061a;
+}
+.mm-projector-intro .mm-intro {
+  width: min(100vw, calc(100vh * 16 / 9));
+  border-radius: 0;
+}
+.mm-intro-paused {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  margin: 0;
+  padding: 8px 20px;
+  border: 2px solid var(--cp-warning, #ffb547);
+  border-radius: 999px;
+  background: rgba(5, 6, 26, 0.85);
+  color: var(--cp-warning, #ffb547);
+  font: 700 clamp(14px, 1.6vw, 24px) / 1.2 var(--cp-font-mono, monospace);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.mm-projector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.mm-projector-head h2 {
+  margin: 0;
+  font: 600 clamp(22px, 2.2vw, 34px) / 1.2 var(--cp-font-display, sans-serif);
+}
+.mm-projector-head p {
+  margin: 0;
+}
+.mm-pj-clock {
+  display: grid;
+  justify-items: end;
+  margin-left: auto;
+}
+.mm-pj-clock small {
+  color: var(--cp-ink-muted);
+  font: clamp(11px, 0.9vw, 14px) var(--cp-font-mono, monospace);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.mm-pj-clock .cp-timer {
+  font-size: clamp(36px, 4.4vw, 64px);
+  line-height: 1;
+}
+.mm-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Public case file (mockup D2): case on the left, suspects, weapons and rooms on the right. */
+.mm-dossier {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  gap: 14px;
+  font-size: clamp(12px, min(1.15vw, 1.85vh), 18px);
+  line-height: 1.4;
+}
+.mm-pj-panel {
+  display: grid;
+  align-content: start;
+  gap: min(10px, 1.3vh);
+  padding: clamp(10px, min(1.2vw, 2vh), 20px);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r, 16px);
+  background: var(--cp-surface);
+}
+.mm-pj-panel .mm-eyebrow {
+  font-weight: 400;
+}
+.mm-dossier p {
+  margin: 0;
+}
+.mm-dossier-case h1 {
+  margin: 0;
+  font: 600 clamp(18px, min(2.1vw, 3.3vh), 32px) / 1.15 var(--cp-font-display, sans-serif);
+  letter-spacing: -0.02em;
+}
+.mm-dossier-found,
+.mm-dossier-goal {
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: var(--cp-r-sm, 10px);
+  background: var(--cp-surface-2);
+}
+.mm-dossier-found b {
+  color: var(--cp-accent);
+}
+.mm-dossier-goal {
+  display: block;
+  background: color-mix(in oklab, var(--cp-primary) 22%, var(--cp-surface));
+}
+.mm-dossier-side {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+.mm-dossier-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-dossier-people li {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-r-sm, 10px);
+  background: var(--cp-surface-2);
+}
+.mm-dossier-people span {
+  color: var(--cp-ink-muted);
+  font-size: 0.82em;
+  line-height: 1.35;
+}
+.mm-dossier-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.mm-dossier-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-dossier-chips li {
+  padding: 4px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 999px;
+  background: var(--cp-surface-2);
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .mm-dossier,
+  .mm-dossier-people {
+    grid-template-columns: 1fr;
+  }
+}
+.mm-stamp {
+  display: inline-block;
+  padding: 4px 16px;
+  border: 4px solid currentColor;
+  border-radius: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-stage {
+    animation: none;
+  }
+  .mm-stage[data-pending="true"] {
+    visibility: visible;
+  }
+}
+
+/* Projector READY (mockup D1): the case waits for the host. */
+.mm-projector-ready {
+  grid-template-rows: 1fr auto;
+  align-content: stretch;
+}
+.mm-ready-center {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  text-align: center;
+}
+.mm-eyebrow {
+  margin: 0;
+  color: var(--cp-ink-muted);
+  font: clamp(12px, 1vw, 15px) var(--cp-font-mono, monospace);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.mm-ready-center h1 {
+  margin: 0;
+  font: 600 clamp(40px, 4.6vw, 72px) / 1.15 var(--cp-font-display, sans-serif);
+  letter-spacing: -0.02em;
+}
+.mm-ready-sub {
+  margin: 0;
+  color: var(--cp-ink-muted);
+  font-size: clamp(18px, 1.9vw, 28px);
+}
+.mm-ready-teams {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-ready-teams li {
+  padding: 8px;
+  border: 1px solid var(--cp-border);
+  border-radius: 999px;
+  background: var(--cp-surface-2);
+}
+.mm-ready-teams .cp-team-badge {
+  font-size: clamp(16px, 1.4vw, 22px);
+  padding: 8px 16px;
+}
+.mm-ready-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding-top: 15px;
+  border-top: 1px solid var(--cp-border);
+  color: var(--cp-ink-muted);
+  font-size: 18px;
+}
+.mm-ready-foot span {
+  color: var(--cp-accent);
+  font-size: 22px;
+}
+
+/* Phone READY and INTRO (mockup P1). */
+.mm-ready-title {
+  margin: 0;
+  order: -1;
+}
+.mm-player .cp-empty {
+  gap: 12px;
+  padding: 8px 0;
+}
+.mm-player .cp-empty-icon {
+  order: -2;
+  width: 88px;
+  height: 88px;
+}
+.mm-members {
+  grid-template-columns: 1fr;
+}
+.mm-members li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.mm-how {
+  list-style: decimal;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--cp-ink-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}

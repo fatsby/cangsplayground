@@ -16,6 +16,7 @@ import { registerLobby } from "./handlers/lobby.js";
 import { registerSession } from "./handlers/session.js";
 import { registerGroups } from "./handlers/groups.js";
 import { registerGame } from "./handlers/game.js";
+import { registerGameVote } from "./handlers/gameVote.js";
 
 export async function createServer(
   options: {
@@ -139,6 +140,7 @@ export async function createServer(
     registerSession(ctx, on);
     registerGroups(ctx, on);
     registerGame(ctx, on);
+    registerGameVote(ctx, on);
     socket.on("disconnect", () => detach(socket));
     socket.emit("time:sync", { serverNow: manager.now() });
   });

@@ -218,6 +218,15 @@ function Playing({
     if (mine && lastTurn.current !== match.turnId) navigator.vibrate?.(200);
     lastTurn.current = match.turnId;
   }, [mine, match.turnId]);
+  // The host can swap the character mid-match; tell the team instead of changing it silently.
+  const lastCharacter = useRef<string | null>(null);
+  const [swapped, setSwapped] = useState(false);
+  useEffect(() => {
+    const id = character?.id ?? null;
+    if (lastCharacter.current !== null && id !== null && id !== lastCharacter.current)
+      setSwapped(true);
+    lastCharacter.current = id;
+  }, [character?.id]);
   return (
     <>
       <Panel className={`gc-turn ${mine ? "gc-turn-mine" : ""}`}>
@@ -280,8 +289,13 @@ function Playing({
       </Panel>
       <div className="gc-card">
         <p className="cp-muted">Your team's character. Don't let the other team see it!</p>
-        {/* Remount per round so a new match always starts face down. */}
-        <SecretCard key={`${view.round}:${match.id}`}>
+        {swapped && (
+          <p className="gc-swapped" role="status">
+            The host changed your team's character. Tap the card to see it.
+          </p>
+        )}
+        {/* Remount per round and per character so a new secret always starts face down. */}
+        <SecretCard key={`${view.round}:${match.id}:${character?.id ?? ""}`}>
           <span className="gc-secret-face">
             <span className="cp-muted">{categoryName(view, match.categoryId)}</span>
             <strong className="gc-secret-name">{character?.name ?? "—"}</strong>

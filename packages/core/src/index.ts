@@ -4,6 +4,8 @@ export * from "./lobbyCode.js";
 export * from "./teams.js";
 export * from "./groups.js";
 export * from "./types.js";
+export * from "./gameVote.js";
+export * from "./gameVoteOption.js";
 export * from "./game.js";
 export * from "./events.js";
 export * from "./time.js";

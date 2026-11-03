@@ -45,6 +45,7 @@ function fixture(role: "host" | "projector" = "projector", stage: Stage = "HUDDL
     status: "open",
     locked: false,
     hostConnected: true,
+    gameVote: null,
     createdAt: 0,
     maxPlayers: 60,
     groupsVersion: 1,

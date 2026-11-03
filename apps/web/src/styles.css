@@ -938,3 +938,144 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* Minigame vote (lobby-wide): host panel, player ballot, projector screen. */
+.gv-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gv-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name count"
+    "track track";
+  gap: 4px 12px;
+  align-items: baseline;
+}
+.gv-bar-name {
+  grid-area: name;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.gv-bar-count {
+  grid-area: count;
+  font-family: var(--cp-font-mono);
+}
+.gv-bar-track {
+  grid-area: track;
+  display: block;
+  height: 10px;
+  border-radius: var(--cp-r-pill);
+  background: var(--cp-surface-3);
+  overflow: hidden;
+}
+.gv-bar-track > span {
+  display: block;
+  height: 100%;
+  background: var(--cp-primary-neon);
+  transition: width var(--cp-dur) var(--cp-ease-out);
+}
+.gv-bar-winner .gv-bar-track > span {
+  background: var(--cp-accent);
+}
+.gv-bar-winner .gv-bar-name {
+  color: var(--cp-accent);
+}
+/* Projector: two columns once the ballot is long, sized by height so six games still fit. */
+.gv-bars-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: clamp(8px, 1.8vh, 24px) 48px;
+}
+.gv-bars-large .gv-bar-name,
+.gv-bars-large .gv-bar-count {
+  font-size: clamp(18px, min(2.2vw, 3.3vh), 32px);
+}
+.gv-bars-large .gv-bar-track {
+  height: clamp(10px, 1.6vh, 20px);
+}
+.gv-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gv-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: var(--cp-border-w-strong) solid var(--cp-border);
+  border-radius: var(--cp-r);
+  background: var(--cp-surface);
+  color: var(--cp-ink);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.gv-choice:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+.gv-choice-mine {
+  border-color: var(--cp-primary-neon);
+  box-shadow: var(--cp-glow-sm);
+}
+.gv-choice-winner {
+  border-color: var(--cp-accent);
+}
+.gv-choice-count {
+  font-family: var(--cp-font-mono);
+}
+.gv-winner h2 {
+  margin: 0;
+}
+.gv-winner-large h2 {
+  font-family: var(--cp-font-display);
+  font-size: clamp(40px, min(4.4vw, 8vh), 64px);
+  line-height: 1.1;
+}
+.gv-projector {
+  display: flex;
+  flex-direction: column;
+  /* "safe" keeps an overflowing ballot below the header instead of pushing it up under it. */
+  justify-content: safe center;
+  gap: clamp(8px, 2vh, 32px);
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  max-width: 1280px;
+  width: 100%;
+  margin-inline: auto;
+}
+.gv-projector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.gv-projector-head h2 {
+  margin: 0;
+  font-size: clamp(32px, min(3.3vw, 6vh), 48px);
+}
+.gv-projector-head .cp-timer-ring {
+  width: clamp(100px, 14vh, 220px);
+  height: clamp(100px, 14vh, 220px);
+  flex-shrink: 0;
+  font-size: clamp(24px, 4vh, 52px);
+}
+.gv-projector-count {
+  margin: 0;
+  font-size: clamp(18px, 3vh, 24px);
+}

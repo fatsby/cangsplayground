@@ -137,6 +137,11 @@ export interface MatchPrivateView {
   matchId: string;
   characters: { groupId: GroupId; character: CharacterFace | null }[];
   votes: Record<PlayerId, string> | null;
+  /**
+   * Host only: every character of the match's category, for the "pick character" list.
+   * Null for players, and before the category is chosen.
+   */
+  characterPool: CharacterFace[] | null;
   teams: { groupId: GroupId; cooldown: TimerState; guessVersion: number }[];
 }
 

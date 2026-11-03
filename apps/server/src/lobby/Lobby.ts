@@ -3,6 +3,8 @@ import {
   activePlayers,
   createRng,
   EXTEND_MS,
+  GAME_VOTE_DURATION_MS,
+  GAME_VOTE_MIN_OPTIONS,
   MAX_PLAYERS_PER_LOBBY,
   PLAYER_NAME_MAX,
   shuffle,
@@ -25,6 +27,7 @@ import {
 import { registry } from "../games/registry.js";
 import { CommandError, fail, failure } from "../auth/errors.js";
 import { newPlayerId, newToken } from "../auth/tokens.js";
+import { GameVote } from "./GameVote.js";
 
 export interface Player {
   id: string;
@@ -59,6 +62,8 @@ export class Lobby {
   groups: GroupSummary[] = [];
   groupsVersion = 0;
   game: Session | null = null;
+  /** The "which minigame?" vote on screen, running or finished; independent of `game`. */
+  gameVote: GameVote | null = null;
   warnings: HostWarning[] = [];
   commands = new Map<string, Ack<any>>();
   onChange: () => void = () => {};
@@ -270,6 +275,7 @@ export class Lobby {
     }
     for (const group of this.groups)
       group.playerIds = group.playerIds.filter((id) => id !== playerId);
+    this.gameVote?.forget(playerId);
     this.players.delete(playerId);
     this.changed();
     return player;
@@ -332,6 +338,70 @@ export class Lobby {
     };
     this.changed();
   }
+  /**
+   * Opens a minigame vote between the given games, replacing any finished one.
+   *
+   * @param gameIds registered game ids; duplicates are ignored and at least two distinct games
+   *   must remain
+   * @throws CommandError `INVALID_STATE` while a game is being played, while another vote is
+   *   still open, or with fewer than two distinct games; `NOT_FOUND` for an unregistered game
+   */
+  startGameVote(gameIds: string[]) {
+    if (this.game?.stage === "ACTIVE") fail("INVALID_STATE", "Exit this game first.");
+    this.settleGameVote();
+    if (this.gameVote?.isOpen) fail("INVALID_STATE", "A vote is already running.");
+    const unique = [...new Set(gameIds)];
+    if (unique.length < GAME_VOTE_MIN_OPTIONS)
+      fail("INVALID_STATE", "Pick at least two different games.");
+    if (unique.some((id) => !registry.has(id))) fail("NOT_FOUND", "Game not found.");
+    this.gameVote = new GameVote(unique, this.now(), GAME_VOTE_DURATION_MS);
+    this.changed();
+  }
+
+  /**
+   * Records, or replaces, a player's choice in the open vote.
+   *
+   * A vote past its deadline is closed and published first, so a late tap is rejected while
+   * everyone still sees the result even if the timer has not fired yet.
+   *
+   * @throws CommandError `NOT_FOUND` for an unknown player or a game not on the ballot,
+   *   `INVALID_STATE` when no vote is open
+   */
+  castGameVote(playerId: string, gameId: string) {
+    if (!this.players.has(playerId)) fail("NOT_FOUND", "Player not found.");
+    this.settleGameVote();
+    const vote = this.gameVote;
+    if (!vote?.isOpen) fail("INVALID_STATE", "No vote is open right now.");
+    vote.cast(playerId, gameId);
+    this.changed();
+  }
+
+  /** Removes the vote screen, running or finished, so the host is back at vote setup. */
+  clearGameVote() {
+    if (!this.gameVote) return;
+    this.gameVote = null;
+    this.changed();
+  }
+
+  /**
+   * Timer entry point: closes the vote if `endsAt` is still the current deadline and has passed.
+   * A stale or early call has no effect.
+   *
+   * @returns true when this call closed the vote, so the timer can re-arm after an early wake-up
+   */
+  expireGameVote(endsAt: number): boolean {
+    return this.gameVote?.endsAt === endsAt && this.settleGameVote();
+  }
+
+  /** Closes the open vote once its deadline has passed and publishes the result. */
+  private settleGameVote(): boolean {
+    const vote = this.gameVote;
+    if (!vote?.isOpen || !vote.isDue(this.now())) return false;
+    vote.close(this.rng);
+    this.changed();
+    return true;
+  }
+
   configure(config: Record<string, unknown>) {
     if (!this.game) fail("INVALID_STATE", "Choose a game first.");
     if (this.game.stage === "ACTIVE" && this.game.module.onSharedAction)
@@ -430,6 +500,8 @@ export class Lobby {
           now: this.now(),
         }) ?? null;
       game.stage = "ACTIVE";
+      // The vote has done its job once a game starts; leaving it would resurface after exit.
+      this.gameVote = null;
       const durationMs = game.module.gameDurationMs?.(game.config);
       game.clock =
         typeof durationMs === "number"

@@ -208,6 +208,9 @@ importers:
       '@cangsplayground/game-guess-the-character':
         specifier: workspace:*
         version: link:../../packages/games/guess-the-character
+      '@cangsplayground/game-murder-mystery':
+        specifier: workspace:*
+        version: link:../../packages/games/murder-mystery
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
@@ -251,6 +254,9 @@ importers:
       '@cangsplayground/game-guess-the-character':
         specifier: workspace:*
         version: link:../../packages/games/guess-the-character
+      '@cangsplayground/game-murder-mystery':
+        specifier: workspace:*
+        version: link:../../packages/games/murder-mystery
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
@@ -389,6 +395,31 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
     devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/games/murder-mystery:
+    dependencies:
+      '@cangsplayground/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@cangsplayground/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.60.0
+        version: 1.60.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.5
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0

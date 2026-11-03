@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { MobileToaster } from "../components/MobileToaster";
 import { AvatarEditor } from "../components/AvatarEditor";
+import { GameVoteBallot } from "../components/game-vote/GameVoteBallot";
 import { gameViews } from "../games/registry";
 import { readToken, request } from "../socket";
 import { useLobbyStore } from "../store";
@@ -69,6 +70,12 @@ export default function Player() {
     if (!result.ok) toast.error(result.error.message);
     return result.ok;
   };
+  const castGameVote = async (gameId: string) => {
+    const result = await request("gameVote:cast", { gameId });
+    if (!result.ok) toast.error(result.error.message);
+  };
+  // The vote is lobby-wide, so it takes over the screen even for players without a group.
+  const voting = !!view?.gameVote && session?.stage !== "ACTIVE";
   const TurnTip = session ? gameViews[session.gameId]?.PlayerTurnTip : undefined;
   const Screen = session ? gameViews[session.gameId]?.PlayerScreen : undefined;
   const isMine = runtime?.currentSpeakerId === view?.me?.playerId && runtime?.phase === "RUNNING";
@@ -113,10 +120,17 @@ export default function Player() {
               )}
               {group && <TeamBadge teamIndex={group.index} />}
             </header>
-            {!session && view.players.find((p) => p.id === view.me!.playerId) && (
+            {!session && !voting && view.players.find((p) => p.id === view.me!.playerId) && (
               <AvatarEditor player={view.players.find((p) => p.id === view.me!.playerId)!} />
             )}
-            {!group ? (
+            {voting && view.gameVote ? (
+              <GameVoteBallot
+                vote={view.gameVote}
+                serverNow={serverNow}
+                disabled={connection !== "online"}
+                onCast={(gameId) => void castGameVote(gameId)}
+              />
+            ) : !group ? (
               <>
                 <Waiting
                   message={
