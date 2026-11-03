@@ -29,28 +29,29 @@ lobby carries on across rounds, new teams and different games.
   "YOUR TURN" to the current speaker, and reloading mid-game puts a player back in the same team and turn.
 - **Teacher in control from a phone.** Pair a phone through a QR on the projector to pause, skip, add time, call a
   vote, or lock the lobby.
-- **Five games, one framework.** Each game is a self-contained module, so adding a game doesn't touch the core.
+- **Six games, one framework.** Each game is a self-contained module, so adding a game doesn't touch the core.
 
 ## Games
 
-| Game | In a sentence |
-|---|---|
-| **Who's the Spy** | Talk about the topic without saying its name, and find the spy. |
-| **Shark Tank** | Pitch a wild product, take questions, then make a deal with your budget. |
-| **Guess the Character** | Two teams ask questions in English to guess each other's secret character. |
-| **Secret Word** | Everyone gets a secret word to use while speaking. Can your group find it? |
-| **Free Talk Timer** | A topic, and fair timed turns for every member of the group. |
+| Game                    | In a sentence                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| **Who's the Spy**       | Talk about the topic without saying its name, and find the spy.                        |
+| **Shark Tank**          | Pitch a wild product, take questions, then make a deal with your budget.               |
+| **Murder Mystery**      | Teams share private clues, choose four investigations, and explain a final accusation. |
+| **Guess the Character** | Two teams ask questions in English to guess each other's secret character.             |
+| **Secret Word**         | Everyone gets a secret word to use while speaking. Can your group find it?             |
+| **Free Talk Timer**     | A topic, and fair timed turns for every member of the group.                           |
 
 Rules and settings: [docs/games.md](docs/games.md).
 
 ## Three screens, one lobby
 
-| Screen | Device | Purpose |
-|---|---|---|
-| Home `/` | Teacher's laptop | Create a lobby or enter a code |
-| Projector `/display/:code` | Classroom display | Lobby code, join QR, teams, timers; public information only |
-| Host console `/host/:code` | Teacher's phone | Full control, including the private "Secrets" view |
-| Player `/join/:code` → `/play/:code` | Student phones | Your team, your card, your turn |
+| Screen                               | Device            | Purpose                                                     |
+| ------------------------------------ | ----------------- | ----------------------------------------------------------- |
+| Home `/`                             | Teacher's laptop  | Create a lobby or enter a code                              |
+| Projector `/display/:code`           | Classroom display | Lobby code, join QR, teams, timers; public information only |
+| Host console `/host/:code`           | Teacher's phone   | Full control, including the private "Secrets" view          |
+| Player `/join/:code` → `/play/:code` | Student phones    | Your team, your card, your turn                             |
 
 <p align="center">
   <img src="docs/assets/screenshots/home.png" alt="Home screen with a Create lobby button and a lobby code field" width="900" />
