@@ -6,6 +6,19 @@
  * Public presentation types live in `types.ts` and import `Answer`/`Field` type-only.
  */
 
+import type {
+  CaseBriefing,
+  CaseReveal,
+  ClueFace,
+  FoundPlaceKind,
+  IntroCaptions,
+  IntroDescriptor,
+  RoomShape,
+  SceneId,
+  SuspectBadge,
+  VictimLook,
+} from "./types.js";
+
 /** The three-part solution of a case. */
 export type Answer = { suspectId: string; weaponId: string; roomId: string };
 
@@ -74,8 +87,106 @@ export type CaseLogic = {
 /** Outcome of {@link validateCase}. */
 export type ValidationReport = { ok: boolean; issues: string[]; terminalPaths: number };
 
+/**
+ * One authored clue before names are bound. `source` is a suspect slot (`s1`..`s4`) or a key of
+ * the template's `documents`; text is composed as `intro` + one sentence per claim + `note`.
+ */
+export type CardSpec = {
+  id: string;
+  kind: "testimony" | "verified";
+  source: string;
+  claims: Expr[];
+  intro: string;
+  note?: string;
+};
+
+/** One authored investigation before binding; `needs` are cards, `after` are actions. */
+export type ActionSpec = {
+  id: string;
+  kind: InvestigationKind;
+  target: string;
+  prompt: string;
+  yields: string[];
+  needs?: string[];
+  after?: string[];
+};
+
+/** A spoken clause for a boolean fact being true (`yes`) or false (`no`). */
+export type FactClause = { yes: string; no: string };
+
+/**
+ * A bounded logical configuration plus the annotated text that tells it. Slots `s1`..`s4`,
+ * `w1`..`w3`, `r1`..`r4` stand for suspects, weapons and rooms; the truth is always
+ * `s3`/`w2`/`r4` and later bound to random entities. Placeholders like `{s1}` in any text are
+ * replaced by the entity's display name.
+ */
+export type CaseTemplate = {
+  familyId: "alibi" | "access" | "exchange";
+  variantId: string;
+  factIds: string[];
+  /** Truth value of every fact in the true world. */
+  truthFacts: Record<string, boolean>;
+  publicConstraint: Expr;
+  /** Sentences that tell the public rules to everyone. */
+  ruleText: string[];
+  factClauses: Record<string, FactClause>;
+  /** Evidence documents that can be a card source or an investigation target (key -> label). */
+  documents: Record<string, string>;
+  initialCardIds: string[];
+  cards: CardSpec[];
+  actions: ActionSpec[];
+  reveal: { events: string[]; explanations: Record<string, string> };
+};
+
+/** Server-only scene preset: the pools and caption templates one intro scene draws from. */
+export type ScenePreset = {
+  id: SceneId;
+  /** The building as a noun for case text: `house` or `hotel`. Fills `{house}`. */
+  venue: string;
+  titles: string[];
+  openings: string[];
+  victims: { name: string; description: string }[];
+  roomPool: { name: string; description: string; shape: RoomShape }[];
+  weaponPool: { name: string; description: string }[];
+  suspectPool: { name: string; role: string; description: string }[];
+  foundPlaces: { kind: FoundPlaceKind; label: string }[];
+  victimLooks: VictimLook[];
+  /** Maps a suspect role to the badge drawn on its silhouette. */
+  badgeByRole: Record<string, SuspectBadge>;
+  discoveredTimes: string[];
+  /** Caption templates; `{victim}`, `{place}`, `{title}` and `{time}` are replaced. */
+  captionTemplates: Record<keyof IntroCaptions, string[]>;
+};
+
+/** A fully bound, validated case. Only the server holds it; views receive projections. */
+export type CompiledCase = {
+  seed: number;
+  contentVersion: string;
+  familyId: string;
+  variantId: string;
+  sceneId: SceneId;
+  logic: CaseLogic;
+  briefing: CaseBriefing;
+  intro: IntroDescriptor;
+  cards: Record<string, ClueFace>;
+  /** Display label of every investigation target id (a suspect or an evidence document). */
+  targets: Record<string, string>;
+  reveal: CaseReveal;
+};
+
 /** Most independent boolean facts one logical configuration may use. */
 export const MAX_FACTS = 8;
+
+/** `fact` expression: a secondary boolean secret holds. */
+export const fact = (id: string): Expr => ({ kind: "fact", id });
+/** `answer` expression: the answer field equals `id`. */
+export const is = (field: Field, id: string): Expr => ({ kind: "answer", field, id });
+/** Negation. */
+export const not = (expr: Expr): Expr => ({ kind: "not", expr });
+/** Conjunction; true for no items. */
+export const all = (...items: Expr[]): Expr => ({ kind: "all", items });
+/** Disjunction; false for no items. */
+export const any = (...items: Expr[]): Expr => ({ kind: "any", items });
 
 /**
  * Evaluates an expression in a world.

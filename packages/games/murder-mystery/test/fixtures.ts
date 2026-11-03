@@ -1,18 +1,18 @@
-import type {
-  CaseLogic,
-  Expr,
-  Field,
-  Investigation,
-  LogicalCard,
-  WorldDomains,
+import {
+  all,
+  any,
+  fact,
+  is,
+  not,
+  type CaseLogic,
+  type Expr,
+  type Investigation,
+  type LogicalCard,
+  type WorldDomains,
 } from "../src/model.js";
 import { enumerateWorlds } from "../src/solver.js";
 
-export const fact = (id: string): Expr => ({ kind: "fact", id });
-export const is = (field: Field, id: string): Expr => ({ kind: "answer", field, id });
-export const not = (expr: Expr): Expr => ({ kind: "not", expr });
-export const all = (...items: Expr[]): Expr => ({ kind: "all", items });
-export const any = (...items: Expr[]): Expr => ({ kind: "any", items });
+export { all, any, fact, is, not };
 
 export const DOMAINS: WorldDomains = {
   suspectIds: ["s1", "s2", "s3", "s4"],
