@@ -2,6 +2,8 @@
 
 Trạng thái: người dùng đã duyệt toàn bộ bản thiết kế bằng “Ok duyệt” ngày 2026-11-03. Bước tiếp theo là lập kế hoạch triển khai; chưa triển khai game.
 
+Cập nhật cùng ngày: người dùng duyệt thêm bộ mockup toàn bộ màn hình (`docs/designs/murder-mystery-screens.html`, “Ok duyệt design”), yêu cầu thêm intro vụ án trên projector và yêu cầu intro **không được hardcode**. Các thay đổi tương ứng nằm ở §1, §3, §4, §5.1, §5.2, §5.6, §7, §8, §9, §10 và §11, mang nhãn **Đề xuất của Claude**. Kế hoạch triển khai đã được cập nhật theo.
+
 Tên làm việc: **Murder Mystery**. Bối cảnh gợi tinh thần cộng sự Holmes & Watson; tên thương mại và tên trong code để người làm quyết.
 
 ## 1. Mục đích và các điểm đã thống nhất
@@ -16,6 +18,7 @@ Trải nghiệm người dùng muốn nhất từ Clue/Cluedo là **ngồi xuố
 - Đội 3–4 người; trình độ khoảng B1; thời lượng khoảng 20–25 phút mỗi vụ.
 - Các đội cùng phá một vụ, chơi đồng thời, công bố lời giải chung.
 - Flow: nhận vụ 2 phút, chia sẻ thông tin đầu 3 phút, bốn lượt điều tra tổng 12 phút, chốt lời giải 4 phút, công bố khoảng 3 phút; tổng khoảng 24 phút.
+- **Đề xuất của Claude:** trước khi nhận vụ, projector chạy một đoạn intro hoạt hình khoảng 13 giây giới thiệu vụ án (§5.2). Intro cố định, không tính vào hai phút nhận vụ và không đổi tổng thời lượng khoảng 24 phút một cách đáng kể.
 - Mỗi người nhận một phần thông tin đầu; đội tiếp tục chọn hành động điều tra để nhận thêm lời khai/chứng cứ trong suốt vụ án.
 - Bốn lượt điều tra là bốn quyết định chung. Người dẫn điều tra đổi lượt; mỗi người trong đội bốn người dẫn một lần.
 - Đích cuối là hung thủ, hung khí và địa điểm gây án, cùng chứng cứ hỗ trợ. Một lần nộp kết luận cuối; ưu tiên đáp án và bằng chứng.
@@ -44,6 +47,8 @@ Mục tiêu:
 
 Ngoài phạm vi bản đầu **(Đề xuất của Codex)**: AI hội thoại lúc chạy, ghi âm, speech recognition, chấm phát âm/ngữ pháp tự động, bản đồ di chuyển bằng xúc xắc, chiến đấu, học viên đóng hung thủ, chat trong app, host tự viết vụ án, campaign, lưu tiến độ dài hạn.
 
+Ngoài phạm vi bổ sung **(Đề xuất của Claude)**: âm thanh hoặc giọng đọc cho intro và màn công bố; host tự soạn hay tải lên cảnh intro; intro minh họa hung khí, hung thủ hoặc nơi gây án.
+
 Điều phải tránh:
 
 - Một người tự đọc hết dữ kiện và giải thay đội; một vai chỉ làm thư ký.
@@ -66,6 +71,8 @@ Ngoài phạm vi bản đầu **(Đề xuất của Codex)**: AI hội thoại l
 - Nhãn nguồn phân biệt **lời khai chưa kiểm chứng** với **phát hiện được xác nhận**. Nhãn không tự chỉ ra ai nói dối.
 - Ít nhất hai người có lý do đáng nghi lúc đầu. Có thể có người vô tội giấu bí mật; lời giải cuối giải thích bí mật đó và vì sao nó liên quan hoặc không liên quan tới vụ án.
 
+- **Đề xuất của Claude — mô tả intro công khai:** mỗi vụ mang một `IntroDescriptor` do server sinh cùng vụ án, gồm: mã cảnh hình ảnh (một trong các cảnh biên soạn sẵn), ngoại hình nạn nhân, kiểu nơi phát hiện, giờ phát hiện, kiểu cửa sổ của từng địa điểm, phụ kiện nhận dạng của từng nghi phạm và các câu phụ đề B1. Mô tả này tham chiếu hồ sơ qua ID, chỉ chứa dữ liệu trình bày công khai và không chứa hay suy ra hung thủ, hung khí, nơi gây án, seed hay cấu hình logic. Bản đầu có ít nhất hai cảnh (dinh thự và khách sạn) để dữ liệu thực sự điều khiển hình ảnh. Xem §5.2 và §7.
+
 Tên/nội dung Blackwood Manor, bác sĩ, quản gia, chìa khóa và cửa sổ trong hội thoại chỉ là ví dụ minh họa, chưa phải một vụ án đã được chứng minh giải được.
 
 ## 5. Luật và vòng đời vụ án
@@ -74,13 +81,21 @@ Tên/nội dung Blackwood Manor, bác sĩ, quản gia, chìa khóa và cửa s�
 
 Host dùng lobby và chia nhóm hiện có. Khi Prepare, server kiểm tra mỗi nhóm có 3–4 người. **Đề xuất của Codex:** cho phép một đội để giáo viên thử hoặc dùng với lớp nhỏ; không cần số đội chẵn.
 
-Server tạo một vụ án chung, khởi tạo tiến độ riêng từng đội, phân phối thẻ và thứ tự dẫn điều tra. Prepare chưa chạy đồng hồ. Host bấm Start để bắt đầu.
+Server tạo một vụ án chung, khởi tạo tiến độ riêng từng đội, phân phối thẻ và thứ tự dẫn điều tra. Prepare chưa chạy đồng hồ. Host bấm Start để bắt đầu: Start mở intro vụ án rồi tới nhận vụ (§5.2).
 
 Các thời lượng mặc định theo §1. **Đề xuất của Codex:** host chỉnh thời lượng các pha trước Prepare; bốn lượt điều tra cố định cho bản đầu. Thời lượng tính bằng server clock, giữ cấu hình trong vụ đang chơi.
 
-### 5.2 Giới thiệu — 2 phút
+### 5.2 Intro vụ án và giới thiệu — intro khoảng 13 giây + 2 phút
 
-Các đội xem cùng hồ sơ công khai, mục tiêu, danh sách nghi phạm, hung khí và địa điểm. Host có thể đọc phần mở đầu và nhắc cách chơi. Chưa mở hành động điều tra hay kết luận.
+**Intro (Đề xuất của Claude, đã duyệt qua mockup D1b):** khi host bấm Start, projector chạy một đoạn hoạt hình cartoon khoảng 13 giây giới thiệu vụ án. Diễn biến: đêm mưa, các ô cửa sổ của bốn địa điểm sáng lần lượt kèm tên; nạn nhân bước vào cảnh với thẻ tên; mất điện, một bóng đen vô danh có dấu “?” lao tới, tia chớp, nạn nhân ngã; vẽ phấn quanh vị trí ngã, rào cảnh sát, giờ phát hiện; camera lùi, bốn bóng nghi phạm có dấu “?” hiện lên cùng tiêu đề vụ án và câu “Who did it? With what? In which room?”.
+
+- Intro là một pha riêng `INTRO`, độ dài cố định 13 giây theo server clock, không cấu hình được và không tính vào hai phút nhận vụ. Đồng hồ Briefing chỉ bắt đầu sau intro. Host có Pause/Resume và Skip intro; Skip không cần xác nhận vì không làm mất nội dung chơi; không có +30s trong intro.
+- Intro **không** thể hiện hung khí (không vẽ súng, dao hay vật cụ thể), hung thủ hay nơi gây án, và không có hình ảnh bạo lực chi tiết: không máu, nhân vật chỉ ngã với mắt chữ X. Cảnh chỉ cho thấy nơi **phát hiện** thi thể, khớp hồ sơ công khai. Phụ đề dùng từ “found”, không dùng động từ chỉ cách gây án.
+- Điện thoại học viên trong INTRO hiện màn chờ “Watch the projector”, chưa mở hồ sơ công khai. Chưa có mockup cho màn này.
+- Khung hình là hàm của thời gian đã trôi từ lúc INTRO bắt đầu: tải lại hoặc kết nối lại giữa chừng tiếp tục đúng khung hình, Pause đóng băng, quá 13 giây hiện khung cuối. Nếu hệ thống bật giảm chuyển động chỉ hiện khung cuối (tiêu đề, hiện trường, nghi phạm).
+- **Không hardcode:** intro dựng từ `IntroDescriptor` (§4) cộng hồ sơ công khai của chính vụ đó. Tên nạn nhân, nghề, bốn địa điểm, bốn nghi phạm, nơi và giờ phát hiện, ngoại hình và phụ đề đều đến từ dữ liệu. Hai vụ khác nhau có thể cho hai cảnh khác nhau. Phần cố định duy nhất là nhịp 13 giây và bộ phận SVG dùng chung.
+
+Sau intro, các đội xem cùng hồ sơ công khai, mục tiêu, danh sách nghi phạm, hung khí và địa điểm trong hai phút. Host có thể đọc phần mở đầu và nhắc cách chơi. Chưa mở hành động điều tra hay kết luận.
 
 ### 5.3 Chia sẻ thông tin đầu — 3 phút
 
@@ -127,6 +142,8 @@ Hết thời gian, đội chưa xác nhận được tính là chưa nộp. Khô
 ### 5.6 Công bố — khoảng 3 phút
 
 Đóng mọi kết luận, sau đó host bấm Reveal chung. Game kể lại trình tự sự việc, hung thủ, hung khí, nơi gây án, chứng cứ cốt lõi và các lời khai gây nhiễu. Mọi đội được xem toàn bộ lời giải, kể cả các nhánh họ chưa điều tra.
+
+**Trình diễn công bố (Đề xuất của Claude, đã duyệt qua mockup D7, D8, P16–P18):** sau Reveal, các màn hình chạy một chuỗi có nhịp thay vì hiện kết quả ngay. Trên projector, lời giải chạy trước (khoảng 16 giây): các mốc thời gian lần lượt hiện ra, mốc gây án là cao trào (rung nhẹ và chớp sáng), rồi lật hung thủ, hung khí, địa điểm, đóng dấu “Case solved”, hiện chứng cứ cốt lõi và gạch các lời khai gây nhiễu. Sau khoảng 2 giây projector tự chuyển sang bảng điểm (khoảng 14 giây): xếp hạng lộ từ dưới lên, hai đội đồng hạng lộ gần như cùng lúc, điểm đếm lên, hạng nhất nổi bật. Host không cần điều khiển thêm và không có deadline server mới. Điện thoại có ba phần Result, Solution, Scoreboard cùng nhịp. Mọi chuỗi là hàm của thời gian đã trôi từ lúc Reveal theo server clock, nên thiết bị vào muộn hoặc tải lại thấy đúng khung hình hoặc khung cuối, không phát lại. Không có âm thanh. Nếu hệ thống bật giảm chuyển động, hiện thẳng kết quả cuối. Nút “Phát lại” trong mockup chỉ để duyệt, không phải tính năng của game.
 
 Host có thể mời các đội so sánh lập luận. Bấm New case khi sẵn sàng sẽ tạo vụ mới và thứ tự dẫn mới với cùng nhóm; Start bắt đầu vụ tiếp. Muốn chia nhóm lại, host thoát game để dùng công cụ hiện có.
 
@@ -179,6 +196,8 @@ Các điều kiện bắt buộc:
 
 Trong phát triển, phải duyệt hết đồ thị trạng thái hữu hạn của từng cấu hình logic/họ vụ án và kiểm tra các tuyến tới độ sâu bốn. Random sampling bổ sung cho biến thể văn bản, không thay việc chứng minh các cấu hình logic được phép. Nếu một họ chưa đáp ứng điều kiện này thì sửa bộ khung trước khi phát hành, không giảm cam kết trong UI.
 
+**Cảnh intro và mô tả intro (Đề xuất của Claude):** trước khi gán tên cho thực thể, server chọn một cảnh biên soạn sẵn. Mỗi cảnh cung cấp kho tên và kiểu địa điểm (ít nhất bốn), kho tên hung khí (ít nhất ba), các kiểu nơi phát hiện thi thể, ngoại hình nạn nhân, phụ kiện nhận dạng theo vai nghi phạm và mẫu phụ đề B1. Mọi cảnh phải tương thích với mọi cấu hình logic, và kiểm thử duyệt toàn bộ tích cảnh × cấu hình. Sau khi hồ sơ công khai đã gán xong, `IntroDescriptor` được dựng **chỉ từ hồ sơ công khai và RNG**; hàm dựng không nhận logic, đáp án hay sự thật, nên không thể phụ thuộc vào chúng. Cảnh không tương quan với họ vụ án hay đáp án. Cùng seed và phiên bản nội dung cho cùng mô tả; seed không được gửi. Phụ đề bị kiểm tra không chứa tên hung khí hay động từ chỉ cách gây án.
+
 Tạo vụ án lúc Prepare bằng các cấu hình đã kiểm tra. Nếu phát hiện cấu hình không hợp lệ, không bắt đầu vụ; host nhận thông báo có thể thử Prepare lại. Không âm thầm phát một vụ thiếu lời giải. Số lần thử sinh và cách cache cấu hình hợp lệ để người làm quyết.
 
 ## 8. Dữ liệu, điều phối và tình huống đặc biệt
@@ -197,7 +216,9 @@ Lịch sử hành động chung chỉ gồm đã hỏi/kiểm tra gì; nội dun
 
 Server lọc payload theo người xem, kiểm tra thành viên/quyền dẫn/pha/lượt và xử lý chống gửi trùng. Không gửi đáp án hoặc nội dung chưa khám phá qua danh sách hành động, gợi ý, ID có ý nghĩa hay trường ẩn. ID của dữ liệu gameplay dùng định danh trung tính.
 
-Host có Pause/Resume, Extend và Next phase; xác nhận trước khi bỏ thời gian còn lại của một pha/lượt. **Đề xuất của Codex:** hết giờ tự đi qua các pha tới lúc đóng kết luận; Reveal luôn do host bấm. Pause khóa thao tác thay đổi game và giữ thời gian còn lại. Next phase bỏ qua lượt điều tra chưa dùng, có cảnh báo cụ thể cho host. Không có điều khiển buộc đội phải chọn hành động.
+**Đề xuất của Claude — phạm vi gửi dữ liệu cho intro và công bố:** `IntroDescriptor` chỉ gửi cho projector và host, từ INTRO trở đi; điện thoại học viên không nhận. Hồ sơ công khai gửi cho host từ READY, cho projector từ INTRO (intro cần tên nạn nhân, địa điểm và vai nghi phạm) và cho học viên từ BRIEFING; READY không lộ hồ sơ, và điện thoại không thấy hồ sơ trong lúc projector chạy intro. Thời điểm Reveal được lưu trên server và gửi cùng kết quả khi REVEALED để mọi thiết bị tính cùng khung hình; không gửi trước Reveal.
+
+Host có Pause/Resume, Extend và Next phase; xác nhận trước khi bỏ thời gian còn lại của một pha/lượt. **Đề xuất của Claude:** trong INTRO chỉ có Pause/Resume và Next (là Skip intro, không cần xác nhận); Extend bị từ chối. **Đề xuất của Codex:** hết giờ tự đi qua các pha tới lúc đóng kết luận; Reveal luôn do host bấm. Pause khóa thao tác thay đổi game và giữ thời gian còn lại. Next phase bỏ qua lượt điều tra chưa dùng, có cảnh báo cụ thể cho host. Không có điều khiển buộc đội phải chọn hành động.
 
 Host có thể nhắc cách diễn đạt hoặc gợi ý cách đặt câu hỏi; không có hint tự động cung cấp bằng chứng ngoài bốn lượt trong bản đầu.
 
@@ -217,6 +238,7 @@ Khi triển khai, cần kiểm chứng:
 - Lọc dữ liệu: các loại client không nhận nội dung ngoài quyền của mình trước Reveal; host và reveal nhận đủ.
 - Timer, pause/extend/skip, ranh giới deadline, retry, disconnect/reconnect, rời và chuyển giao người dẫn.
 - Hai đội cùng vụ đi hai nhánh khác nhau, cùng có đủ chứng cứ; một ván toàn lớp đầy đủ; hồi quy các game hiện có.
+- **Đề xuất của Claude — intro và công bố:** mọi tổ hợp cảnh × cấu hình logic cho `IntroDescriptor` hợp lệ (ID khớp hồ sơ, đủ bốn địa điểm và bốn nghi phạm); mô tả và phụ đề không chứa tên hung khí, động từ chỉ cách gây án, tên địa điểm gây án như nơi xảy ra hành vi, seed hay ID logic; render cùng một khung với hai mô tả khác nhau cho ra hai cảnh khác nhau và không còn chuỗi cố định của vụ mẫu; INTRO có độ dài đúng 13 giây, Skip, Pause, tải lại giữa chừng và giảm chuyển động; chuỗi công bố là hàm thuần của thời gian trôi, kể cả tới đúng khung cuối.
 - Thử với nhóm B1 thật: có bàn luận trước khi chọn hành động, mọi người chia sẻ được manh mối, đổi giả thuyết có lý do, và giải thích được kết luận trong khoảng 24 phút. Quan sát số lượt đóng góp và điểm nghẽn từ vựng; không dùng số lần bấm làm bằng chứng đã nói tiếng Anh.
 
 ## 10. Để người lập kế hoạch/người làm quyết
@@ -225,6 +247,27 @@ Khi triển khai, cần kiểm chứng:
 - Tổ chức dữ liệu, cấu trúc validator/solver, cách biểu diễn điều kiện hành động và tập chứng cứ, tên ID, thuật toán shuffle dùng tiện ích hiện có.
 - Chi tiết câu chữ, danh tính hư cấu và vật chứng của ba họ vụ án, miễn đáp ứng B1, quy mô nội dung và các kiểm tra §7.
 - Khoảng min/max và bước chỉnh thời gian phù hợp config form hiện có; mô tả rõ tổng thời lượng cho host.
+- **Đề xuất của Claude:** nghệ thuật SVG chi tiết của các cảnh intro theo mockup D1b, cách cài đặt khung hình theo thời gian đã trôi, thiết kế cảnh thứ hai ngoài dinh thự và việc đặt tên cho các mã cảnh, kiểu cửa sổ và phụ kiện.
 - Cách tích hợp module với host controls, shared deadlines và view filters; tái sử dụng cơ chế hiện có và giữ hành vi game khác.
 
 Sau khi người dùng duyệt bản thiết kế, bước tiếp theo là lập kế hoạch triển khai riêng. Tài liệu này chưa cho phép bắt đầu viết code sản phẩm.
+
+## 11. Màn hình đã duyệt
+
+**Đề xuất của Claude:** bộ mockup `docs/designs/murder-mystery-screens.html` đã được người dùng duyệt ngày 2026-11-03 và là tham chiếu bố cục: 24 màn điện thoại (P1–P18 luồng chính, E1–E6 tình huống đặc biệt), 13 màn host (H1–H13) và 10 màn máy chiếu (D1–D9 cùng D1b). Khi mockup và spec khác nhau, luật, quyền xem và điểm theo spec; bố cục, chữ trên màn hình và trình tự theo mockup. Mockup dùng nguyên token và thành phần hiện có (`cp-*`) và không thêm phụ thuộc hình ảnh mới. Mockup có dữ liệu mẫu cố định để duyệt; sản phẩm không được hardcode dữ liệu đó.
+
+Các quyết định bố cục đã được duyệt cùng mockup:
+
+- READY: projector chưa lộ hồ sơ vụ án; hồ sơ mở ở Briefing.
+- Investigation: projector chỉ nêu đội đã hành động hay chưa, không nêu tên người dẫn.
+- Hành động điều tra là danh sách gấp bốn nhóm, mỗi lựa chọn có câu hỏi tiếng Anh mẫu; nhóm chất vấn chỉ liệt kê tổ hợp NPC, chủ đề và thẻ hợp lệ; hành động đã dùng bị ẩn.
+- Khi lượt dẫn chuyển cho một người, màn “You lead Round n” dùng thành phần takeover sẵn có.
+- Language help mặc định hiện, có nút Hide, nhớ lựa chọn trên thiết bị; nội dung đổi theo pha.
+- Nhãn nguồn thẻ dùng cả màu lẫn biểu tượng và kiểu viền.
+- Conclusion có gợi ý phần giải thích cho từng người, không bắt buộc.
+- Next phase tắt khi Pause; +30s vẫn dùng được.
+- Đồng hạng xếp kiểu thi đấu (1, 2=, 2=, 4).
+- Host có câu “Say this” gợi ý đọc ở Briefing và Sharing.
+- Nhịp công bố: lời giải khoảng 16 giây, bảng điểm khoảng 14 giây.
+
+Chưa có mockup, cần xác nhận khi triển khai: màn điện thoại “Watch the projector” trong INTRO; nút Skip intro và Pause trên host trong INTRO; cách điều hướng giữa ba phần Result, Solution, Scoreboard trên điện thoại sau Reveal (đề xuất dùng thanh tab sẵn có).
