@@ -1,0 +1,193 @@
+/* Murder Mystery — layout on top of the shared Arcade Night tokens. */
+.mm-player,
+.mm-host,
+.mm-projector {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.mm-player h1,
+.mm-player h2,
+.mm-player h3 {
+  margin: 0;
+}
+
+/* Clue cards: source kind is shown by icon, border style and a word, never by colour alone. */
+.mm-clue {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--cp-radius, 12px);
+  background: var(--cp-surface, transparent);
+  text-align: left;
+}
+.mm-clue[data-kind="verified"] {
+  border: 2px solid var(--cp-ink, currentColor);
+}
+.mm-clue[data-kind="testimony"] {
+  border: 2px dashed var(--cp-ink-muted, currentColor);
+}
+.mm-clue-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.mm-clue-kind {
+  margin-left: auto;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mm-clue-body {
+  margin: 0;
+  line-height: 1.5;
+}
+.mm-vocab dl {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+}
+.mm-vocab dl div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-vocab dt {
+  font-weight: 700;
+}
+.mm-vocab dd {
+  margin: 0;
+  color: var(--cp-ink-muted, inherit);
+}
+
+/* Language help */
+.mm-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mm-phrases {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.mm-phrases li {
+  display: grid;
+  gap: 2px;
+}
+.mm-vi {
+  font-size: 0.875rem;
+  color: var(--cp-ink-muted, inherit);
+}
+
+/* Choices wrap and stack on a 320px phone. */
+.mm-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-choice,
+.mm-evidence,
+.mm-option {
+  flex: 1 1 140px;
+  min-height: 44px;
+  text-align: left;
+  white-space: normal;
+}
+.mm-option {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+}
+.mm-choice[aria-pressed="true"],
+.mm-evidence[aria-pressed="true"],
+.mm-option[aria-pressed="true"] {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+.mm-evidence[aria-disabled="true"] {
+  opacity: 0.5;
+}
+.mm-summary {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.mm-summary div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-summary dd {
+  margin: 0;
+  font-weight: 700;
+}
+.mm-round-head {
+  display: grid;
+  gap: 8px;
+}
+
+/* Staged sequences: every element delays by calc(var(--d) - var(--mm-elapsed)) seconds, so a late
+   mount seeks to the right frame. Reduced motion shows the final frame at once. */
+.mm-stage {
+  animation: mm-stage-in 0.4s ease both;
+  animation-delay: calc((var(--d, 0) - var(--mm-elapsed, 0)) * 1s);
+}
+.mm-stage[data-pending="true"] {
+  visibility: hidden;
+}
+@keyframes mm-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mm-score-lines,
+.mm-events,
+.mm-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mm-score-line,
+.mm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mm-row .mm-team {
+  flex: 1;
+}
+.mm-first {
+  font-weight: 800;
+}
+.mm-answers {
+  display: grid;
+  gap: 8px;
+}
+.mm-struck li {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.mm-total strong {
+  font-size: 1.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-stage {
+    animation: none;
+  }
+  .mm-stage[data-pending="true"] {
+    visibility: visible;
+  }
+}
