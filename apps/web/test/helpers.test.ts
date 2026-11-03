@@ -16,6 +16,7 @@ const view: LobbyView = {
   status: "open",
   locked: false,
   hostConnected: false,
+  gameVote: null,
   createdAt: 0,
   maxPlayers: 60,
   players: [],

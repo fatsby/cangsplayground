@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { avatarSchema } from "./avatar.js";
+import { GAME_VOTE_MIN_OPTIONS } from "./gameVote.js";
 import { LOBBY_CODE_LENGTH } from "./lobbyCode.js";
 import { PLAYER_NAME_MAX, type LobbyView } from "./types.js";
 
@@ -65,6 +66,15 @@ export const schemas = {
     toGroupId: z.string().min(1).nullable(),
     commandId,
   }),
+  /** Host opens a 60s vote between at least two registered games. */
+  "gameVote:start": z.object({
+    gameIds: z.array(z.string().min(1)).min(GAME_VOTE_MIN_OPTIONS).max(20),
+    commandId,
+  }),
+  /** Host closes the vote screen (running or finished) and returns to vote setup. */
+  "gameVote:clear": z.object({ commandId }),
+  /** Player picks, or switches to, a game while the vote is open. */
+  "gameVote:cast": z.object({ gameId: z.string().min(1) }),
   "game:select": z.object({ gameId: z.string().min(1), commandId }),
   "game:configure": z.object({ config: z.record(z.string(), z.unknown()), commandId }),
   "game:control": z.object({
@@ -114,6 +124,9 @@ export interface C2SResults {
   "lobby:close": undefined;
   "groups:assign": { sizes: number[] };
   "groups:move": undefined;
+  "gameVote:start": undefined;
+  "gameVote:clear": undefined;
+  "gameVote:cast": undefined;
   "game:select": undefined;
   "game:configure": undefined;
   "game:control": undefined;

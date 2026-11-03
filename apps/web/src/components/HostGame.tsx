@@ -13,6 +13,7 @@ import {
 } from "@cangsplayground/ui";
 import { gameViews } from "../games/registry";
 import { ConfigForm } from "./ConfigForm";
+import { HostGameVotePanel } from "./game-vote/HostGameVotePanel";
 import { canControl, mainControl, supportsControl, type Control } from "./game-controls";
 export function HostGame({
   view,
@@ -22,6 +23,8 @@ export function HostGame({
   configure,
   control,
   hostAct,
+  startGameVote,
+  clearGameVote,
 }: {
   view: LobbyView;
   busy: boolean;
@@ -30,15 +33,31 @@ export function HostGame({
   configure: (config: Record<string, unknown>) => Promise<boolean>;
   control: (cmd: Control, groupId?: string) => void;
   hostAct?: (action: GameAction) => Promise<boolean>;
+  /** Opens the minigame vote; with `clearGameVote`, enables the vote panel. */
+  startGameVote?: (gameIds: string[]) => void;
+  /** Cancels or dismisses the minigame vote, returning to vote setup. */
+  clearGameVote?: () => void;
 }) {
   const [draft, setDraft] = useState<{ gameId: string; config: Record<string, unknown> } | null>(
     null,
   );
   const game = view.game,
     entry = view.catalog.find((e) => e.id === game?.gameId);
+  // The vote lives until a game is prepared, so it stays reachable once a game is chosen too.
+  const votePanel =
+    startGameVote && clearGameVote && (!game || game.stage === "CONFIGURING") ? (
+      <HostGameVotePanel
+        view={view}
+        busy={busy}
+        serverNow={serverNow}
+        onStart={startGameVote}
+        onClear={clearGameVote}
+      />
+    ) : null;
   if (!game)
     return (
       <div className="cp-stack">
+        {votePanel}
         <h1>Pick a game</h1>
         <p className="cp-muted">Small games. More chances to speak.</p>
         {view.catalog.map((game) => (
@@ -65,6 +84,7 @@ export function HostGame({
     view.groups.every((g) => g.playerIds.length >= (entry?.minPlayersPerGroup ?? 1));
   return (
     <div className="cp-stack">
+      {votePanel}
       <div className="cp-row cp-spread">
         <h1>{game.name}</h1>
         <Chip>{game.stage === "CONFIGURING" ? "Set up" : finished ? "Finished" : "Playing"}</Chip>

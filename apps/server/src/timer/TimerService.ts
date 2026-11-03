@@ -53,6 +53,19 @@ export class TimerService {
           null,
         );
       }
+      const vote = lobby.gameVote;
+      if (vote?.isOpen) {
+        const endsAt = vote.endsAt;
+        schedule(
+          `${lobby.code}:gameVote`,
+          endsAt,
+          () => {
+            // A callback that fires a little early re-arms through reconcile.
+            if (!lobby.expireGameVote(endsAt) && this.now() < endsAt) this.reconcile(lobby);
+          },
+          null,
+        );
+      }
       const session = lobby.game;
       if (session)
         for (const deadline of lobby.sharedDeadlines())

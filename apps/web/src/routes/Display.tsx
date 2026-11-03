@@ -19,6 +19,7 @@ import { useLobbyStore } from "../store";
 import { readToken, request } from "../socket";
 import { SessionBoundary, useRole } from "../components/session";
 import { gameViews } from "../games/registry";
+import { ProjectorGameVote } from "../components/game-vote/ProjectorGameVote";
 export function projectorBody(
   session: GameSessionView | null | undefined,
   views: GameViews | undefined,
@@ -149,7 +150,8 @@ export default function Display() {
     else setPairError(result.error.message);
   };
   const joinUrl = `${publicUrl}/join/${code}`,
-    welcome = !!view && !ProjectorScreen && !view.groups.length;
+    voting = !!view?.gameVote && !ProjectorScreen,
+    welcome = !!view && !ProjectorScreen && !view.groups.length && !voting;
   const columns = !view?.groups.length
     ? 2
     : view.groups.length <= 4
@@ -209,6 +211,8 @@ export default function Display() {
               <Waiting message="Opening your lobby" />
             ) : session && ProjectorScreen ? (
               <ProjectorScreen lobby={view} session={session} serverNow={serverNow} />
+            ) : voting && view.gameVote ? (
+              <ProjectorGameVote vote={view.gameVote} serverNow={serverNow} />
             ) : !view.groups.length ? (
               <section className="projector-lobby">
                 <div className="lobby-welcome">

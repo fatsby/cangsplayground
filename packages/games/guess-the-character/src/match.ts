@@ -182,6 +182,35 @@ export function closeCategoryVote(match: GuessMatch, ctx: Ctx, categoryIds: read
   beginTurn(match, match.askingTeam, ctx);
 }
 
+/**
+ * Host override: gives team `side` a different character from the match's own category.
+ *
+ * `characterId` null rerolls at random among the category's characters that neither team
+ * holds. A named character must belong to the category, differ from the opponent's and
+ * from the current one. Returns false (state untouched) when the change is not allowed:
+ * the match is not playing, or no candidate exists.
+ *
+ * The guessing opponent's `guessVersion` is bumped so a guess typed against the old
+ * character is rejected instead of being judged against the new one.
+ */
+export function replaceCharacter(
+  match: GuessMatch,
+  side: 0 | 1,
+  characterId: string | null,
+  rng: Ctx["rng"],
+): boolean {
+  if (match.phase !== "PLAYING" || !match.categoryId) return false;
+  const team = match.teams[side];
+  const opponent = match.teams[side === 0 ? 1 : 0];
+  const pool = categoryById(match.categoryId).characterIds;
+  const candidates = pool.filter((id) => id !== team.characterId && id !== opponent.characterId);
+  const next = characterId ?? candidates[rng.int(candidates.length)];
+  if (!next || !candidates.includes(next)) return false;
+  team.characterId = next;
+  opponent.guessVersion++;
+  return true;
+}
+
 export function deadlineKey(round: number, match: GuessMatch): string {
   return `r${round}:${match.id}:${match.phase}:v${match.phaseVersion}:t${match.turnId}`;
 }

@@ -11,6 +11,7 @@ import {
   type SessionViewProps,
 } from "@cangsplayground/ui";
 import type { ControlGuard, GuessView, MatchPrivateView, MatchPublicView } from "../types.js";
+import { CharacterEditor } from "./character-editor.js";
 import {
   Person,
   categoryName,
@@ -54,12 +55,18 @@ function TeamRow({
   side,
   priv,
   serverNow,
+  view,
+  disabled,
+  hostAct,
 }: {
   lobby: LobbyView;
   match: MatchPublicView;
   side: 0 | 1;
   priv: MatchPrivateView | undefined;
   serverNow: () => number;
+  view: GuessView;
+  disabled: boolean;
+  hostAct: HostAct;
 }) {
   const groupId = match.groupIds[side];
   const members = match.members[side];
@@ -85,6 +92,17 @@ function TeamRow({
           {character?.name ?? (match.phase === "PLAYING" ? "—" : "Chosen after the vote")}
         </strong>
       </p>
+      {match.phase === "PLAYING" && priv?.characterPool && (
+        <CharacterEditor
+          guard={{ round: view.round, matchId: match.id, phaseVersion: match.phaseVersion }}
+          groupId={groupId}
+          pool={priv.characterPool}
+          currentId={character?.id ?? null}
+          opponentId={priv.characters.find((c) => c.groupId !== groupId)?.character?.id ?? null}
+          disabled={disabled}
+          hostAct={hostAct}
+        />
+      )}
       {cooling && team && (
         <div className="gc-cooldown">
           <span>Wrong guess, waiting</span>
@@ -199,8 +217,26 @@ function MatchCard({
         </p>
       )}
       <div className="gc-teams">
-        <TeamRow lobby={lobby} match={match} side={0} priv={priv} serverNow={serverNow} />
-        <TeamRow lobby={lobby} match={match} side={1} priv={priv} serverNow={serverNow} />
+        <TeamRow
+          lobby={lobby}
+          match={match}
+          side={0}
+          priv={priv}
+          serverNow={serverNow}
+          view={view}
+          disabled={disabled}
+          hostAct={hostAct}
+        />
+        <TeamRow
+          lobby={lobby}
+          match={match}
+          side={1}
+          priv={priv}
+          serverNow={serverNow}
+          view={view}
+          disabled={disabled}
+          hostAct={hostAct}
+        />
       </div>
       {!terminal(match) && (
         <div className="gc-controls">
