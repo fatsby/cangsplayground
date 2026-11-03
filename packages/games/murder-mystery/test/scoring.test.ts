@@ -23,20 +23,19 @@ function best(c: CompiledCase, known: string[]): Conclusion {
 }
 
 describe("scoreConclusion", () => {
-  it("gives 10 on every valid four-action route of every configuration", () => {
-    for (const c of cases()) {
-      const routes = allRoutes(c.logic);
-      expect(routes.length).toBeGreaterThanOrEqual(2);
-      for (const route of routes) {
-        const known = cardsAfter(c.logic, route);
-        expect(scoreConclusion(c, known, best(c, known))).toEqual({
-          suspect: 3,
-          weapon: 2,
-          room: 2,
-          evidence: { suspectId: 1, weaponId: 1, roomId: 1 },
-          total: 10,
-        });
-      }
+  it.each(caseTemplates())("gives 10 on every route of $familyId/$variantId", (template) => {
+    const c = generateCase(11, { familyId: template.familyId, variantId: template.variantId });
+    const routes = allRoutes(c.logic);
+    expect(routes.length).toBeGreaterThanOrEqual(2);
+    for (const route of routes) {
+      const known = cardsAfter(c.logic, route);
+      expect(scoreConclusion(c, known, best(c, known))).toEqual({
+        suspect: 3,
+        weapon: 2,
+        room: 2,
+        evidence: { suspectId: 1, weaponId: 1, roomId: 1 },
+        total: 10,
+      });
     }
   });
 

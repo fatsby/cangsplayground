@@ -208,6 +208,9 @@ importers:
       '@cangsplayground/game-guess-the-character':
         specifier: workspace:*
         version: link:../../packages/games/guess-the-character
+      '@cangsplayground/game-murder-mystery':
+        specifier: workspace:*
+        version: link:../../packages/games/murder-mystery
       '@cangsplayground/game-secret-word':
         specifier: workspace:*
         version: link:../../packages/games/secret-word
