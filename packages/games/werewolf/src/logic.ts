@@ -5,6 +5,7 @@ import { advance } from "./flow.js";
 import { dayActions } from "./day.js";
 import { nightActions } from "./night.js";
 import { playerJoined, playerLeft } from "./roster.js";
+import { viewForViewer } from "./view.js";
 import { initialShared, setupActions } from "./setup.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { GAME_ID, MIN_PLAYERS, configSchema, type WerewolfConfig } from "./types.js";
@@ -39,8 +40,7 @@ const werewolf: GameModule<WerewolfConfig, null, WerewolfShared> = {
   prepare: () => null,
   publicInfo: () => ({}),
   viewFor: () => null,
-  // Replaced by the real per-viewer filter in the view task; until then nothing is exposed.
-  sharedViewFor: () => null,
+  sharedViewFor: ({ shared, viewer }) => viewForViewer(shared, viewer),
   prepareShared({ groups, rng }) {
     const playerIds = groups.flatMap((g) => g.playerIds);
     return initialShared(playerIds, dealRoles(playerIds, rng));
