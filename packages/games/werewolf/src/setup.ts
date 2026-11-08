@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { PlayerId } from "@cangsplayground/core";
 import { isHost, type Reducer } from "./context.js";
 import { deadlineFor } from "./deadline.js";
+import { rolesOf } from "./players.js";
 import { validateRoles } from "./rules.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { REVEAL_MS, ROLES, type Role } from "./types.js";
@@ -28,10 +29,6 @@ export function initialShared(playerIds: readonly PlayerId[], roles: Record<Play
     pendingWinner: null,
   };
 }
-
-/** The current role of every player, as `validateRoles` expects it. */
-export const rolesOf = (shared: WerewolfShared): Record<PlayerId, Role> =>
-  Object.fromEntries(Object.entries(shared.players).map(([id, p]) => [id, p.role]));
 
 /**
  * Host actions available before the game starts.
