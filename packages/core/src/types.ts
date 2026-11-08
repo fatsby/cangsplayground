@@ -77,6 +77,8 @@ export interface GameCatalogEntry {
   description: string;
   minPlayersPerGroup: number;
   maxPlayersPerGroup?: number;
+  /** True when the whole lobby plays one game, so the Host Console skips group assignment. */
+  wholeLobby?: boolean;
   /** e.g. "3–6 per group" */
   recommended: string;
   configFields: ConfigField[];
