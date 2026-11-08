@@ -1,17 +1,11 @@
 import type { Context } from "./context.js";
 import { deadlineFor } from "./deadline.js";
+import { endGame } from "./ending.js";
 import { enterVote, resolveVote } from "./day.js";
 import { resolveDawn, startNight } from "./night.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 
 type FlowContext = Omit<Context, "actor">;
-
-/** Enters ENDED: the hidden winner becomes public and nothing is scheduled any more. */
-export function endGame(shared: WerewolfShared): void {
-  shared.stage = "ENDED";
-  shared.winner = shared.pendingWinner;
-  shared.deadline = null;
-}
 
 /** Day starts: the discussion timer runs for `discussionSeconds`. */
 export function enterDiscussion(shared: WerewolfShared, ctx: FlowContext): void {

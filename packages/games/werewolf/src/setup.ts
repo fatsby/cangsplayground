@@ -3,6 +3,7 @@ import type { PlayerId } from "@cangsplayground/core";
 import { isHost, type Reducer } from "./context.js";
 import { deadlineFor } from "./deadline.js";
 import { rolesOf } from "./players.js";
+import { endsGameOnEntry } from "./roster.js";
 import { validateRoles } from "./rules.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { REVEAL_MS, ROLES, type Role } from "./types.js";
@@ -32,14 +33,18 @@ export function initialShared(playerIds: readonly PlayerId[], roles: Record<Play
 
 /**
  * Host actions available before the game starts.
- * - `ww:setRole {playerId, role}`: change one player's role (SETUP only).
+ * - `ww:setRole {playerId, role}`: change one player's role (SETUP), or a waiting late joiner's role
+ *   (any stage, unless entering with that role would end the game on the spot).
  * - `ww:start`: validate the roles and begin the role-reveal period.
  */
 export const setupActions: Record<string, Reducer> = {
   "ww:setRole": (shared, ctx, payload) => {
     const parsed = setRolePayload.safeParse(payload);
     const target = parsed.success ? shared.players[parsed.data.playerId] : undefined;
-    if (!isHost(ctx) || !parsed.success || !target || shared.stage !== "SETUP") return null;
+    if (!isHost(ctx) || !parsed.success || !target) return null;
+    const editable = shared.stage === "SETUP" || (target.pending && shared.stage !== "ENDED");
+    if (!editable) return null;
+    if (target.pending && endsGameOnEntry(shared, parsed.data.playerId, parsed.data.role)) return null;
     target.role = parsed.data.role;
     return shared;
   },

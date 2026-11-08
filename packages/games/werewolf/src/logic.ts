@@ -4,6 +4,7 @@ import type { Reducer } from "./context.js";
 import { advance } from "./flow.js";
 import { dayActions } from "./day.js";
 import { nightActions } from "./night.js";
+import { playerJoined, playerLeft } from "./roster.js";
 import { initialShared, setupActions } from "./setup.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { GAME_ID, MIN_PLAYERS, configSchema, type WerewolfConfig } from "./types.js";
@@ -49,6 +50,10 @@ const werewolf: GameModule<WerewolfConfig, null, WerewolfShared> = {
     if (shared.deadline?.key !== deadline.key) return null;
     return advance(structuredClone(shared), ctx);
   },
+  onSharedPlayerJoined: ({ shared, playerId }) => playerJoined(structuredClone(shared), playerId),
+  onSharedPlayerLeft: ({ shared, playerId }) => playerLeft(structuredClone(shared), playerId),
+  // Disconnected players keep their seat; they just skip whatever they were due to do.
+  onSharedRosterChange: ({ shared }) => shared,
   onSharedAction({ shared, action, ...ctx }) {
     if (!Object.hasOwn(ACTIONS, action.type)) return null;
     return ACTIONS[action.type]!(structuredClone(shared), ctx, action.payload);

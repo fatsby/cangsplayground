@@ -3,6 +3,7 @@ import type { Context, Reducer } from "./context.js";
 import { deadlineFor } from "./deadline.js";
 import { targetPayload } from "./payloads.js";
 import { livingIds, livingPlayer, livingWith, rolesOf } from "./players.js";
+import { activatePending } from "./roster.js";
 import { checkWinner, pickWolfTarget, resolveNight } from "./rules.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { DAWN_MS, type Role } from "./types.js";
@@ -68,17 +69,17 @@ export function startNight(shared: WerewolfShared, ctx: Pick<Context, "config" |
  * in `pendingWinner` so the kill animation plays before anyone is told the game is over.
  */
 export function resolveDawn(shared: WerewolfShared, ctx: Pick<Context, "now" | "rng">): void {
-  const roles = rolesOf(shared);
   const living = new Set(livingIds(shared));
   const wolfVotes = Object.fromEntries(
     Object.entries(shared.wolfVotes).filter(([voter, target]) => living.has(voter) && living.has(target)),
   );
   const guardId = livingWith(shared, "guard");
   if (guardId !== undefined && shared.guardPick === guardId) shared.guardSelfUsed = true;
+  activatePending(shared);
   const victim = resolveNight(pickWolfTarget(wolfVotes, ctx.rng), guardId === undefined ? null : shared.guardPick);
   if (victim !== null) shared.players[victim]!.alive = false;
   shared.dawn = { eliminatedId: victim };
-  shared.pendingWinner = checkWinner(roles, livingIds(shared));
+  shared.pendingWinner = checkWinner(rolesOf(shared), livingIds(shared));
   shared.stage = "DAWN";
   shared.deadline = deadlineFor("DAWN", shared.night, ctx.now + DAWN_MS);
 }
