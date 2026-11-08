@@ -65,8 +65,8 @@ export function PlayerSessionScreen({ lobby, session, me, act, serverNow }: Play
   return (
     <SfxProvider>
       <div className="ww-root ww-player">
-        <SoundToggle />
         {screen}
+        <SoundToggle />
       </div>
     </SfxProvider>
   );

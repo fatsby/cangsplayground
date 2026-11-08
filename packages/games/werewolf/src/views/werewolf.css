@@ -2751,10 +2751,20 @@
 .player-screen:has(.ww-player) .player-header .cp-team-badge {
   display: none;
 }
-/* Projector: the stage fills the content area at 16:9. */
+/* Projector: the stage is as tall as the content area allows and keeps its 16:9 shape. */
+.ww-root.ww-projector {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .ww-root .pstage {
-  width: 100%;
-  max-height: 100%;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
   margin: 0 auto;
 }
 
@@ -2783,4 +2793,12 @@
   right: 0.8rem;
   font-size: 0.7rem;
   opacity: 0.55;
+}
+
+/* On phones the sound switch sits under the screen so it never covers a title or timer. */
+.ww-root.ww-player .sound-toggle {
+  position: static;
+  display: block;
+  margin: 0.6rem auto 0;
+  opacity: 0.7;
 }
