@@ -24,15 +24,16 @@ function myState(shared: WerewolfShared, id: PlayerId): MyState | null {
     seerLog: inPlay && me.role === "seer" ? shared.seerLog.map((e) => ({ ...e })) : null,
     guardSelfUsed: inPlay && me.role === "guard" ? shared.guardSelfUsed : null,
     myVote: shared.stage === "VOTE" ? (shared.dayVotes[id] ?? null) : null,
-    myNightPick: !night || !inPlay
-      ? null
-      : me.role === "werewolf"
-        ? (shared.wolfVotes[id] ?? null)
-        : me.role === "seer"
-          ? shared.seerPick
-          : me.role === "guard"
-            ? shared.guardPick
-            : null,
+    myNightPick:
+      !night || !inPlay
+        ? null
+        : me.role === "werewolf"
+          ? (shared.wolfVotes[id] ?? null)
+          : me.role === "seer"
+            ? shared.seerPick
+            : me.role === "guard"
+              ? shared.guardPick
+              : null,
   };
 }
 
@@ -69,7 +70,11 @@ export function viewForViewer(shared: WerewolfShared, viewer: Viewer): WerewolfV
     winner: ended ? shared.winner : null,
     hostNight:
       host && shared.stage === "NIGHT"
-        ? { wolfVotes: { ...shared.wolfVotes }, seerPick: shared.seerPick, guardPick: shared.guardPick }
+        ? {
+            wolfVotes: { ...shared.wolfVotes },
+            seerPick: shared.seerPick,
+            guardPick: shared.guardPick,
+          }
         : null,
     hostVotes: host && shared.stage === "VOTE" ? { ...shared.dayVotes } : null,
   };

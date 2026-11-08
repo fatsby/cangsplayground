@@ -25,6 +25,10 @@ export interface WerewolfView {
   lastVote: { eliminatedId: PlayerId | null; counts: Record<PlayerId, number> } | null;
   /** Null until the game has ENDED. */
   winner: Team | null;
-  hostNight: { wolfVotes: Record<PlayerId, PlayerId>; seerPick: PlayerId | null; guardPick: PlayerId | null } | null;
+  hostNight: {
+    wolfVotes: Record<PlayerId, PlayerId>;
+    seerPick: PlayerId | null;
+    guardPick: PlayerId | null;
+  } | null;
   hostVotes: Record<PlayerId, PlayerId> | null;
 }

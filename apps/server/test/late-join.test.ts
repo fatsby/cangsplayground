@@ -6,7 +6,10 @@ import { registry } from "../src/games/registry.js";
 
 type Shared = { log: string[] };
 
-function makeGame(id: string, wholeLobby: boolean): GameModule<Record<string, never>, null, Shared> {
+function makeGame(
+  id: string,
+  wholeLobby: boolean,
+): GameModule<Record<string, never>, null, Shared> {
   return {
     id,
     name: id,
@@ -19,9 +22,13 @@ function makeGame(id: string, wholeLobby: boolean): GameModule<Record<string, ne
     configFields: [],
     turnDurationMs: () => null,
     prepare: () => null,
-    prepareShared: ({ groups }) => ({ log: [`prepared:${groups.length}:${groups[0]?.playerIds.length}`] }),
+    prepareShared: ({ groups }) => ({
+      log: [`prepared:${groups.length}:${groups[0]?.playerIds.length}`],
+    }),
     onSharedAction: ({ shared }) => shared,
-    onSharedPlayerJoined: ({ shared, playerId }) => ({ log: [...shared.log, `joined:${playerId}`] }),
+    onSharedPlayerJoined: ({ shared, playerId }) => ({
+      log: [...shared.log, `joined:${playerId}`],
+    }),
     sharedViewFor: ({ shared }) => shared,
     publicInfo: () => ({}),
     viewFor: () => null,
@@ -30,7 +37,12 @@ function makeGame(id: string, wholeLobby: boolean): GameModule<Record<string, ne
 
 function setup(game: GameModule, players = 4) {
   registry.set(game.id, game);
-  const lobby = new Lobby({ code: "ABC234", hostToken: "host-secret-token", seed: 1, now: () => Date.now() });
+  const lobby = new Lobby({
+    code: "ABC234",
+    hostToken: "host-secret-token",
+    seed: 1,
+    now: () => Date.now(),
+  });
   const joined = Array.from({ length: players }, (_, i) => lobby.join(`P${i}`));
   lobby.selectGame(game.id);
   return { lobby, joined, log: () => (lobby.game!.shared as Shared).log };

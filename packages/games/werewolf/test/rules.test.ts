@@ -56,7 +56,9 @@ describe("dealRoles", () => {
 describe("validateRoles", () => {
   const roles = (list: Role[]) => Object.fromEntries(list.map((r, i) => [`p${i}`, r]));
   it("rejects fewer than 5 players", () => {
-    expect(validateRoles(roles(["werewolf", "villager", "villager", "seer"]))).toMatch(/at least 5/i);
+    expect(validateRoles(roles(["werewolf", "villager", "villager", "seer"]))).toMatch(
+      /at least 5/i,
+    );
   });
   it("rejects a game with no werewolf", () => {
     expect(validateRoles(roles(["villager", "villager", "villager", "seer", "guard"]))).toMatch(
@@ -82,7 +84,9 @@ describe("pickWolfTarget", () => {
   it("breaks a tie at random among the tied players only", () => {
     const tie = new Set<string | null>();
     for (let s = 0; s < 50; s++)
-      tie.add(pickWolfTarget({ w1: "a", w2: "b", w3: "c", w4: "c", w5: "a", w6: "b" }, createRng(s)));
+      tie.add(
+        pickWolfTarget({ w1: "a", w2: "b", w3: "c", w4: "c", w5: "a", w6: "b" }, createRng(s)),
+      );
     expect([...tie].sort()).toEqual(["a", "b", "c"]);
     const narrow = new Set<string | null>();
     for (let s = 0; s < 50; s++)

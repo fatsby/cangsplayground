@@ -16,7 +16,11 @@ export const dayActions: Record<string, Reducer> = {
     const parsed = targetPayload.safeParse(payload);
     if (shared.stage !== "VOTE" || ctx.actor.kind !== "player" || !parsed.success) return null;
     const voter = ctx.actor.playerId;
-    if (!livingPlayer(shared, voter) || voter === parsed.data.targetId || !livingPlayer(shared, parsed.data.targetId))
+    if (
+      !livingPlayer(shared, voter) ||
+      voter === parsed.data.targetId ||
+      !livingPlayer(shared, parsed.data.targetId)
+    )
       return null;
     shared.dayVotes[voter] = parsed.data.targetId;
     return shared;

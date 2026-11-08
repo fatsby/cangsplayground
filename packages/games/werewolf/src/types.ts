@@ -16,7 +16,8 @@ export type Role = (typeof ROLES)[number];
 export type Team = "village" | "wolves";
 
 /** Phases of one game. Order: SETUP, REVEAL, then NIGHT/DAWN/DISCUSSION/VOTE/VERDICT repeating, then ENDED. */
-export type Stage = "SETUP" | "REVEAL" | "NIGHT" | "DAWN" | "DISCUSSION" | "VOTE" | "VERDICT" | "ENDED";
+export type Stage =
+  "SETUP" | "REVEAL" | "NIGHT" | "DAWN" | "DISCUSSION" | "VOTE" | "VERDICT" | "ENDED";
 
 /**
  * Host-editable timings, in seconds. The role-reveal, dawn and verdict periods are fixed

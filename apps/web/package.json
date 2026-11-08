@@ -30,6 +30,7 @@
     "@cangsplayground/game-murder-mystery": "workspace:*",
     "@cangsplayground/game-secret-word": "workspace:*",
     "@cangsplayground/game-shark-tank": "workspace:*",
+    "@cangsplayground/game-werewolf": "workspace:*",
     "@cangsplayground/game-whos-the-spy": "workspace:*",
     "@cangsplayground/ui": "workspace:*",
     "@fontsource-variable/unbounded": "^5.3.0",

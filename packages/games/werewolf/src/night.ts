@@ -34,11 +34,16 @@ export const nightActions: Record<string, Reducer> = {
   "ww:seerPick": (shared, ctx, payload) => {
     const actor = nightActor(shared, ctx, "seer");
     const parsed = targetPayload.safeParse(payload);
-    if (!actor || !parsed.success || shared.seerPick !== null || parsed.data.targetId === actor) return null;
+    if (!actor || !parsed.success || shared.seerPick !== null || parsed.data.targetId === actor)
+      return null;
     const target = livingPlayer(shared, parsed.data.targetId);
     if (!target) return null;
     shared.seerPick = parsed.data.targetId;
-    shared.seerLog.push({ night: shared.night, targetId: parsed.data.targetId, isWerewolf: target.role === "werewolf" });
+    shared.seerLog.push({
+      night: shared.night,
+      targetId: parsed.data.targetId,
+      isWerewolf: target.role === "werewolf",
+    });
     return shared;
   },
   "ww:guardPick": (shared, ctx, payload) => {
@@ -71,12 +76,17 @@ export function startNight(shared: WerewolfShared, ctx: Pick<Context, "config" |
 export function resolveDawn(shared: WerewolfShared, ctx: Pick<Context, "now" | "rng">): void {
   const living = new Set(livingIds(shared));
   const wolfVotes = Object.fromEntries(
-    Object.entries(shared.wolfVotes).filter(([voter, target]) => living.has(voter) && living.has(target)),
+    Object.entries(shared.wolfVotes).filter(
+      ([voter, target]) => living.has(voter) && living.has(target),
+    ),
   );
   const guardId = livingWith(shared, "guard");
   if (guardId !== undefined && shared.guardPick === guardId) shared.guardSelfUsed = true;
   activatePending(shared);
-  const victim = resolveNight(pickWolfTarget(wolfVotes, ctx.rng), guardId === undefined ? null : shared.guardPick);
+  const victim = resolveNight(
+    pickWolfTarget(wolfVotes, ctx.rng),
+    guardId === undefined ? null : shared.guardPick,
+  );
   if (victim !== null) shared.players[victim]!.alive = false;
   shared.dawn = { eliminatedId: victim };
   shared.pendingWinner = checkWinner(rolesOf(shared), livingIds(shared));

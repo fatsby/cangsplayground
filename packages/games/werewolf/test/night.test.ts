@@ -10,9 +10,12 @@ function night1(roles: Role[] = SIX): WerewolfShared {
   const started = act(setupShared(roles), HOST, "ww:start")!;
   return fire(started);
 }
-const vote = (s: WerewolfShared, who: string, target: string) => act(s, player(who), "ww:wolfVote", { targetId: target });
-const seer = (s: WerewolfShared, who: string, target: string) => act(s, player(who), "ww:seerPick", { targetId: target });
-const guard = (s: WerewolfShared, who: string, target: string) => act(s, player(who), "ww:guardPick", { targetId: target });
+const vote = (s: WerewolfShared, who: string, target: string) =>
+  act(s, player(who), "ww:wolfVote", { targetId: target });
+const seer = (s: WerewolfShared, who: string, target: string) =>
+  act(s, player(who), "ww:seerPick", { targetId: target });
+const guard = (s: WerewolfShared, who: string, target: string) =>
+  act(s, player(who), "ww:guardPick", { targetId: target });
 
 describe("starting the night", () => {
   it("REVEAL due -> NIGHT 1 with a nightSeconds deadline", () => {
@@ -42,7 +45,11 @@ describe("ww:wolfVote", () => {
     const deadWolf = structuredClone(s);
     deadWolf.players.p1!.alive = false;
     expect(vote(deadWolf, "p1", "p5")).toBeNull();
-    expect(act(act(setupShared(SIX), HOST, "ww:start")!, player("p1"), "ww:wolfVote", { targetId: "p5" })).toBeNull();
+    expect(
+      act(act(setupShared(SIX), HOST, "ww:start")!, player("p1"), "ww:wolfVote", {
+        targetId: "p5",
+      }),
+    ).toBeNull();
     expect(act(s, HOST, "ww:wolfVote", { targetId: "p5" })).toBeNull();
   });
 });
@@ -105,7 +112,10 @@ describe("dawn", () => {
     expect(s.stage).toBe("DAWN");
     expect(s.dawn).toEqual({ eliminatedId: null });
     expect(s.players.p5!.alive).toBe(true);
-    expect(s.deadline).toEqual({ key: "DAWN:1", endsAt: REVEAL_MS + config.nightSeconds * 1000 + DAWN_MS });
+    expect(s.deadline).toEqual({
+      key: "DAWN:1",
+      endsAt: REVEAL_MS + config.nightSeconds * 1000 + DAWN_MS,
+    });
   });
   it("an unprotected target dies", () => {
     let s = vote(night1(), "p1", "p5")!;

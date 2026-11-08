@@ -23,10 +23,14 @@ const cast = (s: WerewolfShared, votes: Record<string, string>) => {
 describe("discussion and vote stages", () => {
   it("DISCUSSION due -> VOTE with voteSeconds and an empty ballot box", () => {
     const s = toVote();
-    const discussionEnd = REVEAL_MS + config.nightSeconds * 1000 + DAWN_MS + config.discussionSeconds * 1000;
+    const discussionEnd =
+      REVEAL_MS + config.nightSeconds * 1000 + DAWN_MS + config.discussionSeconds * 1000;
     expect(s.stage).toBe("VOTE");
     expect(s.dayVotes).toEqual({});
-    expect(s.deadline).toEqual({ key: "VOTE:1", endsAt: discussionEnd + config.voteSeconds * 1000 });
+    expect(s.deadline).toEqual({
+      key: "VOTE:1",
+      endsAt: discussionEnd + config.voteSeconds * 1000,
+    });
   });
 });
 
@@ -86,7 +90,15 @@ describe("resolving the vote", () => {
     expect(fire(s).stage).toBe("NIGHT");
   });
   it("4 alive split 2-2 banishes nobody", () => {
-    const roles: Role[] = ["werewolf", "seer", "guard", "villager", "villager", "villager", "villager"];
+    const roles: Role[] = [
+      "werewolf",
+      "seer",
+      "guard",
+      "villager",
+      "villager",
+      "villager",
+      "villager",
+    ];
     const s = toVote(roles, (x) => {
       for (const id of ["p5", "p6", "p7"]) x.players[id]!.alive = false;
     });
@@ -144,7 +156,13 @@ describe("a whole round through actions and deadlines only", () => {
     s = fire(s);
     expect([s.stage, s.lastVote!.eliminatedId]).toEqual(["VERDICT", "p1"]);
     s = fire(s);
-    expect([s.stage, s.night, s.wolfVotes, s.seerPick, s.guardPick]).toEqual(["NIGHT", 2, {}, null, null]);
+    expect([s.stage, s.night, s.wolfVotes, s.seerPick, s.guardPick]).toEqual([
+      "NIGHT",
+      2,
+      {},
+      null,
+      null,
+    ]);
     expect(s.seerLog).toHaveLength(1);
   });
 });

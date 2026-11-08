@@ -14,7 +14,8 @@ const args = (shared: WerewolfShared) => ({
   now: 0,
   rng: createRng(1),
 });
-const joined = (s: WerewolfShared, id: string) => werewolf.onSharedPlayerJoined!({ ...args(s), playerId: id });
+const joined = (s: WerewolfShared, id: string) =>
+  werewolf.onSharedPlayerJoined!({ ...args(s), playerId: id });
 const left = (s: WerewolfShared, id: string) =>
   werewolf.onSharedPlayerLeft!({ ...args(s), playerId: id, groupId: "g1" });
 const started = (roles: Role[] = SIX) => act(setupShared(roles), HOST, "ww:start")!;
@@ -32,15 +33,20 @@ describe("joining", () => {
     const s = joined(setupShared(SIX), "p7");
     expect(s.players.p7).toEqual({ role: "villager", alive: true, pending: false });
     expect(s.order).toContain("p7");
-    expect(act(s, HOST, "ww:setRole", { playerId: "p7", role: "seer" })!.players.p7!.role).toBe("seer");
+    expect(act(s, HOST, "ww:setRole", { playerId: "p7", role: "seer" })!.players.p7!.role).toBe(
+      "seer",
+    );
   });
 
-  it.each(["REVEAL", "NIGHT", "DISCUSSION", "VOTE"])("during %s the newcomer is a pending villager", (stage) => {
-    const s = joined(stages()[stage]!, "p7");
-    expect(s.players.p7).toEqual({ role: "villager", alive: true, pending: true });
-    expect(s.order).toContain("p7");
-    expect(s.stage).toBe(stage);
-  });
+  it.each(["REVEAL", "NIGHT", "DISCUSSION", "VOTE"])(
+    "during %s the newcomer is a pending villager",
+    (stage) => {
+      const s = joined(stages()[stage]!, "p7");
+      expect(s.players.p7).toEqual({ role: "villager", alive: true, pending: true });
+      expect(s.order).toContain("p7");
+      expect(s.stage).toBe(stage);
+    },
+  );
 
   it("two joiners at once are both pending", () => {
     const s = joined(joined(stages().NIGHT!, "p7"), "p8");
@@ -57,7 +63,8 @@ describe("joining", () => {
     expect(act(vote, player("p5"), "ww:dayVote", { targetId: "p7" })).toBeNull();
     // 6 living players need 3 votes (a pending 7th must not raise it to 4)
     let v = vote;
-    for (const who of ["p1", "p2", "p3"]) v = act(v, player(who), "ww:dayVote", { targetId: "p5" })!;
+    for (const who of ["p1", "p2", "p3"])
+      v = act(v, player(who), "ww:dayVote", { targetId: "p5" })!;
     expect(fire(v).lastVote!.eliminatedId).toBe("p5");
   });
 

@@ -266,6 +266,9 @@ importers:
       '@cangsplayground/game-shark-tank':
         specifier: workspace:*
         version: link:../../packages/games/shark-tank
+      '@cangsplayground/game-werewolf':
+        specifier: workspace:*
+        version: link:../../packages/games/werewolf
       '@cangsplayground/game-whos-the-spy':
         specifier: workspace:*
         version: link:../../packages/games/whos-the-spy

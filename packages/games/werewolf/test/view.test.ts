@@ -39,8 +39,19 @@ const ROLE_WORDS: string[] = [...ROLES];
 describe("host", () => {
   it("sees every role, the night's live choices and who voted for whom", () => {
     const n = view(nightWithActions(), HOST);
-    expect(n.roles).toEqual({ p1: "werewolf", p2: "werewolf", p3: "seer", p4: "guard", p5: "villager", p6: "villager" });
-    expect(n.hostNight).toEqual({ wolfVotes: { p1: "p5", p2: "p5" }, seerPick: "p1", guardPick: "p6" });
+    expect(n.roles).toEqual({
+      p1: "werewolf",
+      p2: "werewolf",
+      p3: "seer",
+      p4: "guard",
+      p5: "villager",
+      p6: "villager",
+    });
+    expect(n.hostNight).toEqual({
+      wolfVotes: { p1: "p5", p2: "p5" },
+      seerPick: "p1",
+      guardPick: "p6",
+    });
     expect(n.me).toBeNull();
     const v = view(vote(), HOST);
     expect(v.hostVotes).toEqual({ p5: "p1", p6: "p1" });
@@ -63,7 +74,7 @@ describe("projector", () => {
     const v = view(vote(), PROJECTOR);
     expect(v.voteCounts).toEqual({ p1: 2 });
     expect(v.needed).toBe(3);
-    expect(JSON.stringify(v)).not.toContain("p5\":\"p1");
+    expect(JSON.stringify(v)).not.toContain('p5":"p1');
   });
 });
 
@@ -84,11 +95,23 @@ describe("players", () => {
   });
   it("the seer sees their own log and pick only", () => {
     const v = view(nightWithActions(), player("p3"));
-    expect(v.me).toMatchObject({ role: "seer", seerLog: [{ night: 1, targetId: "p1", isWerewolf: true }], myNightPick: "p1", wolfVotes: null, teammates: [] });
+    expect(v.me).toMatchObject({
+      role: "seer",
+      seerLog: [{ night: 1, targetId: "p1", isWerewolf: true }],
+      myNightPick: "p1",
+      wolfVotes: null,
+      teammates: [],
+    });
   });
   it("the guard sees whether the self-protection is spent and their pick", () => {
     const v = view(nightWithActions(), player("p4"));
-    expect(v.me).toMatchObject({ role: "guard", guardSelfUsed: false, myNightPick: "p6", seerLog: null, wolfVotes: null });
+    expect(v.me).toMatchObject({
+      role: "guard",
+      guardSelfUsed: false,
+      myNightPick: "p6",
+      seerLog: null,
+      wolfVotes: null,
+    });
   });
   it("a villager sees no night information at all", () => {
     const v = view(nightWithActions(), player("p5"));
@@ -106,8 +129,12 @@ describe("players", () => {
     expect(strings(v).filter((x) => x === "werewolf" || x === "seer" || x === "guard")).toEqual([]);
   });
   it("a villager's night view is identical whether or not anyone has acted (no 'has acted' leak)", () => {
-    expect(JSON.stringify(view(night(), player("p5")))).toBe(JSON.stringify(view(nightWithActions(), player("p5"))));
-    expect(JSON.stringify(view(night(), PROJECTOR))).toBe(JSON.stringify(view(nightWithActions(), PROJECTOR)));
+    expect(JSON.stringify(view(night(), player("p5")))).toBe(
+      JSON.stringify(view(nightWithActions(), player("p5"))),
+    );
+    expect(JSON.stringify(view(night(), PROJECTOR))).toBe(
+      JSON.stringify(view(nightWithActions(), PROJECTOR)),
+    );
   });
   it("sees their own vote and the public totals during the vote", () => {
     const v = view(vote(), player("p5"));
@@ -140,7 +167,11 @@ describe("players", () => {
 
 describe("dawn, verdict and the end", () => {
   it("a dawn kill is public but the winner stays hidden until ENDED", () => {
-    let s = act(setupShared(["werewolf", "werewolf", "seer", "villager", "villager"]), HOST, "ww:start")!;
+    let s = act(
+      setupShared(["werewolf", "werewolf", "seer", "villager", "villager"]),
+      HOST,
+      "ww:start",
+    )!;
     s = fire(s);
     s.players.p3!.alive = false;
     s = act(s, player("p1"), "ww:wolfVote", { targetId: "p5" })!;

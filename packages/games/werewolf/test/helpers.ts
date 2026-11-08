@@ -38,7 +38,11 @@ export function act(
   return werewolf.onSharedAction!({
     config,
     shared,
-    roster: idsFor(Object.keys(shared.players).length).map((id) => ({ playerId: id, groupId: "g1", connected: true })),
+    roster: idsFor(Object.keys(shared.players).length).map((id) => ({
+      playerId: id,
+      groupId: "g1",
+      connected: true,
+    })),
     now,
     rng: createRng(seed),
     action,
@@ -55,7 +59,8 @@ export function fire(shared: WerewolfShared, now?: number, seed = 1): WerewolfSh
     now: now ?? 0,
     rng: createRng(seed),
   });
-  if (deadlines.length !== 1) throw new Error(`expected exactly one deadline, got ${deadlines.length}`);
+  if (deadlines.length !== 1)
+    throw new Error(`expected exactly one deadline, got ${deadlines.length}`);
   const at = now ?? deadlines[0]!.endsAt;
   const next = werewolf.onSharedDeadline!({
     config,

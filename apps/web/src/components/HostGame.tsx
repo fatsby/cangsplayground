@@ -79,9 +79,10 @@ export function HostGame({
   const Note = views?.HostConfigNote;
   const SessionPanel = views?.HostSessionPanel;
   const finished = allGroupsFinished(game.groups);
-  const allowed =
-    view.groups.length > 0 &&
-    view.groups.every((g) => g.playerIds.length >= (entry?.minPlayersPerGroup ?? 1));
+  const minPlayers = entry?.minPlayersPerGroup ?? 1;
+  const allowed = entry?.wholeLobby
+    ? view.players.length >= minPlayers
+    : view.groups.length > 0 && view.groups.every((g) => g.playerIds.length >= minPlayers);
   return (
     <div className="cp-stack">
       {votePanel}
@@ -114,8 +115,9 @@ export function HostGame({
       )}
       {!allowed && (
         <p className="cp-error">
-          Each group needs at least {entry?.minPlayersPerGroup ?? 1}{" "}
-          {(entry?.minPlayersPerGroup ?? 1) === 1 ? "player" : "players"}. Make groups first.
+          {entry?.wholeLobby
+            ? `${entry.name} needs at least ${minPlayers} players.`
+            : `Each group needs at least ${minPlayers} ${minPlayers === 1 ? "player" : "players"}. Make groups first.`}
         </p>
       )}
       {game.stage === "ACTIVE" &&

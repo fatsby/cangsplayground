@@ -4,6 +4,7 @@ import murderMysteryViews from "@cangsplayground/game-murder-mystery/views";
 import secretWordViews from "@cangsplayground/game-secret-word/views";
 import sharkTankViews from "@cangsplayground/game-shark-tank/views";
 import type { GameViews } from "@cangsplayground/ui";
+import werewolfViews from "@cangsplayground/game-werewolf/views";
 import whosTheSpyViews from "@cangsplayground/game-whos-the-spy/views";
 export const gameViews: Record<string, GameViews> = {
   "free-talk": freeTalkViews,
@@ -11,5 +12,6 @@ export const gameViews: Record<string, GameViews> = {
   "murder-mystery": murderMysteryViews,
   "secret-word": secretWordViews,
   "shark-tank": sharkTankViews,
+  werewolf: werewolfViews,
   "whos-the-spy": whosTheSpyViews,
 };

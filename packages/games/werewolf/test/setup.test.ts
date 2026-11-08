@@ -11,8 +11,16 @@ describe("module shell", () => {
     expect(werewolf.id).toBe("werewolf");
     expect(werewolf.wholeLobby).toBe(true);
     expect(werewolf.minPlayersPerGroup).toBe(MIN_PLAYERS);
-    expect(werewolf.configFields.map((f) => f.key)).toEqual(["nightSeconds", "discussionSeconds", "voteSeconds"]);
-    expect(werewolf.defaultConfig).toEqual({ nightSeconds: 30, discussionSeconds: 180, voteSeconds: 60 });
+    expect(werewolf.configFields.map((f) => f.key)).toEqual([
+      "nightSeconds",
+      "discussionSeconds",
+      "voteSeconds",
+    ]);
+    expect(werewolf.defaultConfig).toEqual({
+      nightSeconds: 30,
+      discussionSeconds: 180,
+      voteSeconds: 60,
+    });
   });
 });
 
@@ -68,7 +76,9 @@ describe("ww:start", () => {
     expect(act(s, HOST, "ww:start")).toBeNull();
   });
   it("rejects fewer than 5 players", () => {
-    expect(act(setupShared(["werewolf", "seer", "guard", "villager"]), HOST, "ww:start")).toBeNull();
+    expect(
+      act(setupShared(["werewolf", "seer", "guard", "villager"]), HOST, "ww:start"),
+    ).toBeNull();
   });
   it("rejects a non-host actor", () => {
     expect(act(setupShared(SIX), player("p1"), "ww:start")).toBeNull();

@@ -42,7 +42,9 @@ export function playerLeft(shared: WerewolfShared, playerId: PlayerId): Werewolf
   }
   leaver.alive = false;
   const without = (votes: Record<PlayerId, PlayerId>) =>
-    Object.fromEntries(Object.entries(votes).filter(([voter, target]) => voter !== playerId && target !== playerId));
+    Object.fromEntries(
+      Object.entries(votes).filter(([voter, target]) => voter !== playerId && target !== playerId),
+    );
   shared.wolfVotes = without(shared.wolfVotes);
   shared.dayVotes = without(shared.dayVotes);
   const winner = checkWinner(rolesOf(shared), livingIds(shared));
@@ -64,6 +66,8 @@ export function activatePending(shared: WerewolfShared): void {
  */
 export function endsGameOnEntry(shared: WerewolfShared, playerId: PlayerId, role: Role): boolean {
   const roles = { ...rolesOf(shared), [playerId]: role };
-  const entering = Object.entries(shared.players).filter(([, p]) => p.pending && p.alive).map(([id]) => id);
+  const entering = Object.entries(shared.players)
+    .filter(([, p]) => p.pending && p.alive)
+    .map(([id]) => id);
   return checkWinner(roles, [...livingIds(shared), ...entering]) !== null;
 }

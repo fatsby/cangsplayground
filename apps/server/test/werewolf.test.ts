@@ -63,7 +63,8 @@ async function connect(url: string): Promise<Conn> {
   });
   return conn;
 }
-const until = (check: () => boolean) => expect.poll(check, { timeout: 3000, interval: 10 }).toBe(true);
+const until = (check: () => boolean) =>
+  expect.poll(check, { timeout: 3000, interval: 10 }).toBe(true);
 const wv = (c: Conn) => c.state.view?.game?.shared as WerewolfView | undefined;
 let commands = 0;
 const cmd = () => `c${++commands}`;
@@ -126,9 +127,13 @@ it("plays a round over Socket.IO: whole-lobby start, secrets filtered, late join
   advance(10_000); // REVEAL -> NIGHT 1
   await until(() => wv(host)?.stage === "NIGHT");
   const victim = villagers[0]!;
-  for (const w of wolves) await ok(w, "game:action", { type: "ww:wolfVote", payload: { targetId: victim.id } });
+  for (const w of wolves)
+    await ok(w, "game:action", { type: "ww:wolfVote", payload: { targetId: victim.id } });
   await ok(seer!, "game:action", { type: "ww:seerPick", payload: { targetId: wolves[0]!.id } });
-  await ok(guard!, "game:action", { type: "ww:guardPick", payload: { targetId: villagers[1]!.id } });
+  await ok(guard!, "game:action", {
+    type: "ww:guardPick",
+    payload: { targetId: villagers[1]!.id },
+  });
   await until(() => wv(host)?.hostNight?.guardPick === villagers[1]!.id);
   expect(wv(seer!)!.me!.seerLog).toEqual([{ night: 1, targetId: wolves[0]!.id, isWerewolf: true }]);
 
@@ -149,9 +154,10 @@ it("plays a round over Socket.IO: whole-lobby start, secrets filtered, late join
     payload: { playerId: joined.playerId, role: "villager" },
     commandId: cmd(),
   });
-  expect((await send(late, "game:action", { type: "ww:dayVote", payload: { targetId: wolves[0]!.id } })).ok).toBe(
-    false,
-  );
+  expect(
+    (await send(late, "game:action", { type: "ww:dayVote", payload: { targetId: wolves[0]!.id } }))
+      .ok,
+  ).toBe(false);
 
   // 5 living players need 3 votes; the pending joiner does not change that.
   expect(wv(projector)!.needed).toBe(3);
@@ -176,7 +182,8 @@ it("plays a round over Socket.IO: whole-lobby start, secrets filtered, late join
     }
   }
   for (const v of views(projector)) expect(v.me).toBeNull();
-  for (const s of students) for (const v of views(s)) if (v.me) expect(v.me.role).toBe(roleOf(s.id));
+  for (const s of students)
+    for (const v of views(s)) if (v.me) expect(v.me.role).toBe(roleOf(s.id));
   expect(views(host).some((v) => v.roles !== null)).toBe(true);
   expect(byId(victim.id).id).toBe(victim.id);
 });

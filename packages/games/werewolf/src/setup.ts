@@ -11,12 +11,17 @@ import { REVEAL_MS, ROLES, type Role } from "./types.js";
 const setRolePayload = z.object({ playerId: z.string().min(1), role: z.enum(ROLES) });
 
 /** The state a fresh game starts in: everyone alive, roles dealt, nothing scheduled. */
-export function initialShared(playerIds: readonly PlayerId[], roles: Record<PlayerId, Role>): WerewolfShared {
+export function initialShared(
+  playerIds: readonly PlayerId[],
+  roles: Record<PlayerId, Role>,
+): WerewolfShared {
   return {
     stage: "SETUP",
     night: 0,
     deadline: null,
-    players: Object.fromEntries(playerIds.map((id) => [id, { role: roles[id]!, alive: true, pending: false }])),
+    players: Object.fromEntries(
+      playerIds.map((id) => [id, { role: roles[id]!, alive: true, pending: false }]),
+    ),
     order: [...playerIds],
     wolfVotes: {},
     seerPick: null,
@@ -44,12 +49,14 @@ export const setupActions: Record<string, Reducer> = {
     if (!isHost(ctx) || !parsed.success || !target) return null;
     const editable = shared.stage === "SETUP" || (target.pending && shared.stage !== "ENDED");
     if (!editable) return null;
-    if (target.pending && endsGameOnEntry(shared, parsed.data.playerId, parsed.data.role)) return null;
+    if (target.pending && endsGameOnEntry(shared, parsed.data.playerId, parsed.data.role))
+      return null;
     target.role = parsed.data.role;
     return shared;
   },
   "ww:start": (shared, ctx) => {
-    if (!isHost(ctx) || shared.stage !== "SETUP" || validateRoles(rolesOf(shared)) !== null) return null;
+    if (!isHost(ctx) || shared.stage !== "SETUP" || validateRoles(rolesOf(shared)) !== null)
+      return null;
     shared.stage = "REVEAL";
     shared.deadline = deadlineFor("REVEAL", 0, ctx.now + REVEAL_MS);
     return shared;
