@@ -11,8 +11,12 @@ export const DAWN_MS = 8_000;
 /** Length of the vote-result reveal that plays between the vote and the next night or the final screen. */
 export const VERDICT_MS = 9_000;
 
-export type Role = "werewolf" | "villager" | "seer" | "guard";
+export const ROLES = ["werewolf", "villager", "seer", "guard"] as const;
+export type Role = (typeof ROLES)[number];
 export type Team = "village" | "wolves";
+
+/** Phases of one game. Order: SETUP, REVEAL, then NIGHT/DAWN/DISCUSSION/VOTE/VERDICT repeating, then ENDED. */
+export type Stage = "SETUP" | "REVEAL" | "NIGHT" | "DAWN" | "DISCUSSION" | "VOTE" | "VERDICT" | "ENDED";
 
 /**
  * Host-editable timings, in seconds. The role-reveal, dawn and verdict periods are fixed
