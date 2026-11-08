@@ -9,6 +9,7 @@ import { RoleScreen } from "./RoleScreen.js";
 import type { ScreenProps } from "./ScreenProps.js";
 import { FinalScreen, PendingScreen, SetupScreen, SpectatorScreen } from "./SideScreens.js";
 import { VerdictScreen } from "./VerdictScreen.js";
+import { SfxProvider, SoundToggle } from "./SoundToggle.js";
 import { useRoster } from "./shared.jsx";
 
 type PlayerProps = SessionViewProps & { me: NonNullable<LobbyView["me"]> };
@@ -61,5 +62,12 @@ export function PlayerSessionScreen({ lobby, session, me, act, serverNow }: Play
   else if (view.stage === "DISCUSSION") screen = <DiscussionScreen {...props} />;
   else if (view.stage === "VOTE") screen = <VoteScreen {...props} />;
   else screen = <SetupScreen />;
-  return <div className="ww-root ww-player">{screen}</div>;
+  return (
+    <SfxProvider>
+      <div className="ww-root ww-player">
+        <SoundToggle />
+        {screen}
+      </div>
+    </SfxProvider>
+  );
 }

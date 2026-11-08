@@ -2757,3 +2757,30 @@
   max-height: 100%;
   margin: 0 auto;
 }
+
+/* Sound toggle (off by default). */
+.ww-root .sound-toggle {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 30;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 80%, transparent);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ww-root.ww-player,
+.ww-root.ww-projector {
+  position: relative;
+}
+.ww-root .pstage .sound-toggle {
+  top: auto;
+  bottom: 0.6rem;
+  right: 0.8rem;
+  font-size: 0.7rem;
+  opacity: 0.55;
+}

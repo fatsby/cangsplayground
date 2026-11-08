@@ -8,6 +8,7 @@ import { NightScene } from "./NightScene.js";
 import type { SceneProps } from "./SceneProps.js";
 import { VerdictStage } from "./VerdictStage.js";
 import { WaitScene } from "./WaitScene.js";
+import { SfxProvider, SoundToggle } from "./SoundToggle.js";
 import { useRoster } from "./shared.jsx";
 
 /**
@@ -50,10 +51,13 @@ export function ProjectorScreen({ lobby, session, serverNow }: SessionViewProps)
     }
   }
   return (
-    <div className="ww-root ww-projector">
-      <div className="pstage" aria-live="polite">
-        {scene}
+    <SfxProvider>
+      <div className="ww-root ww-projector">
+        <div className="pstage" aria-live="polite">
+          {scene}
+          <SoundToggle />
+        </div>
       </div>
-    </div>
+    </SfxProvider>
   );
 }
