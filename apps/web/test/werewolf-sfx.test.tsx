@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { act } from "react";
+import { act, createElement, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createSfx, SFX_NAMES } from "@cangsplayground/game-werewolf/sfx";
@@ -107,11 +107,15 @@ it("keeps the choice in memory only", () => {
 });
 
 it("the projector and the player screen offer a toggle that starts off and turns sound on", async () => {
-  for (const [Screen, p] of [
-    [views.ProjectorScreen!, props(wwView(), "projector")],
-    [views.PlayerSessionScreen!, props(wwView({ me: myState() }))],
-  ] as const) {
-    await act(async () => root.render(<Screen {...(p as never)} />));
+  const cases: Array<[ComponentType<Record<string, unknown>>, Record<string, unknown>]> = [
+    [views.ProjectorScreen as ComponentType<Record<string, unknown>>, props(wwView(), "projector")],
+    [
+      views.PlayerSessionScreen as ComponentType<Record<string, unknown>>,
+      props(wwView({ me: myState() })),
+    ],
+  ];
+  for (const [Screen, p] of cases) {
+    await act(async () => root.render(createElement(Screen, p)));
     const toggle = container.querySelector<HTMLButtonElement>("[data-sound-toggle]")!;
     expect(toggle.getAttribute("aria-pressed")).toBe("false");
     expect(toggle.textContent).toContain("Sound off");
