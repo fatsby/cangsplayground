@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { RolePeek } from "./RolePeek.js";
 import type { ScreenProps } from "./ScreenProps.js";
 import {
   Frame,
@@ -38,9 +39,10 @@ export function SetupScreen() {
 /** An eliminated player: can watch the public game but not talk, vote or act. */
 export function SpectatorScreen({
   view,
+  mine,
   roster,
   serverNow,
-}: Pick<ScreenProps, "view" | "roster" | "serverNow">) {
+}: Pick<ScreenProps, "view" | "mine" | "roster" | "serverNow">) {
   const left = secondsLeft(view.deadlineAt, useNow(serverNow));
   const inPlay = view.players.filter((p) => p.alive && !p.pending);
   const out = view.players.filter((p) => !p.alive);
@@ -92,6 +94,7 @@ export function SpectatorScreen({
             )}
           </b>
         </div>
+        <RolePeek mine={mine} roster={roster} />
       </div>
     </Frame>
   );
@@ -179,6 +182,22 @@ export function FinalScreen({ view, mine, roster }: Pick<ScreenProps, "view" | "
               </div>
             );
           })}
+        </div>
+      </div>
+    </Frame>
+  );
+}
+
+/** The game ended and this player never took part (they joined too late): nothing to win or lose. */
+export function OverScreen() {
+  return (
+    <Frame cls="wait" starry>
+      <div className="pbody" style={{ justifyContent: "center", textAlign: "center" }}>
+        <div className="gtitle">
+          <span className="h">The game is over</span>
+          <span className="s">
+            This one ended before you could join. Wait for the host to start the next game.
+          </span>
         </div>
       </div>
     </Frame>

@@ -57,7 +57,7 @@ describe("ww:wolfVote", () => {
 describe("ww:seerPick", () => {
   it("records an immediate binary result in the log and locks the first pick", () => {
     let s = seer(night1(), "p3", "p1")!;
-    expect(s.seerLog).toEqual([{ night: 1, targetId: "p1", isWerewolf: true }]);
+    expect(s.seerLog).toEqual([{ seerId: "p3", night: 1, targetId: "p1", isWerewolf: true }]);
     expect(seer(s, "p3", "p5")).toBeNull();
     s = seer(night1(), "p3", "p5")!;
     expect(s.seerLog[0]).toMatchObject({ targetId: "p5", isWerewolf: false });
@@ -76,25 +76,25 @@ describe("ww:seerPick", () => {
 describe("ww:guardPick", () => {
   it("protects anyone, including the same player two nights in a row", () => {
     const s = guard(night1(), "p4", "p5")!;
-    expect(s.guardPick).toBe("p5");
+    expect(s.guardPicks).toEqual({ p4: "p5" });
     const night2 = structuredClone(fire(s));
     night2.stage = "NIGHT";
     night2.night = 2;
-    night2.guardPick = null;
-    expect(guard(night2, "p4", "p5")!.guardPick).toBe("p5");
+    night2.guardPicks = {};
+    expect(guard(night2, "p4", "p5")!.guardPicks).toEqual({ p4: "p5" });
   });
   it("allows protecting yourself once per game, and changing a pick does not spend it", () => {
     let s = guard(night1(), "p4", "p4")!;
     s = guard(s, "p4", "p5")!; // changed their mind
     s = fire(s);
-    expect(s.guardSelfUsed).toBe(false);
+    expect(s.guardSelfUsed).toEqual([]);
     let t = guard(night1(), "p4", "p4")!;
     t = fire(t);
-    expect(t.guardSelfUsed).toBe(true);
+    expect(t.guardSelfUsed).toEqual(["p4"]);
     const night2 = structuredClone(t);
     night2.stage = "NIGHT";
     night2.night = 2;
-    night2.guardPick = null;
+    night2.guardPicks = {};
     expect(guard(night2, "p4", "p4")).toBeNull();
     expect(guard(night2, "p4", "p5")).not.toBeNull();
   });
@@ -162,5 +162,53 @@ describe("a dawn kill that decides the game", () => {
     const s = fire(fire(night1()));
     expect(s.stage).toBe("DISCUSSION");
     expect(s.deadline!.key).toBe("DISCUSSION:1");
+  });
+});
+
+describe("several Seers and Guards (the host may assign any number)", () => {
+  /** p1,p2 werewolves; p3,p4 seers; p5,p6 guards; p7 villager. */
+  const MANY: Role[] = ["werewolf", "werewolf", "seer", "seer", "guard", "guard", "villager"];
+  const nightMany = () => night1(MANY);
+
+  it("each Seer inspects once and sees only their own result", () => {
+    let s = seer(nightMany(), "p3", "p1")!;
+    s = seer(s, "p4", "p7")!;
+    expect(s.seerPicks).toEqual({ p3: "p1", p4: "p7" });
+    expect(seer(s, "p3", "p2")).toBeNull();
+    expect(s.seerLog.map((e) => [e.seerId, e.targetId, e.isWerewolf])).toEqual([
+      ["p3", "p1", true],
+      ["p4", "p7", false],
+    ]);
+  });
+
+  it("every living Guard's protection counts, not just the last one to tap", () => {
+    let s = vote(nightMany(), "p1", "p7")!;
+    s = vote(s, "p2", "p7")!;
+    s = guard(s, "p5", "p7")!;
+    s = guard(s, "p6", "p3")!; // the second Guard protects someone else
+    s = fire(s);
+    expect(s.dawn).toEqual({ eliminatedId: null });
+  });
+
+  it("each Guard has their own single self-protection", () => {
+    let s = guard(nightMany(), "p5", "p5")!;
+    s = guard(s, "p6", "p6")!;
+    s = fire(s);
+    expect(s.guardSelfUsed.sort()).toEqual(["p5", "p6"]);
+    const next = structuredClone(s);
+    next.stage = "NIGHT";
+    next.guardPicks = {};
+    expect(guard(next, "p5", "p5")).toBeNull();
+    expect(guard(next, "p6", "p6")).toBeNull();
+    expect(guard(next, "p5", "p7")).not.toBeNull();
+  });
+
+  it("a dead Guard's protection no longer counts", () => {
+    const base = nightMany();
+    let s = vote(base, "p1", "p7")!;
+    s = guard(s, "p5", "p7")!;
+    s.players.p5!.alive = false;
+    s = fire(s);
+    expect(s.dawn).toEqual({ eliminatedId: "p7" });
   });
 });

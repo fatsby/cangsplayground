@@ -11,6 +11,7 @@ export function wwView(over: Partial<WerewolfView> = {}): WerewolfView {
     stage: "NIGHT",
     night: 1,
     deadlineAt: 30_000,
+    stageMs: 30_000,
     players: ids.map((id) => ({ id, alive: true })),
     roles: null,
     me: null,

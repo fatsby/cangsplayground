@@ -110,6 +110,10 @@ export function useNow(serverNow: () => number, everyMs = 250): number {
 export const secondsLeft = (deadlineAt: number | null, now: number): number =>
   deadlineAt === null ? 0 : Math.max(0, Math.ceil((deadlineAt - now) / 1000));
 
+/** Length in seconds of the current stage: what the server says, else the configured default. */
+export const stageSeconds = (view: { stageMs: number | null }, fallbackSeconds: number): number =>
+  view.stageMs ? view.stageMs / 1000 : fallbackSeconds;
+
 export const fmt = (sec: number): string =>
   `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
 

@@ -127,3 +127,16 @@ it("the end reveals every role and the winner", () => {
   expect(village.textContent).toContain("THE VILLAGE WINS");
   expect(village.querySelectorAll(".fc.win")).toHaveLength(4);
 });
+
+it("draws the projector's timer rings from the stage's real length", () => {
+  const dash = (el: HTMLElement, sel: string) =>
+    (el.querySelector<SVGCircleElement>(`${sel} .prg`)!.style.strokeDasharray || "").replace(
+      /\s+/g,
+      " ",
+    );
+  expect(dash(html({ stageMs: 60_000, deadlineAt: 30_000 }), ".moonwrap")).toBe("50 100");
+  expect(dash(html({ stage: "DISCUSSION", stageMs: 90_000, deadlineAt: 45_000 }), ".sunc")).toBe(
+    "50 100",
+  );
+  expect(dash(html({ stage: "VOTE", stageMs: 20_000, deadlineAt: 10_000 }), ".clk")).toBe("50 100");
+});

@@ -19,6 +19,6 @@ export const livingPlayer = (shared: WerewolfShared, id: PlayerId): PlayerState 
   return p && p.alive && !p.pending ? p : undefined;
 };
 
-/** Id of the living player holding `role` (the Seer and Guard are unique), if any. */
-export const livingWith = (shared: WerewolfShared, role: Role): PlayerId | undefined =>
-  livingIds(shared).find((id) => shared.players[id]!.role === role);
+/** Ids of the living players holding `role` (the host may assign several Seers or Guards). */
+export const livingWith = (shared: WerewolfShared, role: Role): PlayerId[] =>
+  livingIds(shared).filter((id) => shared.players[id]!.role === role);

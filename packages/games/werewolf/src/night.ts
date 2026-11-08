@@ -1,6 +1,6 @@
 import type { PlayerId } from "@cangsplayground/core";
 import type { Context, Reducer } from "./context.js";
-import { deadlineFor } from "./deadline.js";
+import { scheduleStage } from "./deadline.js";
 import { targetPayload } from "./payloads.js";
 import { livingIds, livingPlayer, livingWith, rolesOf } from "./players.js";
 import { activatePending } from "./roster.js";
@@ -18,8 +18,8 @@ function nightActor(shared: WerewolfShared, ctx: Context, role: Role): PlayerId 
 /**
  * Night actions (all simultaneous and secret, resolved only when the night timer ends).
  * - `ww:wolfVote {targetId}`: a werewolf votes for a living non-werewolf; can be changed until dawn.
- * - `ww:seerPick {targetId}`: the Seer inspects another living player; the first pick is locked.
- * - `ww:guardPick {targetId}`: the Guard protects any living player; self-protection only once per game.
+ * - `ww:seerPick {targetId}`: a Seer inspects another living player; each Seer's first pick is locked.
+ * - `ww:guardPick {targetId}`: a Guard protects any living player; each Guard may protect themselves once per game.
  */
 export const nightActions: Record<string, Reducer> = {
   "ww:wolfVote": (shared, ctx, payload) => {
@@ -34,12 +34,13 @@ export const nightActions: Record<string, Reducer> = {
   "ww:seerPick": (shared, ctx, payload) => {
     const actor = nightActor(shared, ctx, "seer");
     const parsed = targetPayload.safeParse(payload);
-    if (!actor || !parsed.success || shared.seerPick !== null || parsed.data.targetId === actor)
+    if (!actor || !parsed.success || actor in shared.seerPicks || parsed.data.targetId === actor)
       return null;
     const target = livingPlayer(shared, parsed.data.targetId);
     if (!target) return null;
-    shared.seerPick = parsed.data.targetId;
+    shared.seerPicks[actor] = parsed.data.targetId;
     shared.seerLog.push({
+      seerId: actor,
       night: shared.night,
       targetId: parsed.data.targetId,
       isWerewolf: target.role === "werewolf",
@@ -50,8 +51,8 @@ export const nightActions: Record<string, Reducer> = {
     const actor = nightActor(shared, ctx, "guard");
     const parsed = targetPayload.safeParse(payload);
     if (!actor || !parsed.success || !livingPlayer(shared, parsed.data.targetId)) return null;
-    if (parsed.data.targetId === actor && shared.guardSelfUsed) return null;
-    shared.guardPick = parsed.data.targetId;
+    if (parsed.data.targetId === actor && shared.guardSelfUsed.includes(actor)) return null;
+    shared.guardPicks[actor] = parsed.data.targetId;
     return shared;
   },
 };
@@ -61,11 +62,11 @@ export function startNight(shared: WerewolfShared, ctx: Pick<Context, "config" |
   shared.night += 1;
   shared.stage = "NIGHT";
   shared.wolfVotes = {};
-  shared.seerPick = null;
-  shared.guardPick = null;
+  shared.seerPicks = {};
+  shared.guardPicks = {};
   shared.dawn = null;
   shared.dayVotes = {};
-  shared.deadline = deadlineFor("NIGHT", shared.night, ctx.now + ctx.config.nightSeconds * 1000);
+  scheduleStage(shared, "NIGHT", ctx.now, ctx.config.nightSeconds * 1000);
 }
 
 /**
@@ -80,16 +81,21 @@ export function resolveDawn(shared: WerewolfShared, ctx: Pick<Context, "now" | "
       ([voter, target]) => living.has(voter) && living.has(target),
     ),
   );
-  const guardId = livingWith(shared, "guard");
-  if (guardId !== undefined && shared.guardPick === guardId) shared.guardSelfUsed = true;
+  // Every living Guard protects whoever they chose; a self-protection is spent for good.
+  const protections = livingWith(shared, "guard").flatMap((guard) => {
+    const pick = shared.guardPicks[guard];
+    if (pick === undefined) return [];
+    if (pick === guard && !shared.guardSelfUsed.includes(guard)) shared.guardSelfUsed.push(guard);
+    return [pick];
+  });
   activatePending(shared);
-  const victim = resolveNight(
+  const victim = protections.reduce<PlayerId | null>(
+    (target, protectedId) => resolveNight(target, protectedId),
     pickWolfTarget(wolfVotes, ctx.rng),
-    guardId === undefined ? null : shared.guardPick,
   );
   if (victim !== null) shared.players[victim]!.alive = false;
   shared.dawn = { eliminatedId: victim };
   shared.pendingWinner = checkWinner(rolesOf(shared), livingIds(shared));
   shared.stage = "DAWN";
-  shared.deadline = deadlineFor("DAWN", shared.night, ctx.now + DAWN_MS);
+  scheduleStage(shared, "DAWN", ctx.now, DAWN_MS);
 }

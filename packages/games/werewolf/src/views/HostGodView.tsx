@@ -37,15 +37,13 @@ export function HostGodView({
     PHASE[view.stage] ?? (night ? `NIGHT ${view.night}` : `DAY ${view.night} · ${view.stage}`);
   const inPlay = view.players.filter((p) => !p.pending);
   const nameOf = roster.name;
-  const holder = (role: Role) =>
-    view.players.find((p) => p.alive && !p.pending && roles[p.id] === role)?.id;
+  const holders = (role: Role) =>
+    view.players.filter((p) => p.alive && !p.pending && roles[p.id] === role).map((p) => p.id);
   const acted = new Set<string>();
   if (night && view.hostNight) {
     Object.keys(view.hostNight.wolfVotes).forEach((id) => acted.add(id));
-    const seer = holder("seer");
-    const guard = holder("guard");
-    if (seer && view.hostNight.seerPick) acted.add(seer);
-    if (guard && view.hostNight.guardPick) acted.add(guard);
+    Object.keys(view.hostNight.seerPicks).forEach((id) => acted.add(id));
+    Object.keys(view.hostNight.guardPicks).forEach((id) => acted.add(id));
   }
   const needed = Math.max(1, view.needed);
   const totals = Object.entries(view.voteCounts).sort((a, b) => b[1] - a[1]);
@@ -102,28 +100,28 @@ export function HostGodView({
                     .map(([w, t]) => `${nameOf(w)} → ${nameOf(t)}`)
                     .join(" · ")}
             </div>
-            <div className="line">
-              <span className="icw">
-                <RoleIcon role="seer" />
-              </span>
-              <b>Seer</b>
-              {holder("seer") === undefined
-                ? "no one"
-                : view.hostNight.seerPick
-                  ? `${nameOf(holder("seer")!)} inspects ${nameOf(view.hostNight.seerPick)}`
-                  : `${nameOf(holder("seer")!)} has not chosen`}
-            </div>
-            <div className="line">
-              <span className="icw">
-                <RoleIcon role="guard" />
-              </span>
-              <b>Guard</b>
-              {holder("guard") === undefined
-                ? "no one"
-                : view.hostNight.guardPick
-                  ? `${nameOf(holder("guard")!)} protects ${nameOf(view.hostNight.guardPick)}`
-                  : `${nameOf(holder("guard")!)} has not chosen`}
-            </div>
+            {(["seer", "guard"] as const).map((role) => {
+              const picks =
+                role === "seer" ? view.hostNight!.seerPicks : view.hostNight!.guardPicks;
+              const people = holders(role);
+              return (
+                <div className="line" key={role}>
+                  <span className="icw">
+                    <RoleIcon role={role} />
+                  </span>
+                  <b>{role === "seer" ? "Seer" : "Guard"}</b>
+                  {people.length === 0
+                    ? "no one"
+                    : people
+                        .map((id) =>
+                          picks[id]
+                            ? `${nameOf(id)} ${role === "seer" ? "inspects" : "protects"} ${nameOf(picks[id]!)}`
+                            : `${nameOf(id)} has not chosen`,
+                        )
+                        .join(" · ")}
+                </div>
+              );
+            })}
           </div>
         )}
         {view.stage === "VOTE" && (

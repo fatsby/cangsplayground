@@ -1,5 +1,5 @@
 import type { Context } from "./context.js";
-import { deadlineFor } from "./deadline.js";
+import { scheduleStage } from "./deadline.js";
 import { endGame } from "./ending.js";
 import { enterVote, resolveVote } from "./day.js";
 import { resolveDawn, startNight } from "./night.js";
@@ -10,11 +10,7 @@ type FlowContext = Omit<Context, "actor">;
 /** Day starts: the discussion timer runs for `discussionSeconds`. */
 export function enterDiscussion(shared: WerewolfShared, ctx: FlowContext): void {
   shared.stage = "DISCUSSION";
-  shared.deadline = deadlineFor(
-    "DISCUSSION",
-    shared.night,
-    ctx.now + ctx.config.discussionSeconds * 1000,
-  );
+  scheduleStage(shared, "DISCUSSION", ctx.now, ctx.config.discussionSeconds * 1000);
 }
 
 /**

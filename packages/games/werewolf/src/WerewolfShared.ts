@@ -11,17 +11,21 @@ export interface WerewolfShared {
   /** 1-based night counter; 0 before the first night. Day N follows night N. */
   night: number;
   deadline: SharedDeadline | null;
+  /** Length in ms of the stage the deadline belongs to (for timer rings), or null when nothing is timed. */
+  stageMs: number | null;
   players: Record<PlayerId, PlayerState>;
   /** Join order, for stable display. */
   order: PlayerId[];
   /** Werewolf id -> chosen victim, for the current night. */
   wolfVotes: Record<PlayerId, PlayerId>;
-  /** The Seer's locked pick for the current night. */
-  seerPick: PlayerId | null;
-  guardPick: PlayerId | null;
-  /** True once the Guard has spent their single self-protection (set when a night resolves). */
-  guardSelfUsed: boolean;
-  seerLog: Array<{ night: number; targetId: PlayerId; isWerewolf: boolean }>;
+  /** Seer id -> their locked pick for the current night (the host may assign several Seers). */
+  seerPicks: Record<PlayerId, PlayerId>;
+  /** Guard id -> who they protect tonight (the host may assign several Guards). */
+  guardPicks: Record<PlayerId, PlayerId>;
+  /** Guards who have already spent their single self-protection (recorded when a night resolves). */
+  guardSelfUsed: PlayerId[];
+  /** Every inspection so far; a Seer only ever sees their own entries. */
+  seerLog: Array<{ seerId: PlayerId; night: number; targetId: PlayerId; isWerewolf: boolean }>;
   /** Result of the last night: who died, or null for "no one died". */
   dawn: { eliminatedId: PlayerId | null } | null;
   /** Voter id -> target id for the current day vote. */

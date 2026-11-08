@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import type { SceneProps } from "./SceneProps.js";
-import { Portrait, fmt, secondsLeft, useNow } from "./shared.jsx";
+import { Portrait, fmt, secondsLeft, useNow, stageSeconds } from "./shared.jsx";
 import { stars } from "./effects.js";
 import { useSfx } from "./sfx-context.js";
 
@@ -48,7 +48,7 @@ export function NightScene({ view, roster, serverNow, config }: SceneProps) {
             r="46"
             pathLength={100}
             style={{
-              strokeDasharray: `${Math.min(1, left / config.nightSeconds) * 100} 100`,
+              strokeDasharray: `${Math.min(1, left / stageSeconds(view, config.nightSeconds)) * 100} 100`,
               ...(counting ? { stroke: left <= 3 ? "var(--danger)" : "var(--warning)" } : {}),
             }}
           />

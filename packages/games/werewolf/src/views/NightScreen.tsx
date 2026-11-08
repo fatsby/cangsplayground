@@ -1,7 +1,16 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import type { Role } from "../types.js";
 import type { ScreenProps } from "./ScreenProps.js";
-import { Frame, Mini, ROLE_COLOR, RoleIcon, fmt, secondsLeft, useNow } from "./shared.jsx";
+import {
+  Frame,
+  Mini,
+  ROLE_COLOR,
+  RoleIcon,
+  fmt,
+  secondsLeft,
+  useNow,
+  stageSeconds,
+} from "./shared.jsx";
 import { useSfx } from "./sfx-context.js";
 
 const POWER: Record<Role, string> = {
@@ -79,7 +88,7 @@ export function NightScreen({
         return IDLE.seer;
     }
   };
-  const ratio = Math.min(1, left / config.nightSeconds);
+  const ratio = Math.min(1, left / stageSeconds(view, config.nightSeconds));
   return (
     <Frame cls={`nshell ${left > 0 && left <= 5 ? "final5" : ""}`} starry>
       <div className="pbar">

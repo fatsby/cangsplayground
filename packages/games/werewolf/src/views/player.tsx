@@ -7,7 +7,13 @@ import { KilledScreen, NewsScreen, SafeScreen } from "./DawnScreens.js";
 import { NightScreen } from "./NightScreen.js";
 import { RoleScreen } from "./RoleScreen.js";
 import type { ScreenProps } from "./ScreenProps.js";
-import { FinalScreen, PendingScreen, SetupScreen, SpectatorScreen } from "./SideScreens.js";
+import {
+  FinalScreen,
+  OverScreen,
+  PendingScreen,
+  SetupScreen,
+  SpectatorScreen,
+} from "./SideScreens.js";
 import { VerdictScreen } from "./VerdictScreen.js";
 import { SfxProvider, SoundToggle } from "./SoundToggle.js";
 import { useRoster } from "./shared.jsx";
@@ -26,7 +32,7 @@ export function PlayerSessionScreen({ lobby, session, me, act, serverNow }: Play
   if (!view || !mine)
     return (
       <div className="ww-root ww-player">
-        <Waiting message="Joining the village" />
+        {view?.stage === "ENDED" ? <OverScreen /> : <Waiting message="Joining the village" />}
       </div>
     );
   const config = configSchema.parse(session.config ?? {});
@@ -41,7 +47,8 @@ export function PlayerSessionScreen({ lobby, session, me, act, serverNow }: Play
   };
   const dawnVictim = view.dawn?.eliminatedId ?? null;
   let screen;
-  if (view.stage === "ENDED") screen = <FinalScreen {...props} />;
+  if (view.stage === "ENDED")
+    screen = mine.pending || !mine.role ? <OverScreen /> : <FinalScreen {...props} />;
   else if (mine.pending) screen = <PendingScreen />;
   else if (view.stage === "SETUP") screen = <SetupScreen />;
   else if (view.stage === "REVEAL") screen = <RoleScreen {...props} />;
@@ -57,7 +64,7 @@ export function PlayerSessionScreen({ lobby, session, me, act, serverNow }: Play
   else if (view.stage === "VERDICT" && view.lastVote)
     screen = <VerdictScreen view={view} roster={roster} />;
   else if (!mine.alive)
-    screen = <SpectatorScreen view={view} roster={roster} serverNow={serverNow} />;
+    screen = <SpectatorScreen view={view} mine={mine} roster={roster} serverNow={serverNow} />;
   else if (view.stage === "NIGHT") screen = <NightScreen {...props} />;
   else if (view.stage === "DISCUSSION") screen = <DiscussionScreen {...props} />;
   else if (view.stage === "VOTE") screen = <VoteScreen {...props} />;

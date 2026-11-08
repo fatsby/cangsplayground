@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SceneProps } from "./SceneProps.js";
-import { Portrait, RingClock, secondsLeft, useNow } from "./shared.jsx";
+import { Portrait, RingClock, secondsLeft, useNow, stageSeconds } from "./shared.jsx";
 import { useSfx } from "./sfx-context.js";
 
 /** Day: discussion. The sun is the clock; portraits take turns lighting up as if talking (decoration only). */
@@ -22,7 +22,7 @@ export function TalkScene({ view, roster, serverNow, config }: SceneProps) {
         <span className="k">Day {view.night} · Discussion</span>
         <b>Talk it out</b>
       </div>
-      <RingClock left={left} total={config.discussionSeconds} cls="sunc" />
+      <RingClock left={left} total={stageSeconds(view, config.discussionSeconds)} cls="sunc" />
       <div className="grid">
         {living.map((p) => (
           <Portrait
@@ -66,7 +66,7 @@ export function VoteScene({ view, roster, serverNow, config }: SceneProps) {
         Needed to banish: <b>{needed}</b>
         <span>half of {living.length} alive, rounded up</span>
       </div>
-      <RingClock left={left} total={config.voteSeconds} cls="clk" />
+      <RingClock left={left} total={stageSeconds(view, config.voteSeconds)} cls="clk" />
       <div className="cols">
         {living.map((p) => {
           const count = view.voteCounts[p.id] ?? 0;

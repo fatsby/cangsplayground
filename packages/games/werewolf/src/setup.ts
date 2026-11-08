@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { PlayerId } from "@cangsplayground/core";
 import { isHost, type Reducer } from "./context.js";
-import { deadlineFor } from "./deadline.js";
+import { scheduleStage } from "./deadline.js";
 import { rolesOf } from "./players.js";
 import { endsGameOnEntry } from "./roster.js";
 import { validateRoles } from "./rules.js";
@@ -19,14 +19,15 @@ export function initialShared(
     stage: "SETUP",
     night: 0,
     deadline: null,
+    stageMs: null,
     players: Object.fromEntries(
       playerIds.map((id) => [id, { role: roles[id]!, alive: true, pending: false }]),
     ),
     order: [...playerIds],
     wolfVotes: {},
-    seerPick: null,
-    guardPick: null,
-    guardSelfUsed: false,
+    seerPicks: {},
+    guardPicks: {},
+    guardSelfUsed: [],
     seerLog: [],
     dawn: null,
     dayVotes: {},
@@ -58,7 +59,7 @@ export const setupActions: Record<string, Reducer> = {
     if (!isHost(ctx) || shared.stage !== "SETUP" || validateRoles(rolesOf(shared)) !== null)
       return null;
     shared.stage = "REVEAL";
-    shared.deadline = deadlineFor("REVEAL", 0, ctx.now + REVEAL_MS);
+    scheduleStage(shared, "REVEAL", ctx.now, REVEAL_MS);
     return shared;
   },
 };

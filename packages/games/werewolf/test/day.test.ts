@@ -156,12 +156,12 @@ describe("a whole round through actions and deadlines only", () => {
     s = fire(s);
     expect([s.stage, s.lastVote!.eliminatedId]).toEqual(["VERDICT", "p1"]);
     s = fire(s);
-    expect([s.stage, s.night, s.wolfVotes, s.seerPick, s.guardPick]).toEqual([
+    expect([s.stage, s.night, s.wolfVotes, s.seerPicks, s.guardPicks]).toEqual([
       "NIGHT",
       2,
       {},
-      null,
-      null,
+      {},
+      {},
     ]);
     expect(s.seerLog).toHaveLength(1);
   });

@@ -59,7 +59,9 @@ const openTab = async (label: string) => {
   const tab = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((t) =>
     t.textContent?.includes(label),
   )!;
-  await act(async () => tab.dispatchEvent(new MouseEvent("mousedown", { button: 0, bubbles: true })));
+  await act(async () =>
+    tab.dispatchEvent(new MouseEvent("mousedown", { button: 0, bubbles: true })),
+  );
 };
 
 it("can prepare a whole-lobby game without any groups once enough players are here", async () => {
@@ -71,7 +73,9 @@ it("can prepare a whole-lobby game without any groups once enough players are he
 
 it("will not prepare with fewer players than the game's minimum", async () => {
   await renderHost(configuring(4));
-  expect(container.querySelector<HTMLButtonElement>(".host-fixed-controls button")!.disabled).toBe(true);
+  expect(container.querySelector<HTMLButtonElement>(".host-fixed-controls button")!.disabled).toBe(
+    true,
+  );
   await openTab("Game");
   expect(container.textContent).toContain("needs at least 5 players");
   expect(container.textContent).not.toContain("Make groups first");

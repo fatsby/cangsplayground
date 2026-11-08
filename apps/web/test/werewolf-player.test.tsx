@@ -245,3 +245,68 @@ it("the end screen tells each player whether they won and reveals every role", (
   for (const name of ["Ada", "Bo", "Cy", "Dee", "Eve", "Fay"]) expect(won).toContain(name);
   expect(won).toContain("Seer");
 });
+
+it("draws the timer rings from the stage's real length, not the default settings", () => {
+  const dash = (el: HTMLElement, sel: string) =>
+    (el.querySelector<SVGCircleElement>(`${sel} .prg`)!.style.strokeDasharray || "").replace(
+      /\s+/g,
+      " ",
+    );
+  // 30 s left of a 60 s night: half the ring
+  const night = markup(props(wwView({ stageMs: 60_000, deadlineAt: 30_000, me: myState() })));
+  expect(dash(night, ".moonmini")).toBe("50 100");
+  // 45 s left of a 90 s discussion: half the ring
+  const talk = markup(
+    props(wwView({ stage: "DISCUSSION", stageMs: 90_000, deadlineAt: 45_000, me: myState() })),
+  );
+  expect(dash(talk, ".sunring")).toBe("50 100");
+});
+
+it("a player can look at their role again during the day by holding the role chip", async () => {
+  for (const stage of ["DISCUSSION", "VOTE"] as const) {
+    await mount(props(wwView({ stage, me: myState({ role: "seer" }) })));
+    const peek = container.querySelector<HTMLElement>(".rolepeek")!;
+    expect(peek.textContent).toContain("Seer");
+    expect(peek.classList.contains("open")).toBe(false);
+    await act(async () => peek.dispatchEvent(new Event("pointerdown", { bubbles: true })));
+    expect(peek.classList.contains("open")).toBe(true);
+    await act(async () => peek.dispatchEvent(new Event("pointerup", { bubbles: true })));
+    expect(peek.classList.contains("open")).toBe(false);
+  }
+});
+
+it("the role chip also shows a werewolf's pack, and is there for spectators too", () => {
+  const wolf = markup(
+    props(wwView({ stage: "DISCUSSION", me: myState({ role: "werewolf", teammates: ["p2"] }) })),
+  );
+  expect(wolf.querySelector(".rolepeek")!.textContent).toContain("Your pack: Bo");
+  const ghost = markup(props(wwView({ stage: "DISCUSSION", me: myState({ alive: false }) })));
+  expect(ghost.querySelector(".rolepeek")!.textContent).toContain("Villager");
+});
+
+it("a joiner who never entered play is told the game is over instead of 'you win'", () => {
+  const roles = {
+    p1: "werewolf",
+    p2: "villager",
+    p3: "seer",
+    p4: "guard",
+    p5: "villager",
+    p6: "villager",
+  } as const;
+  const waiting = markup(
+    props(
+      wwView({
+        stage: "ENDED",
+        winner: "village",
+        roles,
+        me: myState({ role: null, pending: true }),
+      }),
+    ),
+  ).textContent!;
+  expect(waiting).toContain("The game is over");
+  expect(waiting).not.toMatch(/YOU WIN|YOU LOSE/);
+  const unknown = markup(
+    props(wwView({ stage: "ENDED", winner: "village", roles, me: null })),
+  ).textContent!;
+  expect(unknown).toContain("The game is over");
+});

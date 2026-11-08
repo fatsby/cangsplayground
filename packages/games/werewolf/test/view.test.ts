@@ -3,7 +3,7 @@ import type { Viewer } from "@cangsplayground/core";
 import werewolf from "../src/index.js";
 import { viewForViewer } from "../src/view.js";
 import type { WerewolfShared } from "../src/WerewolfShared.js";
-import { ROLES, type Role } from "../src/types.js";
+import { DAWN_MS, REVEAL_MS, ROLES, VERDICT_MS, type Role } from "../src/types.js";
 import { HOST, act, config, fire, player, setupShared } from "./helpers.js";
 
 /** p1,p2 werewolves; p3 seer; p4 guard; p5,p6 villagers. */
@@ -49,8 +49,8 @@ describe("host", () => {
     });
     expect(n.hostNight).toEqual({
       wolfVotes: { p1: "p5", p2: "p5" },
-      seerPick: "p1",
-      guardPick: "p6",
+      seerPicks: { p3: "p1" },
+      guardPicks: { p4: "p6" },
     });
     expect(n.me).toBeNull();
     const v = view(vote(), HOST);
@@ -203,5 +203,54 @@ describe("module wiring", () => {
     expect(
       werewolf.sharedViewFor!({ config, shared: s, viewer: player("p5"), viewerGroupId: "g1" }),
     ).toEqual(view(s, player("p5")));
+  });
+});
+
+describe("stage length (so clients can draw timer rings for any host setting)", () => {
+  it("is the length of the current stage's timer, and null when nothing is timed", () => {
+    const reveal = act(setupShared(SIX), HOST, "ww:start")!;
+    expect(view(reveal, PROJECTOR).stageMs).toBe(REVEAL_MS);
+    const n = fire(reveal);
+    expect(view(n, player("p5")).stageMs).toBe(config.nightSeconds * 1000);
+    const dawn = fire(n);
+    expect(view(dawn, HOST).stageMs).toBe(DAWN_MS);
+    const talk = fire(dawn);
+    expect(view(talk, PROJECTOR).stageMs).toBe(config.discussionSeconds * 1000);
+    const v = fire(talk);
+    expect(view(v, PROJECTOR).stageMs).toBe(config.voteSeconds * 1000);
+    expect(view(fire(v), PROJECTOR).stageMs).toBe(VERDICT_MS);
+    expect(view(setupShared(SIX), PROJECTOR).stageMs).toBeNull();
+    const ended = structuredClone(n);
+    ended.stage = "ENDED";
+    ended.deadline = null;
+    ended.stageMs = null;
+    expect(view(ended, PROJECTOR).stageMs).toBeNull();
+  });
+
+  it("follows the host's configured timings", () => {
+    const custom = { nightSeconds: 60, discussionSeconds: 90, voteSeconds: 20 };
+    let s = act(setupShared(SIX), HOST, "ww:start")!;
+    const step = (cur: WerewolfShared) => {
+      const [d] = werewolf.sharedDeadlines!({
+        config: custom,
+        shared: cur,
+        roster: [],
+        now: 0,
+        rng: { next: () => 0, int: () => 0 },
+      });
+      return werewolf.onSharedDeadline!({
+        config: custom,
+        shared: cur,
+        roster: [],
+        now: d!.endsAt,
+        rng: { next: () => 0, int: () => 0 },
+        deadline: d!,
+      })!;
+    };
+    s = step(s);
+    expect(view(s, PROJECTOR).stageMs).toBe(60_000);
+    s = step(step(s));
+    expect(view(s, PROJECTOR).stageMs).toBe(90_000);
+    expect(view(step(s), PROJECTOR).stageMs).toBe(20_000);
   });
 });

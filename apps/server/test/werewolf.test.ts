@@ -134,7 +134,7 @@ it("plays a round over Socket.IO: whole-lobby start, secrets filtered, late join
     type: "ww:guardPick",
     payload: { targetId: villagers[1]!.id },
   });
-  await until(() => wv(host)?.hostNight?.guardPick === villagers[1]!.id);
+  await until(() => wv(host)?.hostNight?.guardPicks[guard!.id] === villagers[1]!.id);
   expect(wv(seer!)!.me!.seerLog).toEqual([{ night: 1, targetId: wolves[0]!.id, isWerewolf: true }]);
 
   advance(30_000); // night ends -> DAWN: the victim dies

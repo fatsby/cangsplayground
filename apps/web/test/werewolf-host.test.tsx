@@ -102,7 +102,11 @@ it("Start is disabled with the reason when the roles are not valid, and sends ww
 it("during the night the host sees every role, who has acted and tonight's live choices", () => {
   const el = markup(
     hostProps({
-      hostNight: { wolfVotes: { p1: "p5", p2: "p5" }, seerPick: "p1", guardPick: "p6" },
+      hostNight: {
+        wolfVotes: { p1: "p5", p2: "p5" },
+        seerPicks: { p3: "p1" },
+        guardPicks: { p4: "p6" },
+      },
     }),
   );
   const text = el.textContent!;

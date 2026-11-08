@@ -21,8 +21,13 @@ function myState(shared: WerewolfShared, id: PlayerId): MyState | null {
           .map(([other]) => other)
       : [],
     wolfVotes: isWolf && night ? { ...shared.wolfVotes } : null,
-    seerLog: inPlay && me.role === "seer" ? shared.seerLog.map((e) => ({ ...e })) : null,
-    guardSelfUsed: inPlay && me.role === "guard" ? shared.guardSelfUsed : null,
+    seerLog:
+      inPlay && me.role === "seer"
+        ? shared.seerLog
+            .filter((e) => e.seerId === id)
+            .map(({ night, targetId, isWerewolf }) => ({ night, targetId, isWerewolf }))
+        : null,
+    guardSelfUsed: inPlay && me.role === "guard" ? shared.guardSelfUsed.includes(id) : null,
     myVote: shared.stage === "VOTE" ? (shared.dayVotes[id] ?? null) : null,
     myNightPick:
       !night || !inPlay
@@ -30,9 +35,9 @@ function myState(shared: WerewolfShared, id: PlayerId): MyState | null {
         : me.role === "werewolf"
           ? (shared.wolfVotes[id] ?? null)
           : me.role === "seer"
-            ? shared.seerPick
+            ? (shared.seerPicks[id] ?? null)
             : me.role === "guard"
-              ? shared.guardPick
+              ? (shared.guardPicks[id] ?? null)
               : null,
   };
 }
@@ -52,6 +57,7 @@ export function viewForViewer(shared: WerewolfShared, viewer: Viewer): WerewolfV
     stage: shared.stage,
     night: shared.night,
     deadlineAt: shared.deadline?.endsAt ?? null,
+    stageMs: shared.stageMs,
     players: shared.order
       .filter((id) => shared.players[id])
       .map((id) => {
@@ -72,8 +78,8 @@ export function viewForViewer(shared: WerewolfShared, viewer: Viewer): WerewolfV
       host && shared.stage === "NIGHT"
         ? {
             wolfVotes: { ...shared.wolfVotes },
-            seerPick: shared.seerPick,
-            guardPick: shared.guardPick,
+            seerPicks: { ...shared.seerPicks },
+            guardPicks: { ...shared.guardPicks },
           }
         : null,
     hostVotes: host && shared.stage === "VOTE" ? { ...shared.dayVotes } : null,

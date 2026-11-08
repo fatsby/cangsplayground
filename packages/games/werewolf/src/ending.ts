@@ -5,4 +5,5 @@ export function endGame(shared: WerewolfShared): void {
   shared.stage = "ENDED";
   shared.winner = shared.pendingWinner;
   shared.deadline = null;
+  shared.stageMs = null;
 }

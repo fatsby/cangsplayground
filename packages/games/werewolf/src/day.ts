@@ -1,5 +1,5 @@
 import type { Context, Reducer } from "./context.js";
-import { deadlineFor } from "./deadline.js";
+import { scheduleStage } from "./deadline.js";
 import { livingIds, livingPlayer, rolesOf } from "./players.js";
 import { targetPayload } from "./payloads.js";
 import { checkWinner, resolveDayVote, tallyVotes } from "./rules.js";
@@ -31,7 +31,7 @@ export const dayActions: Record<string, Reducer> = {
 export function enterVote(shared: WerewolfShared, ctx: Pick<Context, "config" | "now">): void {
   shared.stage = "VOTE";
   shared.dayVotes = {};
-  shared.deadline = deadlineFor("VOTE", shared.night, ctx.now + ctx.config.voteSeconds * 1000);
+  scheduleStage(shared, "VOTE", ctx.now, ctx.config.voteSeconds * 1000);
 }
 
 /**
@@ -46,5 +46,5 @@ export function resolveVote(shared: WerewolfShared, ctx: Pick<Context, "now">): 
   if (banished !== null) shared.players[banished]!.alive = false;
   shared.pendingWinner = checkWinner(rolesOf(shared), livingIds(shared));
   shared.stage = "VERDICT";
-  shared.deadline = deadlineFor("VERDICT", shared.night, ctx.now + VERDICT_MS);
+  scheduleStage(shared, "VERDICT", ctx.now, VERDICT_MS);
 }

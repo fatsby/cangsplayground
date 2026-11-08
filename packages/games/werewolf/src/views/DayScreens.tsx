@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import type { ScreenProps } from "./ScreenProps.js";
-import { Frame, Mini, fmt, secondsLeft, useNow } from "./shared.jsx";
+import { Frame, Mini, fmt, secondsLeft, useNow, stageSeconds } from "./shared.jsx";
+import { RolePeek } from "./RolePeek.js";
 import { useSfx } from "./sfx-context.js";
 
 /** Day: discussion. The sun is the timer; everyone talks out loud. */
-export function DiscussionScreen({ meId, view, roster, serverNow, config }: ScreenProps) {
+export function DiscussionScreen({ meId, view, mine, roster, serverNow, config }: ScreenProps) {
   const left = secondsLeft(view.deadlineAt, useNow(serverNow));
   const living = view.players.filter((p) => p.alive && !p.pending);
   return (
@@ -27,7 +28,7 @@ export function DiscussionScreen({ meId, view, roster, serverNow, config }: Scre
                 strokeWidth: 5,
                 stroke: "#ffd36b",
                 filter: "none",
-                strokeDasharray: `${Math.min(1, left / config.discussionSeconds) * 100} 100`,
+                strokeDasharray: `${Math.min(1, left / stageSeconds(view, config.discussionSeconds)) * 100} 100`,
               }}
             />
           </svg>
@@ -45,6 +46,7 @@ export function DiscussionScreen({ meId, view, roster, serverNow, config }: Scre
         <div className="tlk">
           <span>💬</span>Voting opens when the timer ends.
         </div>
+        <RolePeek mine={mine} roster={roster} />
       </div>
     </Frame>
   );
@@ -103,6 +105,7 @@ export function VoteScreen({ meId, view, mine, roster, act, serverNow }: ScreenP
         <div className="vp-hint" style={{ marginTop: "auto" }}>
           Only totals are public. You can change your vote until the timer ends.
         </div>
+        <RolePeek mine={mine} roster={roster} />
       </div>
     </Frame>
   );

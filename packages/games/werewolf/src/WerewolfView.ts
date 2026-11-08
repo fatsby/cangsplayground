@@ -12,6 +12,8 @@ export interface WerewolfView {
   night: number;
   /** Epoch ms (server clock) when the current stage ends, or null. */
   deadlineAt: number | null;
+  /** Length in ms of the current stage, for drawing timer rings; null when nothing is timed. */
+  stageMs: number | null;
   players: Array<{ id: PlayerId; alive: boolean; pending?: true }>;
   /** Host: always. Everyone else: only once the game has ENDED. */
   roles: Record<PlayerId, Role> | null;
@@ -27,8 +29,8 @@ export interface WerewolfView {
   winner: Team | null;
   hostNight: {
     wolfVotes: Record<PlayerId, PlayerId>;
-    seerPick: PlayerId | null;
-    guardPick: PlayerId | null;
+    seerPicks: Record<PlayerId, PlayerId>;
+    guardPicks: Record<PlayerId, PlayerId>;
   } | null;
   hostVotes: Record<PlayerId, PlayerId> | null;
 }
