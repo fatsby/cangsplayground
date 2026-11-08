@@ -1,5 +1,6 @@
 import type { Context } from "./context.js";
 import { deadlineFor } from "./deadline.js";
+import { enterVote, resolveVote } from "./day.js";
 import { resolveDawn, startNight } from "./night.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 
@@ -33,6 +34,16 @@ export function advance(shared: WerewolfShared, ctx: FlowContext): WerewolfShare
     case "DAWN":
       if (shared.pendingWinner) endGame(shared);
       else enterDiscussion(shared, ctx);
+      return shared;
+    case "DISCUSSION":
+      enterVote(shared, ctx);
+      return shared;
+    case "VOTE":
+      resolveVote(shared, ctx);
+      return shared;
+    case "VERDICT":
+      if (shared.pendingWinner) endGame(shared);
+      else startNight(shared, ctx);
       return shared;
     default:
       return null;

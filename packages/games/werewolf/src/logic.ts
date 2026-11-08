@@ -2,13 +2,14 @@ import { dealRoles } from "./rules.js";
 import type { GameModule } from "@cangsplayground/core";
 import type { Reducer } from "./context.js";
 import { advance } from "./flow.js";
+import { dayActions } from "./day.js";
 import { nightActions } from "./night.js";
 import { initialShared, setupActions } from "./setup.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { GAME_ID, MIN_PLAYERS, configSchema, type WerewolfConfig } from "./types.js";
 
 /** Every player/host action the module understands, keyed by action type. */
-const ACTIONS: Record<string, Reducer> = { ...setupActions, ...nightActions };
+const ACTIONS: Record<string, Reducer> = { ...setupActions, ...nightActions, ...dayActions };
 
 const durationField = (key: keyof WerewolfConfig, label: string, min: number, max: number, step: number) =>
   ({ key, label, kind: "number", display: "stepper", min, max, step, unit: "sec" }) as const;

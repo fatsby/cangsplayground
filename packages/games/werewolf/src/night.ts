@@ -1,13 +1,11 @@
-import { z } from "zod";
 import type { PlayerId } from "@cangsplayground/core";
 import type { Context, Reducer } from "./context.js";
 import { deadlineFor } from "./deadline.js";
+import { targetPayload } from "./payloads.js";
 import { livingIds, livingPlayer, livingWith, rolesOf } from "./players.js";
 import { checkWinner, pickWolfTarget, resolveNight } from "./rules.js";
 import type { WerewolfShared } from "./WerewolfShared.js";
 import { DAWN_MS, type Role } from "./types.js";
-
-const targetPayload = z.object({ targetId: z.string().min(1) });
 
 /** The acting player's id when they are a living, non-pending `role` and it is night; otherwise null. */
 function nightActor(shared: WerewolfShared, ctx: Context, role: Role): PlayerId | null {
