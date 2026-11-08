@@ -192,3 +192,33 @@ export function Frame({
     </div>
   );
 }
+
+/** Circular countdown (the mockup's `.ring-clock`): the stroke drains as `left` falls toward 0. */
+export function RingClock({
+  left,
+  total,
+  cls = "",
+}: {
+  left: number;
+  total: number;
+  cls?: string;
+}) {
+  const tone = left <= 5 ? "hot" : left <= 10 ? "warn" : "";
+  return (
+    <div className={`ring-clock ${cls} ${tone}`}>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle className="trk" cx="50" cy="50" r="46" />
+        <circle
+          className="prg"
+          cx="50"
+          cy="50"
+          r="46"
+          pathLength={100}
+          style={{ strokeDasharray: `${Math.min(1, left / Math.max(1, total)) * 100} 100` }}
+        />
+      </svg>
+      <i className="core" />
+      <b>{fmt(left)}</b>
+    </div>
+  );
+}
