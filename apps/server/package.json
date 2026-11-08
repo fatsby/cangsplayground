@@ -17,6 +17,7 @@
     "@cangsplayground/game-murder-mystery": "workspace:*",
     "@cangsplayground/game-secret-word": "workspace:*",
     "@cangsplayground/game-shark-tank": "workspace:*",
+    "@cangsplayground/game-werewolf": "workspace:*",
     "@cangsplayground/game-whos-the-spy": "workspace:*",
     "@fastify/static": "^10.1.6",
     "fastify": "^5.12.7",
