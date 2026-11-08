@@ -108,9 +108,12 @@ it("keeps the choice in memory only", () => {
 
 it("the projector and the player screen offer a toggle that starts off and turns sound on", async () => {
   const cases: Array<[ComponentType<Record<string, unknown>>, Record<string, unknown>]> = [
-    [views.ProjectorScreen as ComponentType<Record<string, unknown>>, props(wwView(), "projector")],
     [
-      views.PlayerSessionScreen as ComponentType<Record<string, unknown>>,
+      views.ProjectorScreen as unknown as ComponentType<Record<string, unknown>>,
+      props(wwView(), "projector"),
+    ],
+    [
+      views.PlayerSessionScreen as unknown as ComponentType<Record<string, unknown>>,
       props(wwView({ me: myState() })),
     ],
   ];
