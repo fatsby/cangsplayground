@@ -200,11 +200,14 @@
 }
 .ww-root .hp .acted {
   position: absolute;
-  right: 6px;
-  top: 4px;
+  right: 8px;
+  top: 3px;
   font-size: 10px;
   color: var(--success);
   font-weight: 800;
+}
+.ww-root .hp.has-acted .rb {
+  margin-top: 10px;
 }
 .ww-root .panel2 {
   background: var(--surface-2);
@@ -212,6 +215,12 @@
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+.ww-root .panel2-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 .ww-root .panel2 h4 {
@@ -221,6 +230,12 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+.ww-root .panel2-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
 .ww-root .line {
   display: flex;
   align-items: center;
@@ -229,47 +244,182 @@
   font-weight: 600;
   flex-wrap: wrap;
 }
-.ww-root .line .arrow {
-  color: var(--muted);
+.ww-root .vtarget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.ww-root .vbar {
-  display: grid;
-  grid-template-columns: 62px 1fr 38px;
+.ww-root .vtarget-card {
+  background: color-mix(in oklab, var(--surface) 75%, var(--surface-2));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ww-root .vtarget-card.reach {
+  border-color: color-mix(in oklab, var(--danger) 70%, var(--border));
+  background: color-mix(in oklab, var(--danger) 10%, var(--surface));
+  box-shadow: 0 0 18px -6px rgb(255 77 122 / 0.45);
+}
+.ww-root .vtarget-top {
+  display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
 }
-.ww-root .vbar .tr {
-  height: 10px;
+.ww-root .vtarget-top .mini {
+  width: 24px;
+  height: 24px;
+}
+.ww-root .vtarget-name {
+  font-weight: 800;
+  font-size: 14px;
+  min-width: 44px;
+}
+.ww-root .vtarget-bar {
+  flex: 1;
+  height: 8px;
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--surface-2);
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
-.ww-root .vbar .tr i {
+.ww-root .vtarget-bar i {
   display: block;
   height: 100%;
   border-radius: 999px;
   background: var(--primary-neon);
   width: 0;
-  transition: width 0.8s var(--ease-out);
+  transition: width 0.4s var(--ease-out);
 }
-.ww-root .vbar .tr b {
-  position: absolute;
-  top: -4px;
-  bottom: -4px;
-  width: 2px;
+.ww-root .vtarget-card.reach .vtarget-bar i {
   background: var(--danger);
-  box-shadow: 0 0 6px var(--danger);
+  box-shadow: 0 0 10px var(--danger);
 }
-.ww-root .vbar.reach .tr i {
-  background: var(--danger);
-  box-shadow: 0 0 12px var(--danger);
-}
-.ww-root .vbar span:last-child {
+.ww-root .vtarget-cnt {
   font-family: var(--font-mono);
-  text-align: right;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.ww-root .vtarget-card.reach .vtarget-cnt {
+  background: rgb(255 77 122 / 0.22);
+  color: #ffc2d0;
+  border: 1px solid rgb(255 77 122 / 0.5);
+}
+.ww-root .voter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-left: 2px;
+}
+.ww-root .voter-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-right: 2px;
+}
+.ww-root .pchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.ww-root .pchip .mini,
+.ww-root .ncompact-target .mini {
+  width: 20px;
+  height: 20px;
+}
+.ww-root .pchip .role-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rc, var(--muted));
+  flex: none;
+}
+.ww-root .pchip.ghost-chip {
+  opacity: 0.65;
+  border-style: dashed;
+  background: transparent;
+}
+.ww-root .unvoted-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+}
+.ww-root .unvoted-bar .voter-lbl {
+  color: var(--faint);
+}
+.ww-root .group-voters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+.ww-root .ncompact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ww-root .ncompact-row {
+  display: grid;
+  grid-template-columns: 82px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgb(255 255 255 / 0.06);
+  font-size: 13px;
+}
+.ww-root .ncompact-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--rc);
+}
+.ww-root .ncompact-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--rc) 16%, var(--surface-2));
+  border: 1px solid color-mix(in oklab, var(--rc) 45%, transparent);
+  font-weight: 700;
+  font-size: 12px;
+}
+.ww-root .ncompact-target .verb-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--rc);
+  padding-left: 4px;
+}
+.ww-root .ncompact-empty {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  font-style: italic;
 }
 .ww-root .secret-note {
   display: flex;

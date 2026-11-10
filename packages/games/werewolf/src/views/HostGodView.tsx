@@ -47,6 +47,41 @@ export function HostGodView({
   }
   const needed = Math.max(1, view.needed);
   const totals = Object.entries(view.voteCounts).sort((a, b) => b[1] - a[1]);
+  const hostVotes = view.hostVotes ?? {};
+  const votersByTarget: Record<string, string[]> = {};
+  for (const [voterId, targetId] of Object.entries(hostVotes)) {
+    (votersByTarget[targetId] ??= []).push(voterId);
+  }
+  const living = inPlay.filter((p) => p.alive);
+  const unvoted = living.filter((p) => !hostVotes[p.id]);
+  const nightActors = living.filter((p) =>
+    (["werewolf", "seer", "guard"] as Role[]).includes(roles[p.id] ?? "villager"),
+  );
+
+  const wolfTargets: Record<string, string[]> = {};
+  if (night && view.hostNight) {
+    for (const [wolfId, targetId] of Object.entries(view.hostNight.wolfVotes)) {
+      (wolfTargets[targetId] ??= []).push(wolfId);
+    }
+  }
+  const wolfTargetEntries = Object.entries(wolfTargets);
+  const livingWolves = holders("werewolf");
+
+  const renderChip = (id: string, ghost = false) => {
+    const role = roles[id] ?? "villager";
+    return (
+      <span
+        className={`pchip ${ghost ? "ghost-chip" : ""}`}
+        key={id}
+        style={{ "--rc": ROLE_COLOR[role] } as CSSProperties}
+      >
+        <Mini roster={roster} id={id} />
+        <span>{nameOf(id)}</span>
+        <i className="role-dot" />
+      </span>
+    );
+  };
+
   return (
     <div className="hf">
       <div className="hf-h">
@@ -67,9 +102,10 @@ export function HostGodView({
         <div className="hgrid">
           {inPlay.map((p) => {
             const role = roles[p.id] ?? "villager";
+            const hasActed = acted.has(p.id);
             return (
               <div
-                className={`hp ${p.alive ? "" : "dead"}`}
+                className={`hp ${p.alive ? "" : "dead"} ${hasActed ? "has-acted" : ""}`}
                 key={p.id}
                 style={{ "--rc": ROLE_COLOR[role] } as CSSProperties}
               >
@@ -81,76 +117,160 @@ export function HostGodView({
                   </span>
                   {p.alive ? ROLE_LABEL[role] : ""}
                 </span>
-                {acted.has(p.id) && <span className="acted">✓ acted</span>}
+                {hasActed && <span className="acted">✓ acted</span>}
               </div>
             );
           })}
         </div>
         {night && view.hostNight && (
           <div className="panel2">
-            <h4>Tonight, live</h4>
-            <div className="line">
-              <span className="icw">
-                <RoleIcon role="werewolf" />
+            <div className="panel2-head">
+              <h4>Tonight, live</h4>
+              <span className="panel2-sub">
+                {acted.size}/{nightActors.length} acted
               </span>
-              <b>Wolves</b>
-              {Object.keys(view.hostNight.wolfVotes).length === 0
-                ? "no votes yet"
-                : Object.entries(view.hostNight.wolfVotes)
-                    .map(([w, t]) => `${nameOf(w)} → ${nameOf(t)}`)
-                    .join(" · ")}
             </div>
-            {(["seer", "guard"] as const).map((role) => {
-              const picks =
-                role === "seer" ? view.hostNight!.seerPicks : view.hostNight!.guardPicks;
-              const people = holders(role);
-              return (
-                <div className="line" key={role}>
-                  <span className="icw">
-                    <RoleIcon role={role} />
-                  </span>
-                  <b>{role === "seer" ? "Seer" : "Guard"}</b>
-                  {people.length === 0
-                    ? "no one"
-                    : people
-                        .map((id) =>
-                          picks[id]
-                            ? `${nameOf(id)} ${role === "seer" ? "inspects" : "protects"} ${nameOf(picks[id]!)}`
-                            : `${nameOf(id)} has not chosen`,
-                        )
-                        .join(" · ")}
+            <div className="ncompact-list">
+              {wolfTargetEntries.length === 0 ? (
+                <div
+                  className="ncompact-row"
+                  style={{ "--rc": ROLE_COLOR.werewolf } as CSSProperties}
+                >
+                  <div className="ncompact-role">
+                    <span className="icw">
+                      <RoleIcon role="werewolf" />
+                    </span>
+                    <span>Wolves</span>
+                  </div>
+                  <div className="group-voters">
+                    {livingWolves.map((id) => renderChip(id, true))}
+                  </div>
+                  <span className="ncompact-empty">No votes yet</span>
                 </div>
-              );
-            })}
+              ) : (
+                wolfTargetEntries.map(([targetId, wolfIds]) => (
+                  <div
+                    className="ncompact-row"
+                    key={`wolf-${targetId}`}
+                    style={{ "--rc": ROLE_COLOR.werewolf } as CSSProperties}
+                  >
+                    <div className="ncompact-role">
+                      <span className="icw">
+                        <RoleIcon role="werewolf" />
+                      </span>
+                      <span>Wolves</span>
+                    </div>
+                    <div className="group-voters">{wolfIds.map((id) => renderChip(id))}</div>
+                    <div className="ncompact-target">
+                      <span className="verb-tag">Attack</span>
+                      <Mini roster={roster} id={targetId} />
+                      <span>{nameOf(targetId)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+              {(["seer", "guard"] as const).map((role) => {
+                const picks =
+                  role === "seer" ? view.hostNight!.seerPicks : view.hostNight!.guardPicks;
+                const people = holders(role);
+                const label = role === "seer" ? "Seer" : "Guard";
+                const verb = role === "seer" ? "Inspect" : "Protect";
+                if (people.length === 0) {
+                  return (
+                    <div
+                      className="ncompact-row"
+                      key={role}
+                      style={{ "--rc": ROLE_COLOR[role] } as CSSProperties}
+                    >
+                      <div className="ncompact-role">
+                        <span className="icw">
+                          <RoleIcon role={role} />
+                        </span>
+                        <span>{label}</span>
+                      </div>
+                      <div className="group-voters" />
+                      <span className="ncompact-empty">No one</span>
+                    </div>
+                  );
+                }
+                return people.map((id) => {
+                  const targetId = picks[id];
+                  return (
+                    <div
+                      className="ncompact-row"
+                      key={`${role}-${id}`}
+                      style={{ "--rc": ROLE_COLOR[role] } as CSSProperties}
+                    >
+                      <div className="ncompact-role">
+                        <span className="icw">
+                          <RoleIcon role={role} />
+                        </span>
+                        <span>{label}</span>
+                      </div>
+                      <div className="group-voters">{renderChip(id, !targetId)}</div>
+                      {targetId ? (
+                        <div className="ncompact-target">
+                          <span className="verb-tag">{verb}</span>
+                          <Mini roster={roster} id={targetId} />
+                          <span>{nameOf(targetId)}</span>
+                        </div>
+                      ) : (
+                        <span className="ncompact-empty">Has not chosen</span>
+                      )}
+                    </div>
+                  );
+                });
+              })}
+            </div>
           </div>
         )}
         {view.stage === "VOTE" && (
           <>
             <div className="panel2">
-              <h4>Votes · needs {needed}</h4>
-              {totals.length === 0 && <div className="line">No votes yet.</div>}
-              {totals.map(([id, count]) => (
-                <div className={`vbar ${count >= needed ? "reach" : ""}`} key={id}>
-                  <span>{nameOf(id)}</span>
-                  <div className="tr">
-                    <i style={{ width: `${Math.min(100, (count / needed) * 100)}%` }} />
-                    <b style={{ left: "100%" }} />
-                  </div>
-                  <span>
-                    {count}/{needed}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="panel2">
-              <h4>Who voted for whom (host only)</h4>
-              <div className="line">
-                {Object.entries(view.hostVotes ?? {}).length === 0
-                  ? "No votes yet."
-                  : Object.entries(view.hostVotes ?? {})
-                      .map(([v, t]) => `${nameOf(v)} → ${nameOf(t)}`)
-                      .join(" · ")}
+              <div className="panel2-head">
+                <h4>Votes · needs {needed}</h4>
+                <span className="panel2-sub">
+                  {Object.keys(hostVotes).length}/{living.length} voted
+                </span>
               </div>
+              {totals.length === 0 ? (
+                <div className="line">No votes yet.</div>
+              ) : (
+                <div className="vtarget-list">
+                  {totals.map(([id, count]) => {
+                    const voters = votersByTarget[id] ?? [];
+                    return (
+                      <div
+                        className={`vtarget-card vbar ${count >= needed ? "reach" : ""}`}
+                        key={id}
+                      >
+                        <div className="vtarget-top">
+                          <Mini roster={roster} id={id} />
+                          <span className="vtarget-name">{nameOf(id)}</span>
+                          <div className="vtarget-bar tr">
+                            <i style={{ width: `${Math.min(100, (count / needed) * 100)}%` }} />
+                          </div>
+                          <span className="vtarget-cnt">
+                            {count}/{needed}
+                          </span>
+                        </div>
+                        {voters.length > 0 && (
+                          <div className="voter-row">
+                            <span className="voter-lbl">Voted by</span>
+                            {voters.map((voterId) => renderChip(voterId))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {unvoted.length > 0 && (
+                    <div className="unvoted-bar">
+                      <span className="voter-lbl">Waiting</span>
+                      {unvoted.map((p) => renderChip(p.id, true))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <span className="secret-note">🔒 Players and the projector only see the totals.</span>
           </>

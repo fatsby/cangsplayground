@@ -112,11 +112,17 @@ it("during the night the host sees every role, who has acted and tonight's live 
   const text = el.textContent!;
   expect(text).toContain("NIGHT 1");
   for (const label of ["Werewolf", "Seer", "Guard", "Villager"]) expect(text).toContain(label);
-  expect(text).toContain("Ada → Eve");
-  expect(text).toContain("Bo → Eve");
-  expect(text).toContain("Cy");
-  expect(text).toContain("inspects Ada");
-  expect(text).toContain("protects Fay");
+  const rows = [...el.querySelectorAll(".ncompact-row")].map((r) => r.textContent);
+  expect(rows[0]).toContain("Wolves");
+  expect(rows[0]).toContain("Ada");
+  expect(rows[0]).toContain("Bo");
+  expect(rows[0]).toContain("AttackEve");
+  expect(rows[1]).toContain("Seer");
+  expect(rows[1]).toContain("Cy");
+  expect(rows[1]).toContain("InspectAda");
+  expect(rows[2]).toContain("Guard");
+  expect(rows[2]).toContain("Dee");
+  expect(rows[2]).toContain("ProtectFay");
   expect(el.querySelectorAll(".acted")).toHaveLength(4);
 });
 
@@ -129,10 +135,17 @@ it("during the vote the host sees who voted for whom plus totals against the thr
       hostVotes: { p3: "p1", p4: "p1", p5: "p1", p6: "p2" },
     }),
   );
-  const text = el.textContent!;
-  expect(text).toContain("Cy → Ada");
-  expect(text).toContain("Fay → Bo");
-  expect(text).toContain("3/3");
+  const cards = [...el.querySelectorAll(".vtarget-card")].map((c) => c.textContent);
+  expect(cards[0]).toContain("Ada");
+  expect(cards[0]).toContain("3/3");
+  expect(cards[0]).toContain("Voted by");
+  expect(cards[0]).toContain("Cy");
+  expect(cards[0]).toContain("Dee");
+  expect(cards[0]).toContain("Eve");
+  expect(cards[1]).toContain("Bo");
+  expect(cards[1]).toContain("1/3");
+  expect(cards[1]).toContain("Fay");
+  expect(el.querySelector(".unvoted-bar")?.textContent).toContain("Waiting");
   expect(el.querySelectorAll(".vbar.reach")).toHaveLength(1);
 });
 
