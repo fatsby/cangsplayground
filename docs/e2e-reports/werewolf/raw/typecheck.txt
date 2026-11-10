@@ -1,0 +1,24 @@
+$ pnpm -r typecheck
+packages/core typecheck$ tsc -p tsconfig.json
+packages/core typecheck: Done
+packages/ui typecheck$ tsc -p tsconfig.json
+packages/ui typecheck: Done
+packages/games/free-talk typecheck$ tsc -p tsconfig.json
+packages/games/secret-word typecheck$ tsc -p tsconfig.json
+packages/games/murder-mystery typecheck$ tsc -p tsconfig.json
+packages/games/guess-the-character typecheck$ tsc -p tsconfig.json
+packages/games/free-talk typecheck: Done
+packages/games/shark-tank typecheck$ tsc -p tsconfig.json
+packages/games/secret-word typecheck: Done
+packages/games/werewolf typecheck$ tsc -p tsconfig.json
+packages/games/guess-the-character typecheck: Done
+packages/games/whos-the-spy typecheck$ tsc -p tsconfig.json
+packages/games/murder-mystery typecheck: Done
+packages/games/whos-the-spy typecheck: Done
+packages/games/werewolf typecheck: Done
+packages/games/shark-tank typecheck: Done
+apps/server typecheck$ tsc -p tsconfig.json
+apps/web typecheck$ tsc -p tsconfig.json
+apps/server typecheck: Done
+apps/web typecheck: Done
+exit code: 0

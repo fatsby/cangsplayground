@@ -1,0 +1,694 @@
+$ pnpm -r test
+Scope: 11 of 12 workspace projects
+packages/core test$ vitest run
+packages/core test: 
+packages/core test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/core
+packages/core test: 
+packages/core test:  ✓ test/groups.test.ts (9 tests) 24ms
+packages/core test: 
+packages/core test:  Test Files  1 passed (1)
+packages/core test:       Tests  9 passed (9)
+packages/core test:    Start at  12:35:10
+packages/core test:    Duration  168ms (import 39%, transform 35%, tests 23%, worker 2%)
+packages/core test: 
+packages/core test: Done
+packages/ui test$ vitest run --passWithNoTests
+packages/ui test: 
+packages/ui test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/ui
+packages/ui test: 
+packages/ui test: No test files found, exiting with code 0
+packages/ui test: 
+packages/ui test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/ui test: exclude:  **/node_modules/**, **/.git/**
+packages/ui test: 
+packages/ui test: Done
+packages/games/free-talk test$ vitest run --passWithNoTests
+packages/games/murder-mystery test$ vitest run
+packages/games/secret-word test$ vitest run
+packages/games/guess-the-character test$ vitest run
+packages/games/guess-the-character test: 
+packages/games/guess-the-character test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/guess-the-character
+packages/games/guess-the-character test: 
+packages/games/secret-word test: 
+packages/games/secret-word test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/secret-word
+packages/games/secret-word test: 
+packages/games/murder-mystery test: 
+packages/games/murder-mystery test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/murder-mystery
+packages/games/murder-mystery test: 
+packages/games/free-talk test: 
+packages/games/free-talk test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/free-talk
+packages/games/free-talk test: 
+packages/games/murder-mystery test:  ✓ test/boundary.test.ts (3 tests) 15ms
+packages/games/secret-word test:  ✓ test/logic.test.ts (5 tests) 8ms
+packages/games/secret-word test: 
+packages/games/secret-word test:  Test Files  1 passed (1)
+packages/games/secret-word test:       Tests  5 passed (5)
+packages/games/secret-word test:    Start at  12:35:11
+packages/games/secret-word test:    Duration  330ms (import 63%, transform 30%, tests 4%, worker 3%)
+packages/games/secret-word test: 
+packages/games/secret-word test: Done
+packages/games/free-talk test:  ✓ test/logic.test.ts (6 tests) 6ms
+packages/games/shark-tank test$ vitest run
+packages/games/free-talk test: 
+packages/games/free-talk test:  Test Files  1 passed (1)
+packages/games/free-talk test:       Tests  6 passed (6)
+packages/games/free-talk test:    Start at  12:35:11
+packages/games/free-talk test:    Duration  343ms (import 60%, transform 33%, worker 4%, tests 3%)
+packages/games/free-talk test: 
+packages/games/murder-mystery test:  ✓ test/config.test.ts (3 tests) 9ms
+packages/games/free-talk test: Done
+packages/games/werewolf test$ vitest run
+packages/games/murder-mystery test:  ✓ test/solver.test.ts (12 tests) 50ms
+packages/games/guess-the-character test:  ✓ test/view.test.ts (8 tests) 28ms
+packages/games/guess-the-character test:  ✓ test/lifecycle.test.ts (17 tests) 42ms
+packages/games/guess-the-character test:  ✓ test/set-character.test.ts (10 tests) 50ms
+packages/games/guess-the-character test:  ✓ test/guess.test.ts (19 tests) 41ms
+packages/games/guess-the-character test:  ✓ test/match.test.ts (21 tests) 65ms
+packages/games/guess-the-character test:  ✓ test/content.test.ts (28 tests) 185ms
+packages/games/guess-the-character test: 
+packages/games/guess-the-character test:  Test Files  6 passed (6)
+packages/games/guess-the-character test:       Tests  103 passed (103)
+packages/games/guess-the-character test:    Start at  12:35:11
+packages/games/guess-the-character test:    Duration  582ms (import 42%, transform 39%, tests 18%, worker 1%)
+packages/games/guess-the-character test: 
+packages/games/murder-mystery test:  ✓ test/validate.test.ts (23 tests) 194ms
+packages/games/guess-the-character test: Done
+packages/games/whos-the-spy test$ vitest run
+packages/games/shark-tank test: 
+packages/games/shark-tank test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/shark-tank
+packages/games/shark-tank test: 
+packages/games/werewolf test: 
+packages/games/werewolf test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/werewolf
+packages/games/werewolf test: 
+packages/games/shark-tank test:  ✓ test/rules.test.ts (30 tests) 31ms
+packages/games/whos-the-spy test: 
+packages/games/whos-the-spy test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/whos-the-spy
+packages/games/whos-the-spy test: 
+packages/games/shark-tank test:  ✓ test/content.test.ts (19 tests) 74ms
+packages/games/werewolf test:  ✓ test/setup.test.ts (12 tests) 20ms
+packages/games/murder-mystery test:  ✓ test/lifecycle.test.ts (15 tests) 1120ms
+packages/games/werewolf test:  ✓ test/roster.test.ts (21 tests) 30ms
+packages/games/werewolf test:  ✓ test/rules.test.ts (30 tests) 24ms
+packages/games/werewolf test:  ✓ test/day.test.ts (12 tests) 34ms
+packages/games/werewolf test:  ✓ test/night.test.ts (18 tests) 27ms
+packages/games/werewolf test:  ✓ test/view.test.ts (17 tests) 44ms
+packages/games/shark-tank test:  ✓ test/view.test.ts (57 tests) 128ms
+packages/games/shark-tank test:  ✓ test/logic-prep.test.ts (26 tests) 77ms
+packages/games/werewolf test: 
+packages/games/werewolf test:  Test Files  6 passed (6)
+packages/games/werewolf test:       Tests  110 passed (110)
+packages/games/werewolf test:    Start at  12:35:12
+packages/games/werewolf test:    Duration  842ms (import 58%, transform 32%, tests 7%, worker 3%)
+packages/games/werewolf test: 
+packages/games/murder-mystery test:  ✓ test/view.test.ts (15 tests) 1178ms
+packages/games/shark-tank test:  ✓ test/logic-cycle.test.ts (37 tests) 129ms
+packages/games/shark-tank test: 
+packages/games/shark-tank test:  Test Files  5 passed (5)
+packages/games/shark-tank test:       Tests  169 passed (169)
+packages/games/shark-tank test:    Start at  12:35:12
+packages/games/werewolf test: Done
+packages/games/shark-tank test:    Duration  912ms (import 57%, transform 23%, tests 18%, worker 2%)
+packages/games/shark-tank test: 
+packages/games/shark-tank test: Done
+packages/games/whos-the-spy test:  ✓ test/logic.test.ts (16 tests) 22ms
+packages/games/whos-the-spy test: 
+packages/games/whos-the-spy test:  Test Files  1 passed (1)
+packages/games/whos-the-spy test:       Tests  16 passed (16)
+packages/games/whos-the-spy test:    Start at  12:35:13
+packages/games/whos-the-spy test:    Duration  441ms (import 63%, transform 22%, tests 12%, worker 3%)
+packages/games/whos-the-spy test: 
+packages/games/whos-the-spy test: Done
+packages/games/murder-mystery test:  ✓ test/actions.test.ts (24 tests) 1583ms
+packages/games/murder-mystery test:  ✓ test/clock.test.ts (19 tests) 2005ms
+packages/games/murder-mystery test:    ✓ distribution (6)
+packages/games/murder-mystery test:      ✓ shuffles lead order and card owners independently of each other and between cases 731ms
+packages/games/murder-mystery test:  ✓ test/intro.test.ts (19 tests) 2740ms
+packages/games/murder-mystery test:    ✓ buildIntro (5)
+packages/games/murder-mystery test:      ✓ varies across seeds, so a constant descriptor would fail 1124ms
+packages/games/murder-mystery test:      ✓ never carries a weapon, family, variant, seed or violent vocabulary 349ms
+packages/games/murder-mystery test:      ✓ captions say where the body was found and never name a crime room 339ms
+packages/games/murder-mystery test:  ✓ test/scoring.test.ts (13 tests) 3397ms
+packages/games/murder-mystery test:    ✓ scoreConclusion (12)
+packages/games/murder-mystery test:      ✓ gives 10 on every route of alibi/window 1011ms
+packages/games/murder-mystery test:      ✓ gives 10 on every route of alibi/route 843ms
+packages/games/murder-mystery test:      ✓ gives 10 on every route of access/door-access 450ms
+packages/games/murder-mystery test:      ✓ gives 10 on every route of exchange/swapped-recipients 307ms
+packages/games/murder-mystery test:  ✓ test/content.test.ts (26 tests) 3526ms
+packages/games/murder-mystery test:    ✓ generateCase (13)
+packages/games/murder-mystery test:      ✓ varies who did it and where the culprit sits in the list across seeds 1149ms
+packages/games/murder-mystery test:      ✓ does not name the true entity second in the starting clues 944ms
+packages/games/murder-mystery test:      ✓ uses every family and variant over a sample of seeds 727ms
+packages/games/murder-mystery test: 
+packages/games/murder-mystery test:  Test Files  11 passed (11)
+packages/games/murder-mystery test:       Tests  172 passed (172)
+packages/games/murder-mystery test:    Start at  12:35:11
+packages/games/murder-mystery test:    Duration  4.04s (tests 83%, import 10%, transform 7%)
+packages/games/murder-mystery test: 
+packages/games/murder-mystery test: Done
+apps/web test$ vitest run --passWithNoTests
+apps/server test$ vitest run
+apps/server test: 
+apps/server test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/apps/server
+apps/server test: 
+apps/web test: 
+apps/web test:  RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/apps/web
+apps/web test: 
+apps/server test:  ✓ test/game-clock.test.ts (6 tests) 110ms
+apps/server test:  ✓ test/shared-state.test.ts (16 tests) 59ms
+apps/server test:  ✓ test/shared-deadlines.test.ts (10 tests) 68ms
+apps/server test:  ✓ test/spy-lifecycle.test.ts (3 tests) 137ms
+apps/server test:  ✓ test/guess-the-character.test.ts (9 tests) 200ms
+apps/server test:  ✓ test/lobby.test.ts (20 tests) 263ms
+apps/server test:  ✓ test/vote-cycle.test.ts (13 tests) 159ms
+apps/server test:  ✓ test/game-vote.test.ts (30 tests) 289ms
+apps/server test:  ✓ test/whos-the-spy.test.ts (2 tests) 363ms
+apps/server test:    ✓ never sends the topic to the projector or the spy, and never sends spy ids to the projector 316ms
+apps/server test:  ✓ test/warning-lifecycle.test.ts (6 tests) 26ms
+apps/server test:  ✓ test/http.test.ts (2 tests) 557ms
+apps/server test:    ✓ returns health/config, serves production assets and falls back to the SPA for page routes 542ms
+apps/server test:  ✓ test/game-vote-socket.test.ts (1 test) 644ms
+apps/server test:    ✓ runs a minigame vote over sockets: live tally for all, private choice, auth, and a published result 631ms
+apps/server test:  ✓ test/murder-mystery-prepare-failure.test.ts (1 test) 15ms
+apps/server test:  ✓ test/security.test.ts (4 tests) 30ms
+apps/server test:  ✓ test/late-join.test.ts (7 tests) 16ms
+apps/server test:  ✓ test/werewolf.test.ts (1 test) 809ms
+apps/server test:    ✓ plays a round over Socket.IO: whole-lobby start, secrets filtered, late join, verdict 807ms
+apps/server test:  ✓ test/turn-end.test.ts (1 test) 17ms
+apps/server test:  ✓ test/secret-word.test.ts (1 test) 875ms
+apps/server test:    ✓ secret words reach only their owner and the host until reveal 864ms
+apps/server test:  ✓ test/guess-the-character-socket.test.ts (1 test) 906ms
+apps/server test:    ✓ plays two concurrent matches over Socket.IO with filtered secrets 904ms
+apps/web test:  ✓ test/vote-interaction.test.tsx (1 test) 242ms
+apps/server test:  ✓ test/simulate.test.ts (1 test) 3424ms
+apps/server test:    ✓ simulates Who's the Spy to a result for every group without an external server 3415ms
+apps/server test:  ✓ test/murder-mystery.test.ts (16 tests) 1685ms
+apps/web test:  ✓ test/avatar-editor.test.tsx (4 tests) 825ms
+apps/web test:    ✓ randomizes on plain HTTP classroom phones without crypto.randomUUID 405ms
+apps/web test:  ✓ test/werewolf-projector.test.tsx (11 tests) 328ms
+apps/server test:  ✓ test/integration.test.ts (4 tests) 1610ms
+apps/server test:    ✓ authenticates avatar updates, broadcasts the saved appearance and restores it on resume 569ms
+apps/server test:    ✓ 30 clients keep matching groups and the exact authoritative timer after reconnect and repeated games 943ms
+apps/web test:  ✓ test/werewolf-host.test.tsx (9 tests) 562ms
+apps/server test:  ✓ test/shark-tank.test.ts (13 tests) 1855ms
+apps/server test:    ✓ keeps PREP tabs personal across broadcasts and resume while sharing idea lock votes 641ms
+apps/web test:  ✓ test/config-interaction.test.tsx (3 tests) 229ms
+apps/web test:  ✓ test/murder-mystery-intro-reveal.test.tsx (11 tests) 1408ms
+apps/web test:    ✓ ProjectorScreen in INTRO (4)
+apps/web test:      ✓ resumes at the right frame after a reload, and shows the last frame past the end 330ms
+apps/web test:  ✓ test/werewolf-host-lobby.test.tsx (4 tests) 557ms
+apps/web test:  ✓ test/murder-mystery-host-projector.test.tsx (18 tests) 1377ms
+apps/web test:  ✓ test/player-shell-interaction.test.tsx (8 tests) 496ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 1 shows full vocabulary and selling points, and respects the reroll lock
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 1 shows full vocabulary and selling points, and respects the reroll lock
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 1 shows full vocabulary and selling points, and respects the reroll lock
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 1 shows full vocabulary and selling points, and respects the reroll lock
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/session-slots.test.tsx (12 tests) 675ms
+apps/web test:  ✓ test/command-id.test.ts (1 test) 19ms
+apps/web test:  ✓ test/game-vote-views.test.tsx (15 tests) 826ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP tabs send the member's selected step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP tabs send the member's selected step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP tabs send the member's selected step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP Idea lets a member vote once and disables changes when locked
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP Idea lets a member vote once and disables changes when locked
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP Idea lets a member vote once and disables changes when locked
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP Idea lets a member vote once and disables changes when locked
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP Idea lets a member vote once and disables changes when locked
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/game-controls.test.ts (10 tests) 15ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP needs no lock vote after the group's only idea change
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves a full part's blanks on blur, never on each keystroke
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves a full part's blanks on blur, never on each keystroke
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves a full part's blanks on blur, never on each keystroke
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 2 validates prices against the public bounds
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 2 validates prices against the public bounds
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > PREP 2 validates prices against the public bounds
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/werewolf-player.test.tsx (19 tests) 1056ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps the price Save action beside the input and scrolls it into view on focus
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/server test:  ✓ test/murder-mystery-socket.test.ts (3 tests) 2914ms
+apps/server test:    ✓ plays manor-night over Socket.IO with private clues and one shared reveal 1374ms
+apps/server test:    ✓ plays hotel-night over Socket.IO with private clues and one shared reveal 1194ms
+apps/server test:    ✓ restores private cards on resume, transfers an offline lead and excludes same-name rejoiners 345ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > scrolls a PREP script blank into view when focused
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/server test: 
+apps/server test:  Test Files  24 passed (24)
+apps/server test:       Tests  171 passed (171)
+apps/server test:    Start at  12:35:15
+apps/server test:    Duration  5.23s (transform 36%, import 32%, tests 31%)
+apps/server test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > presenters get their filled script and QA answers with one valid discount
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > presenters get their filled script and QA answers with one valid discount
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > presenters get their filled script and QA answers with one valid discount
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/murder-mystery-player.test.tsx (24 tests) 2147ms
+apps/web test:    ✓ waiting screens (5)
+apps/web test:      ✓ does not crash when the briefing is missing 386ms
+apps/web test:    ✓ conclusion (4)
+apps/web test:      ✓ shows every team clue, lets only the submitter edit, and caps evidence at two cards 438ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > presenters get their filled script and QA answers with one valid discount
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/guess-character-host-projector.test.tsx (13 tests) 1273ms
+apps/server test: Done
+apps/web test: stderr | test/shark-tank-player.test.tsx > HUDDLE caps votes by the wallet and current members, then locks voted groups
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/guess-character-player.test.tsx (24 tests) 1264ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > HUDDLE caps votes by the wallet and current members, then locks voted groups
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > HUDDLE caps votes by the wallet and current members, then locks voted groups
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > HUDDLE caps votes by the wallet and current members, then locks voted groups
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > allows an explicit zero vote and reduces the cap after a leaver
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > allows an explicit zero vote and reduces the cap after a leaver
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > allows an explicit zero vote and reduces the cap after a leaver
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/spy-shell.test.tsx (21 tests) 118ms
+apps/web test:  ✓ test/host-console-controls.test.tsx (10 tests) 1075ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/rendering.test.tsx (15 tests) 218ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > keeps a newer edit when an earlier blur save is broadcast back
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > updates untouched blanks from a fresh shared view after a focus and blur
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > updates untouched blanks from a fresh shared view after a focus and blur
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > sends the Need help toggle without changing the game step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > sends the Need help toggle without changing the game step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > sends the Need help toggle without changing the game step
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > persists hidden frames while retaining vocabulary, blanks and filled content
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > persists hidden frames while retaining vocabulary, blanks and filled content
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > persists hidden frames while retaining vocabulary, blanks and filled content
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/helpers.test.ts (9 tests) 7ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > persists hidden frames while retaining vocabulary, blanks and filled content
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > survives denied localStorage reads and writes
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > survives denied localStorage reads and writes
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a quick save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a quick save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a quick save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a blur save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a blur save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/ui-clock.test.tsx (7 tests) 50ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > saves the typed price with a blur save
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/whos-the-spy-player.test.tsx (16 tests) 88ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PREP
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/murder-mystery-timeline.test.ts (9 tests) 21ms
+apps/web test:  ✓ test/avatar-fallback.test.tsx (1 test) 40ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in PITCH
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in QA
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/werewolf-sfx.test.tsx (5 tests) 138ms
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > announces time up and vibrates once per stage in HUDDLE
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved false)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved false)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved false)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved false)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved false)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved true)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved true)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test: stderr | test/shark-tank-player.test.tsx > locks HUDDLE voting at expiry and unlocks after an extension (saved true)
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
+apps/web test: 
+apps/web test:  ✓ test/shark-tank-player.test.tsx (57 tests) 1669ms
+apps/web test:  ✓ test/shark-tank-host-projector.test.tsx (49 tests) 2417ms
+apps/web test:    ✓ RESULTS spotlights teams from lowest to highest before showing the podium 1050ms
+apps/web test: 
+apps/web test:  Test Files  28 passed (28)
+apps/web test:       Tests  386 passed (386)
+apps/web test:    Start at  12:35:16
+apps/web test:    Duration  5.90s (import 37%, environment 25%, tests 22%, transform 16%, worker 1%)
+apps/web test: 
+apps/web test:     Isolate  28 workers spawned · ~1.11s startup each (spawn + environment, per file)
+apps/web test:              at least ~525ms faster with isolate: false — reuses workers across files instead of one per file
+apps/web test: 
+apps/web test: Done
+exit code: 0

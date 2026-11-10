@@ -1,0 +1,25 @@
+$ pnpm lint
+$ eslint .
+
+/home/cang/orca/projects/cangsplayground/.superpowers/brainstorm/1360346-1793173539/content/player-demo-v2.js
+   9:5   error  'document' is not defined  no-undef
+  10:5   error  'document' is not defined  no-undef
+  11:5   error  'document' is not defined  no-undef
+  12:5   error  'document' is not defined  no-undef
+  13:5   error  'document' is not defined  no-undef
+  14:5   error  'document' is not defined  no-undef
+  15:5   error  'document' is not defined  no-undef
+  16:32  error  'document' is not defined  no-undef
+  17:37  error  'document' is not defined  no-undef
+
+/home/cang/orca/projects/cangsplayground/.superpowers/brainstorm/1360346-1793173539/content/secret-hold-v3.js
+   2:20  error  'document' is not defined  no-undef
+   3:21  error  'document' is not defined  no-undef
+  27:1   error  'window' is not defined    no-undef
+  28:1   error  'document' is not defined  no-undef
+  29:1   error  'document' is not defined  no-undef
+
+✖ 14 problems (14 errors, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.
+exit code: 1

@@ -1,0 +1,18 @@
+$ pnpm --filter @cangsplayground/game-werewolf test
+$ vitest run
+
+ RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/packages/games/werewolf
+
+ ✓ test/rules.test.ts (30 tests) 8ms
+ ✓ test/setup.test.ts (12 tests) 7ms
+ ✓ test/day.test.ts (12 tests) 17ms
+ ✓ test/night.test.ts (18 tests) 18ms
+ ✓ test/roster.test.ts (21 tests) 19ms
+ ✓ test/view.test.ts (17 tests) 19ms
+
+ Test Files  6 passed (6)
+      Tests  110 passed (110)
+   Start at  12:34:53
+   Duration  289ms (import 60%, transform 29%, tests 9%, worker 3%)
+
+exit code: 0

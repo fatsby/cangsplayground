@@ -1,0 +1,12 @@
+$ pnpm --filter @cangsplayground/server exec vitest run test/werewolf.test.ts
+
+ RUN  v5.0.5 /home/cang/orca/projects/cangsplayground/apps/server
+
+ ✓ test/werewolf.test.ts (1 test) 223ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  12:34:54
+   Duration  725ms (import 45%, tests 35%, transform 20%)
+
+exit code: 0

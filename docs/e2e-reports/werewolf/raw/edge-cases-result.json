@@ -1,0 +1,18 @@
+{
+  "minPlayersEnforced": true,
+  "startRejectedNoWolf": true,
+  "startRejectedWolfParity": true,
+  "unauthorizedStartRejected": true,
+  "validStartAccepted": true,
+  "wolfSelfVoteRejected": true,
+  "seerSelfInspectRejected": true,
+  "guardSelfProtectAcceptedFirstTime": true,
+  "villAKilled": true,
+  "deadPlayerVoteRejected": true,
+  "voteForDeadRejected": true,
+  "daySelfVoteRejected": true,
+  "rapidVoteHandled": false,
+  "secrecyRolesNeverLeakedBeforeEnd": true,
+  "secrecyHostNightNeverLeaked": true,
+  "secrecyHostVotesNeverLeaked": true
+}
