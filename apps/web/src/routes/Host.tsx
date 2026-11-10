@@ -191,9 +191,10 @@ export default function Host() {
     plan = validatePlan(sizes, selected?.minPlayersPerGroup ?? 1),
     game = view?.game;
   const action = game ? mainControl(game) : null;
-  const canPrepare =
-    !!view?.groups.length &&
-    view.groups.every((g) => g.playerIds.length >= (selected?.minPlayersPerGroup ?? 1));
+  const canPrepare = selected?.wholeLobby
+    ? (view?.players.length ?? 0) >= selected.minPlayersPerGroup
+    : !!view?.groups.length &&
+      view.groups.every((g) => g.playerIds.length >= (selected?.minPlayersPerGroup ?? 1));
   return (
     <SessionBoundary code={code} error={error}>
       <MobileToaster />
@@ -264,51 +265,68 @@ export default function Host() {
               {tab === "groups" && (
                 <>
                   <h1>Make your teams</h1>
-                  <p className="cp-muted">Everyone gets a colour, a shape, and a team.</p>
-                  <Panel className="cp-stack">
-                    <div className="cp-row mode-buttons">
-                      <Button aria-pressed={mode === "count"} onClick={() => setMode("count")}>
-                        Group count
-                      </Button>
-                      <Button aria-pressed={mode === "maxSize"} onClick={() => setMode("maxSize")}>
-                        Max size
-                      </Button>
-                    </div>
-                    <Input
-                      label={mode === "count" ? "Number of groups" : "Max players per group"}
-                      type="number"
-                      min={1}
-                      max={60}
-                      value={value}
-                      onChange={(e) =>
-                        setValue(Math.max(1, Math.min(60, Math.floor(Number(e.target.value) || 1))))
-                      }
-                    />
-                    <p className="group-plan" aria-live="polite">
-                      {describePlan(view.players.length, mode, value)}
-                    </p>
-                    {!plan.ok && <p className="cp-error">{plan.reason}</p>}
-                  </Panel>
-                  <div className="cp-sticky-action">
-                    <Button
-                      variant={game ? "secondary" : "primary"}
-                      size="lg"
-                      disabled={busy || !plan.ok || view.players.length === 0}
-                      onClick={() => {
-                        if (game?.stage === "ACTIVE")
-                          setConfirm({
-                            title: "Make new groups?",
-                            description: "The current game will end for all groups.",
-                            danger: true,
-                            action: () => assign(true),
-                          });
-                        else void assign();
-                      }}
-                    >
-                      <Shuffle strokeWidth={2.25} />
-                      {view.groups.length ? "Re-assign groups" : "Assign groups"}
-                    </Button>
-                  </div>
+                  {selected?.wholeLobby ? (
+                    <Panel className="cp-stack">
+                      <h2>Everyone plays together</h2>
+                      <p className="cp-muted">
+                        {selected.name} uses the whole lobby as one team, so there is nothing to
+                        assign here.
+                      </p>
+                    </Panel>
+                  ) : (
+                    <>
+                      <p className="cp-muted">Everyone gets a colour, a shape, and a team.</p>
+                      <Panel className="cp-stack">
+                        <div className="cp-row mode-buttons">
+                          <Button aria-pressed={mode === "count"} onClick={() => setMode("count")}>
+                            Group count
+                          </Button>
+                          <Button
+                            aria-pressed={mode === "maxSize"}
+                            onClick={() => setMode("maxSize")}
+                          >
+                            Max size
+                          </Button>
+                        </div>
+                        <Input
+                          label={mode === "count" ? "Number of groups" : "Max players per group"}
+                          type="number"
+                          min={1}
+                          max={60}
+                          value={value}
+                          onChange={(e) =>
+                            setValue(
+                              Math.max(1, Math.min(60, Math.floor(Number(e.target.value) || 1))),
+                            )
+                          }
+                        />
+                        <p className="group-plan" aria-live="polite">
+                          {describePlan(view.players.length, mode, value)}
+                        </p>
+                        {!plan.ok && <p className="cp-error">{plan.reason}</p>}
+                      </Panel>
+                      <div className="cp-sticky-action">
+                        <Button
+                          variant={game ? "secondary" : "primary"}
+                          size="lg"
+                          disabled={busy || !plan.ok || view.players.length === 0}
+                          onClick={() => {
+                            if (game?.stage === "ACTIVE")
+                              setConfirm({
+                                title: "Make new groups?",
+                                description: "The current game will end for all groups.",
+                                danger: true,
+                                action: () => assign(true),
+                              });
+                            else void assign();
+                          }}
+                        >
+                          <Shuffle strokeWidth={2.25} />
+                          {view.groups.length ? "Re-assign groups" : "Assign groups"}
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
               {tab === "game" && (

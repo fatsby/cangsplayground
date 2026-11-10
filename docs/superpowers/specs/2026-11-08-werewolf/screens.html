@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Werewolf — screen designs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Unbounded:wght@500..900&display=swap">
+<style>
+/* ───────── Tokens: copied from packages/ui/src/styles/tokens.css (Arcade Night) ───────── */
+:root{
+  color-scheme:dark;
+  --bg-deep:#080a1a; --bg:#0d0f24; --surface:#171a3a; --surface-2:#20244d; --surface-3:#2a2f63;
+  --ink:#f4f3ff; --muted:#a3a1cc; --faint:#6e6c9a; --border:#343a75; --border-strong:#4a519a;
+  --primary:#6d4aff; --primary-fg:#fff; --primary-neon:#9b85ff;
+  --accent:#00e5c7; --accent-fg:#0d0f24;
+  --success:#2be38b; --warning:#ffb547; --danger:#ff4d7a; --danger-fg:#0d0f24;
+  --r-sm:10px; --r:20px; --r-lg:28px;
+  --font-display:"Unbounded","Be Vietnam Pro",system-ui,sans-serif;
+  --font-body:"Be Vietnam Pro",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+  --elev-2:0 0 0 1px var(--border),0 12px 32px -12px rgb(0 0 0/.6);
+  --elev-3:0 0 0 1px var(--border-strong),0 24px 64px -16px rgb(0 0 0/.75);
+  /* Werewolf additions (new, scoped to this game) */
+  --blood:#c1121f; --blood-deep:#6e0710; --blood-hot:#ff2a4d;
+  --night-0:#04061a; --night-1:#0a0e30; --night-2:#171455; --moon:#e9edff; --dawn:#ffb547;
+  --frame:#05060f;
+  /* role accents: SMALL elements only (chips, icons). Never full-screen tints — see secrecy rules. */
+  --role-werewolf:var(--danger); --role-villager:var(--warning); --role-seer:var(--primary-neon); --role-guard:var(--accent);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-body);padding:0 16px;
+  background-image:radial-gradient(60vmax 40vmax at 0% 0%,color-mix(in oklab,var(--primary) 25%,transparent),transparent 70%),radial-gradient(50vmax 40vmax at 100% 100%,color-mix(in oklab,var(--accent) 15%,transparent),transparent 70%);
+  background-attachment:fixed}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 0 96px;display:flex;flex-direction:column;gap:64px}
+h1{font-family:var(--font-display);font-weight:800;font-size:clamp(26px,4vw,40px);margin:0;line-height:1.1}
+.lead{color:var(--muted);margin:8px 0 0;max-width:72ch}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:20px}
+.sec-head h2{font-family:var(--font-display);font-weight:800;font-size:24px;margin:2px 0 4px}
+.sec-head p{margin:0;color:var(--muted);max-width:76ch}
+.guess{color:var(--warning);font-style:normal;font-weight:700}
+code,.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-display);font-weight:700;font-size:15px;min-height:44px;padding:0 18px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--ink);box-shadow:var(--elev-2);transition:transform .15s var(--ease-out),box-shadow .15s}
+.btn:hover{transform:translateY(-1px)} .btn:active{transform:scale(.97)}
+.btn.primary{background:var(--primary);border-color:transparent;box-shadow:0 0 0 1px var(--primary),0 8px 24px -6px color-mix(in oklab,var(--primary) 80%,transparent)}
+.btn.danger{background:var(--danger);color:var(--danger-fg);border-color:transparent;box-shadow:0 0 0 1px var(--danger),0 8px 24px -6px color-mix(in oklab,var(--danger) 70%,transparent)}
+.btn.lg{min-height:54px;font-size:16px;width:100%}
+.btn.sm{min-height:32px;font-size:12px;padding:0 12px;border-radius:12px}
+.btn[disabled]{opacity:.4;pointer-events:none;box-shadow:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 14px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);font-weight:700;font-size:14px;transition:.15s}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:transparent;box-shadow:0 0 18px -4px var(--accent)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:14px;color:var(--muted);max-width:84ch}
+.note b{color:var(--ink)}
+.note.warn{border-color:color-mix(in oklab,var(--warning) 60%,var(--border))}
+.note.leak{border-color:color-mix(in oklab,var(--danger) 60%,var(--border))}
+.dur{font-family:var(--font-mono);font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface-2);color:var(--accent)}
+
+/* ───────── generic motion helpers ───────── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shake{0%,100%{transform:translate(0)}10%{transform:translate(-1.6%,.8%)}25%{transform:translate(1.4%,-1%)}40%{transform:translate(-1.2%,1.2%)}55%{transform:translate(1%,-.6%)}70%{transform:translate(-.6%,.4%)}85%{transform:translate(.4%,-.2%)}}
+.shake{animation:shake .55s linear}
+@media (prefers-reduced-motion:reduce){
+  .shake,.scene.shake,.screen.shake,.sc-night.tremble{animation:none!important}
+  .flash.go,.redflash.go,.vig,.nshell.final5::after,.shock.go{animation:none!important}
+  .howl.go,.rays,.firefly,.ember,.shoot{animation:none!important}
+  .rm-hide{display:none!important}
+}
+
+/* ═════════════ PROJECTOR (16:9, cqw units) ═════════════ */
+.stage-shell{overflow-x:auto;padding-bottom:10px}
+.projector{container-type:inline-size;min-width:720px;aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--night-0);
+  border:10px solid var(--frame);border-radius:18px;box-shadow:var(--elev-3);isolation:isolate}
+.scene{position:absolute;inset:0;overflow:hidden;animation:fadeIn .5s ease both;color:var(--ink)}
+.scene>*{position:absolute}
+.scene.shake{animation:shake .55s linear}
+.scene>.ring-clock{position:absolute}
+svg.ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.icw{display:inline-grid;place-items:center}
+.av{position:relative}
+.sky{inset:0}
+.k{font-size:1.15cqw;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:rgb(255 255 255/.7)}
+.hl{font-family:var(--font-display);font-weight:900;line-height:1.02;text-align:center;letter-spacing:-.01em}
+/* portraits */
+.pt{display:flex;flex-direction:column;align-items:center;gap:.5cqw;--sz:6cqw;position:absolute}
+.pt.rel{position:relative}
+.av{width:var(--sz);height:var(--sz);border-radius:50%;display:block;overflow:hidden;background:#ffe3ea;box-shadow:0 0 0 .2cqw rgb(255 255 255/.18),0 .5cqw 1.6cqw -.4cqw color-mix(in oklab,var(--c) 70%,transparent);transition:filter .6s,box-shadow .4s}
+.nm{font-family:var(--font-display);font-weight:700;font-size:1.25cqw;text-shadow:0 .1cqw .5cqw rgb(0 0 0/.7)}
+.flame{position:absolute;left:50%;top:calc(var(--sz)*-.36);width:calc(var(--sz)*.17);height:calc(var(--sz)*.3);margin-left:calc(var(--sz)*-.085);border-radius:50% 50% 45% 45%/65% 65% 35% 35%;
+  background:radial-gradient(ellipse at 50% 72%,#fff6c4 0,#ffd166 35%,#ff8a3d 70%,transparent 100%);box-shadow:0 0 1.4cqw .4cqw rgb(255 160 60/.5);animation:flick .7s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes flick{0%{transform:scale(1,1) skewX(0)}35%{transform:scale(.94,1.1) skewX(3deg)}70%{transform:scale(1.05,.92) skewX(-3deg)}100%{transform:scale(.98,1.06) skewX(2deg)}}
+.pt.out .flame{animation:snuff .45s ease-in forwards}
+@keyframes snuff{to{transform:scale(.1,.02);opacity:0}}
+.smoke{position:absolute;width:1.6cqw;height:1.6cqw;border-radius:50%;background:radial-gradient(rgb(200 200 220/.55),transparent 70%);filter:blur(.25cqw);animation:smoke 2.2s ease-out forwards;pointer-events:none;z-index:7}
+@keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:.8}100%{opacity:0;transform:translate(1.4cqw,-9cqw) scale(3.2)}}
+.pt .z{position:absolute;right:-.4cqw;top:-.8cqw;font-family:var(--font-display);font-weight:800;font-size:1.2cqw;color:#cfd3ff;opacity:0}
+.pt.sleep .av{filter:brightness(.58) saturate(.65)} .pt.sleep .z{animation:zz 3.2s ease-in-out infinite;animation-delay:var(--zd,0s)}
+@keyframes zz{0%{opacity:0;transform:translate(0,0) scale(.6)}30%{opacity:.9}100%{opacity:0;transform:translate(1.2cqw,-2.4cqw) scale(1.2)}}
+.pt.dead .av{filter:grayscale(1) brightness(.45);color:transparent} .pt.dead .flame{display:none}
+.xe{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-display);font-weight:900;font-size:calc(var(--sz)*.3);white-space:nowrap;color:#ff2a4d;letter-spacing:.12em;opacity:0;text-shadow:0 0 .8cqw #000;background:rgb(0 0 0/.35)}
+.pt.dead .xe{opacity:1;animation:fadeIn .4s}
+.pt.dim{opacity:.28;filter:saturate(.4);transition:.5s}
+.pt.gone{opacity:0!important;transition:none}
+/* clocks */
+.ring-clock{width:var(--cs,12cqw);aspect-ratio:1;position:relative;display:grid;place-items:center}
+.ring-clock svg{position:absolute;inset:0;transform:rotate(-90deg);overflow:visible}
+.trk{fill:none;stroke:rgb(255 255 255/.14);stroke-width:3}
+.prg{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:100 100;transition:stroke-dasharray 1s linear,stroke .4s;filter:drop-shadow(0 0 .6cqw var(--accent))}
+.ring-clock b{font-family:var(--font-mono);font-weight:700;font-size:calc(var(--cs,12cqw)*.26);text-shadow:0 0 1.6cqw color-mix(in oklab,var(--accent) 60%,transparent)}
+.ring-clock.warn .prg{stroke:var(--warning)} .ring-clock.hot .prg{stroke:var(--danger)}
+/* ───── NIGHT + COUNTDOWN ───── */
+.sc-night .sky{background:linear-gradient(#04061a 0%,#0a0e30 55%,#171455 100%)}
+.star{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#fff;animation:tw var(--t) ease-in-out var(--dl) infinite}
+@keyframes tw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+.stars{inset:0}
+.shoot{left:12%;top:14%;width:9cqw;height:.14cqw;background:linear-gradient(90deg,transparent,#fff);transform:rotate(24deg);opacity:0;animation:shoot 7s ease-in 2s infinite}
+@keyframes shoot{0%{opacity:0;transform:translate(0,0) rotate(24deg)}3%{opacity:1}10%{opacity:0;transform:translate(34cqw,15cqw) rotate(24deg)}100%{opacity:0}}
+.fog{left:-20%;right:-20%;height:30%;filter:blur(1.4cqw);opacity:.5;background:radial-gradient(ellipse at 30% 50%,rgb(140 150 255/.28),transparent 60%),radial-gradient(ellipse at 75% 60%,rgb(120 90 255/.22),transparent 60%)}
+.fog.f1{bottom:8%;animation:drift 22s linear infinite alternate}.fog.f2{bottom:-4%;opacity:.7;animation:drift 30s linear infinite alternate-reverse}
+@keyframes drift{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+.moonwrap{left:50%;top:38%;width:23cqw;aspect-ratio:1;transform:translate(-50%,-50%)}
+.mring{position:absolute;inset:-9%;width:118%;height:118%;transform:rotate(-90deg)}
+.moon{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--moon) 45%,#aeb6e8 100%);box-shadow:0 0 6cqw 1.5cqw rgb(170 180 255/.35),inset -1.4cqw -1.2cqw 2.4cqw rgb(60 70 150/.35);overflow:hidden}
+.moon::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 35% 30%,#ff8a8a,#d4182f 55%,#6e0710);opacity:var(--bl,0);transition:opacity .9s}
+.moonwrap::before{content:"";position:absolute;inset:-30%;border-radius:50%;background:radial-gradient(rgb(255 40 70/calc(var(--bl,0)*.45)),transparent 62%);transition:background .9s}
+.cr{position:absolute;border-radius:50%;background:rgb(120 130 190/.28);box-shadow:inset .2cqw .2cqw .4cqw rgb(90 100 170/.4);z-index:1}
+.cr.c1{width:18%;height:18%;left:22%;top:24%}.cr.c2{width:11%;height:11%;left:58%;top:50%}.cr.c3{width:14%;height:14%;left:34%;top:62%}
+.sc-night .ttl{left:3cqw;top:2.6cqw;display:flex;flex-direction:column;gap:.3cqw}
+.sc-night .ttl b{font-family:var(--font-display);font-weight:800;font-size:2.6cqw}
+.mtime{left:50%;top:60.5%;transform:translateX(-50%);font-family:var(--font-mono);font-weight:700;font-size:2.4cqw;color:#dfe3ff;text-shadow:0 0 1.2cqw rgb(150 160 255/.6)}
+.sc-night .row{left:0;right:0;bottom:3.4cqw;display:flex;justify-content:center;gap:2.4cqw;align-items:flex-end}
+.sc-night .row .pt{position:relative;--sz:5.4cqw}
+.vig{inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgb(190 10 30/calc(.08*var(--k,0))) 70%,rgb(160 0 20/calc(.2*var(--k,0))) 100%);animation:beat var(--bt,1s) ease-in-out infinite;opacity:0;z-index:6}
+.sc-night[data-cd] .vig{opacity:1}
+.sc-night[data-cd] .mtime{opacity:0}
+.sc-night[data-cd] .ttl{opacity:.35}
+@keyframes beat{0%,100%{transform:scale(1)}14%{transform:scale(1.035)}28%{transform:scale(1)}42%{transform:scale(1.05)}}
+.cd{inset:0;display:grid;place-items:center;pointer-events:none;z-index:8}
+.cd .num{font-family:var(--font-display);font-weight:900;font-size:25cqw;line-height:1;color:#fff;text-shadow:0 0 2.4cqw rgb(255 40 70/.95),0 0 9cqw rgb(190 10 30/.85);animation:slam 1s var(--ease-out) forwards}
+@keyframes slam{0%{transform:scale(2.8);filter:blur(14px);opacity:0}15%{transform:scale(1);filter:blur(0);opacity:1}72%{transform:scale(.97);opacity:1}100%{transform:scale(.7);opacity:0;filter:blur(7px)}}
+.cdlabel{left:0;right:0;top:3.4cqw;text-align:center;z-index:8;opacity:0}
+.sc-night[data-cd] .cdlabel{opacity:1;animation:fadeIn .6s both}
+.cdlabel span{font-family:var(--font-display);font-weight:700;font-size:1.6cqw;letter-spacing:.3em;text-transform:uppercase;color:#ffd4da}
+.sc-night.tremble{animation:shake .5s linear infinite}
+.flash{inset:0;background:radial-gradient(circle at 50% 38%,#fff,#ffe9b0 40%,transparent 80%);opacity:0;z-index:9;pointer-events:none}
+.flash.go{animation:flash 1.3s ease-out forwards}
+@keyframes flash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
+.dawnword{left:0;right:0;top:36%;text-align:center;z-index:9;font-family:var(--font-display);font-weight:900;font-size:6cqw;color:#fff8e0;letter-spacing:.9em;opacity:0;text-shadow:0 0 3cqw rgb(255 190 90/.9)}
+.dawnword.go{animation:dw 1.8s ease-out forwards}
+@keyframes dw{0%{opacity:0;letter-spacing:1.2em}30%{opacity:1}100%{opacity:0;letter-spacing:.25em}}
+/* ───── BLOOD ───── */
+.splat{position:absolute;transform:translate(-50%,-50%);aspect-ratio:1;overflow:visible;pointer-events:none;z-index:5;height:auto}
+.splat .blob{transform-box:fill-box;transform-origin:center;transform:scale(.05);opacity:0}
+.splat.go .blob{animation:splatIn .26s cubic-bezier(.1,.95,.2,1) var(--delay) forwards}
+@keyframes splatIn{0%{transform:scale(.05);opacity:1}70%{transform:scale(1.13)}100%{transform:scale(1);opacity:1}}
+.splat .drop{opacity:0}.splat.go .drop{animation:fly .55s cubic-bezier(.1,.8,.3,1) calc(var(--delay) + var(--d)) forwards}
+@keyframes fly{0%{opacity:1;transform:translate(0,0)}100%{opacity:1;transform:translate(var(--dx),var(--dy))}}
+.splat .streak{stroke-dasharray:1;stroke-dashoffset:1;opacity:0}
+.splat.go .streak{animation:streak .4s ease-out calc(var(--delay) + var(--d)) forwards}
+@keyframes streak{0%{stroke-dashoffset:1;opacity:.9}60%{opacity:.9}100%{stroke-dashoffset:0;opacity:.75}}
+.splat .drip{transform-box:fill-box;transform-origin:top;transform:scaleY(0)}
+.splat.go .drip{animation:dripY var(--t) cubic-bezier(.5,0,.9,.6) calc(var(--delay) + var(--d)) forwards}
+@keyframes dripY{to{transform:scaleY(1)}}
+.splat .drip-end{opacity:0;transform:translateY(-100px)}
+.splat.go .drip-end{animation:dripE var(--t) cubic-bezier(.5,0,.9,.6) calc(var(--delay) + var(--d)) forwards}
+@keyframes dripE{0%{opacity:1;transform:translateY(-100px)}100%{opacity:1;transform:translateY(0)}}
+.curtain-drip{position:absolute;top:0;width:var(--w);height:0;background:linear-gradient(#b00f1f,#7a0a14);border-radius:0 0 999px 999px;z-index:4;animation:curtain var(--t) cubic-bezier(.4,0,.8,.6) var(--d) forwards}
+.curtain-drip::after{content:"";position:absolute;left:50%;bottom:-.5cqw;width:calc(var(--w)*1.7);aspect-ratio:1;margin-left:calc(var(--w)*-.85);border-radius:50%;background:#7a0a14}
+@keyframes curtain{to{height:var(--len)}}
+.claws{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+.cl{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:0}
+.cl.core{stroke:#fff;stroke-width:.55}.cl.glow{stroke:var(--blood-hot);stroke-width:1.9;filter:blur(.5px)}
+.claws.go .cl{animation:slash .32s var(--ease-out) calc(var(--i)*85ms) forwards,burn 1.4s ease-in 1.1s forwards}
+@keyframes slash{0%{stroke-dashoffset:1;opacity:1}100%{stroke-dashoffset:0;opacity:1}}
+@keyframes burn{0%{opacity:1}100%{opacity:.0}}
+.redflash{inset:0;background:radial-gradient(circle,rgb(255 40 70/.55),rgb(120 0 15/.7));opacity:0;z-index:6;pointer-events:none}
+.redflash.go{animation:rf .5s ease-out forwards}@keyframes rf{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+/* ───── DAWN ───── */
+.sc-dawn .sky{background:linear-gradient(#1a1040 0%,#5a1140 48%,#c1451f 100%)}
+.sc-dawn .glowlow{left:-10%;right:-10%;bottom:-30%;height:80%;background:radial-gradient(ellipse at 50% 100%,rgb(255 150 60/.55),transparent 65%)}
+.sc-dawn .tag{left:3cqw;top:2.6cqw}
+.sc-dawn .victim{left:50%;top:40%;--sz:15cqw;transform:translate(-50%,-50%) scale(.2);opacity:0;z-index:3}
+.sc-dawn .victim.in{animation:vin .9s var(--ease-out) forwards}
+@keyframes vin{to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.sc-dawn .victim .nm{display:none}
+.sc-dawn .victim::before{content:"";position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;transform:translate(-50%,-62%);background:radial-gradient(circle,rgb(255 255 255/.18),transparent 62%);border-radius:50%;z-index:-1}
+.sc-dawn .row{left:0;right:0;bottom:2.6cqw;display:flex;justify-content:center;gap:2.6cqw;opacity:0}
+.sc-dawn .row.in{animation:fadeIn .8s .2s both}
+.sc-dawn .row .pt{position:relative;--sz:4.4cqw}
+.fx{inset:0;pointer-events:none;z-index:5}
+.sc-dawn .head{left:0;right:0;bottom:13cqw;display:flex;flex-direction:column;align-items:center;gap:.8cqw;z-index:7;opacity:0}
+.sc-dawn .head.in{opacity:1}
+.sc-dawn .head h2{margin:0;font-size:5.4cqw;color:#fff;text-shadow:0 0 2cqw rgb(255 40 70/.8),0 .3cqw 0 rgb(80 0 10/.9);animation:hlSlam .7s var(--ease-out) both}
+.sc-dawn .head p{margin:0;font-weight:600;font-size:1.7cqw;color:#ffd8de;animation:fadeIn 1s .5s both}
+@keyframes hlSlam{0%{transform:scale(2.2);letter-spacing:.5em;opacity:0;filter:blur(10px)}100%{transform:scale(1);letter-spacing:-.01em;opacity:1;filter:blur(0)}}
+.sc-safe .sky{background:linear-gradient(#2a2f63 0%,#8a4a9a 45%,#ffb06b 100%)}
+.sun{left:50%;bottom:0;width:20cqw;aspect-ratio:1;border-radius:50%;transform:translate(-50%,120%);background:radial-gradient(circle at 40% 35%,#fffbe0,#ffd36b 50%,#ff9a3d);box-shadow:0 0 8cqw 3cqw rgb(255 190 90/.55);z-index:1}
+.sc-safe .sun{animation:sunrise 3.2s var(--ease-out) .3s forwards}
+@keyframes sunrise{to{transform:translate(-50%,-62%)}}
+.rays{left:50%;bottom:0;width:150cqw;aspect-ratio:1;transform:translate(-50%,50%);background:repeating-conic-gradient(from 0deg,rgb(255 220 140/.2) 0 5deg,transparent 5deg 15deg);-webkit-mask:radial-gradient(circle,#000 8%,transparent 55%);mask:radial-gradient(circle,#000 8%,transparent 55%);opacity:0;animation:spin 60s linear infinite,fadeIn 2s 1.4s forwards}
+@keyframes spin{to{transform:translate(-50%,50%) rotate(360deg)}}
+.bird{width:3cqw;height:1.4cqw;opacity:0;z-index:2;animation:fly2 7s linear var(--bd) infinite}
+.bird path{fill:none;stroke:#2a1a4a;stroke-width:3;stroke-linecap:round}
+@keyframes fly2{0%{opacity:0;transform:translate(-5cqw,0)}8%{opacity:1}92%{opacity:1}100%{opacity:0;transform:translate(110cqw,-9cqw)}}
+.sc-safe .head{left:0;right:0;top:11cqw;text-align:center;z-index:7;display:flex;flex-direction:column;align-items:center;gap:.8cqw}
+.sc-safe .head h2{letter-spacing:.02em;margin:0;font-size:5.6cqw;color:#fff4d0;text-shadow:0 0 2.4cqw rgb(255 190 90/.9),0 .3cqw 0 rgb(120 50 10/.7);animation:hlGlow 1.4s 1.6s var(--ease-out) both}
+.sc-safe .head p{margin:0;font-weight:600;font-size:1.8cqw;color:#fff;animation:fadeIn 1s 2.3s both}
+@keyframes hlGlow{0%{opacity:0;transform:translateY(2cqw) scale(.94);filter:blur(8px)}100%{opacity:1;transform:none;filter:blur(0)}}
+.sc-safe .row{left:0;right:0;bottom:2.6cqw;display:flex;justify-content:center;gap:2.4cqw;z-index:3}
+.sc-safe .row .pt{position:relative;--sz:4.6cqw}
+/* ───── DISCUSSION ───── */
+.sc-talk .sky{background:linear-gradient(#20244d 0%,#4a3fa8 55%,#ff9f6b 130%)}
+.sc-talk .sunc{left:50%;top:6cqw;transform:translateX(-50%);--cs:15cqw}
+.sc-talk .sunc .core{position:absolute;inset:13%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fffbe0,#ffd36b 55%,#ff9a3d);box-shadow:0 0 5cqw 1cqw rgb(255 190 90/.5)}
+.sc-talk .sunc b{position:relative;color:#3a1f00;text-shadow:none;z-index:1}
+.sc-talk .ttl{left:3cqw;top:2.6cqw;display:flex;flex-direction:column;gap:.3cqw}
+.sc-talk .ttl b{font-family:var(--font-display);font-weight:800;font-size:2.6cqw}
+.sc-talk .grid{left:8cqw;right:8cqw;bottom:6cqw;display:grid;grid-template-columns:repeat(4,1fr);gap:3.4cqw 2cqw;justify-items:center}
+.sc-talk .grid .pt{position:relative;--sz:7cqw}
+.bubble{position:absolute;left:62%;top:-1.2cqw;background:#fff;color:#20244d;border-radius:1.4cqw;padding:.5cqw .9cqw;display:none;gap:.25cqw;z-index:3}
+.bubble::after{content:"";position:absolute;left:.7cqw;bottom:-.5cqw;border:.55cqw solid transparent;border-top-color:#fff;border-bottom:0}
+.bubble i{width:.5cqw;height:.5cqw;border-radius:50%;background:#20244d;animation:dots 1s infinite}.bubble i:nth-child(2){animation-delay:.15s}.bubble i:nth-child(3){animation-delay:.3s}
+@keyframes dots{0%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-.3cqw);opacity:1}}
+.pt.talk .bubble{display:flex}.pt.talk .av{box-shadow:0 0 0 .3cqw #fff,0 0 2cqw color-mix(in oklab,var(--c) 80%,transparent)}
+.sc-talk .hint{left:0;right:0;bottom:1.8cqw;text-align:center;font-weight:600;font-size:1.5cqw;color:rgb(255 255 255/.85)}
+/* ───── VOTE ───── */
+.sc-vote .sky{background:linear-gradient(#0e0d2e 0%,#35124d 60%,#7a2040 130%)}
+.sc-vote .ttl{left:3cqw;top:2.6cqw;display:flex;flex-direction:column;gap:.3cqw}
+.sc-vote .ttl b{font-family:var(--font-display);font-weight:800;font-size:2.6cqw}
+.sc-vote .need{left:3cqw;top:9.6cqw;font-weight:600;font-size:1.5cqw;color:#ffd4da;display:flex;gap:.6cqw;align-items:center}
+.sc-vote .need b{font-family:var(--font-mono);font-size:1.8cqw;color:#fff;background:rgb(255 77 122/.25);border:1px solid rgb(255 77 122/.6);padding:.1cqw .7cqw;border-radius:.8cqw}
+.sc-vote .clk{right:3cqw;top:2cqw;--cs:9.5cqw}
+.sc-vote .cols{left:4cqw;right:4cqw;bottom:6cqw;display:flex;justify-content:space-around;align-items:flex-end}
+.vcol{display:flex;flex-direction:column;align-items:center;gap:1.1cqw;position:relative}
+.vcol .pt{position:relative;--sz:6.6cqw}
+.slots{display:grid;grid-template-columns:repeat(2,2.5cqw);gap:.55cqw;min-height:5.6cqw}
+.slot{width:2.5cqw;height:2.5cqw;border-radius:50%;border:.17cqw dashed rgb(255 255 255/.3);position:relative}
+.slot b{position:absolute;inset:.2cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9e6ff,#9b85ff 55%,#4a37b8);box-shadow:0 .2cqw .6cqw rgb(0 0 0/.5);opacity:0}
+.slot.on{border-style:solid;border-color:transparent}
+.slot.on b{opacity:1;animation:pebble .62s cubic-bezier(.3,1.5,.5,1) both}
+.slot.off b{animation:pebbleUp .45s ease-in forwards}
+@keyframes pebble{0%{transform:translateY(-52cqw);opacity:1}60%{transform:translateY(0)}78%{transform:translateY(-.9cqw)}100%{transform:translateY(0);opacity:1}}
+@keyframes pebbleUp{to{transform:translateY(-8cqw);opacity:0}}
+.slot.on::after{content:"";position:absolute;inset:-.3cqw;border-radius:50%;border:.15cqw solid rgb(155 133 255/.9);opacity:0;animation:ripple .7s .45s ease-out both}
+@keyframes ripple{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.9)}}
+.vcol .cnt{font-family:var(--font-mono);font-weight:700;font-size:1.3cqw;color:rgb(255 255 255/.65)}
+.vcol.reached .av{box-shadow:0 0 0 .3cqw var(--danger),0 0 3.4cqw .6cqw rgb(255 77 122/.65)}
+.vcol.reached .cnt{color:var(--danger)}
+.vcol.reached::before{content:"";position:absolute;left:50%;top:-2cqw;width:15cqw;aspect-ratio:1;transform:translateX(-50%);background:radial-gradient(rgb(255 77 122/.3),transparent 65%);z-index:-1;animation:pulseGlow 1.2s ease-in-out infinite}
+@keyframes pulseGlow{50%{opacity:.5;transform:translateX(-50%) scale(1.08)}}
+.sc-vote .locked{left:0;right:0;top:27%;text-align:center;font-family:var(--font-display);font-weight:800;font-size:3.4cqw;opacity:0;z-index:4;text-shadow:0 0 2cqw rgb(0 0 0/.8)}
+.sc-vote .locked.in{animation:hlSlam .6s var(--ease-out) both}
+/* ───── VERDICT ───── */
+.sc-verdict .sky{background:radial-gradient(70% 80% at 50% 48%,#1d1658,#06071d 75%)}
+.ember{width:.3cqw;height:.3cqw;border-radius:50%;background:#ffb06b;box-shadow:0 0 .6cqw #ff8a3d;animation:rise 7s linear infinite;opacity:0}
+@keyframes rise{0%{opacity:0;transform:translate(0,0)}15%{opacity:.8}100%{opacity:0;transform:translate(var(--ex),-30cqw)}}
+.sc-verdict .pre{left:0;right:0;top:6cqw;text-align:center;z-index:3}
+.sc-verdict .pre span{font-family:var(--font-display);font-weight:700;font-size:1.9cqw;letter-spacing:.34em;text-transform:uppercase;color:#d9d4ff;animation:fadeIn 1s both}
+.sc-verdict .pre i{font-style:normal;animation:dots 1.2s infinite}.sc-verdict .pre i:nth-child(3){animation-delay:.2s}.sc-verdict .pre i:nth-child(4){animation-delay:.4s}
+.ring{inset:0}.ring .pt{--sz:6.6cqw;transform:translate(-50%,-50%);transition:opacity .5s,filter .5s,transform .25s}
+.ring .pt.lit{transform:translate(-50%,-50%) scale(1.22);z-index:4}
+.ring .pt.lit .av{box-shadow:0 0 0 .3cqw #fff,0 0 4cqw 1cqw rgb(255 255 255/.55)}
+.spot{width:17cqw;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgb(255 255 255/.34),rgb(190 180 255/.12) 45%,transparent 70%);z-index:2;transition:left var(--hop,.12s) ease-out,top var(--hop,.12s) ease-out,opacity .6s,transform .4s;pointer-events:none}
+.shock{width:8cqw;aspect-ratio:1;border-radius:50%;border:.35cqw solid rgb(255 255 255/.8);transform:translate(-50%,-50%) scale(.3);opacity:0;z-index:5}
+.shock.go{animation:shock .9s ease-out forwards}@keyframes shock{0%{opacity:1;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(5)}}
+.shard{position:absolute;margin:0;z-index:7;pointer-events:none;animation:shardOut 1.7s cubic-bezier(.3,0,.8,.5) var(--sd) both}
+@keyframes shardOut{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--sx),calc(var(--sy) + 16cqw)) rotate(var(--sr));opacity:0}}
+.ash{position:absolute;background:#9c97bf;border-radius:50%;opacity:0;animation:ashUp 1.9s ease-out var(--ad) forwards;z-index:7}
+@keyframes ashUp{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--ax),var(--ay))}}
+.sc-verdict .head{left:0;right:0;top:53%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:.8cqw;z-index:8;opacity:0}
+.sc-verdict .head.in{opacity:1}
+.sc-verdict .head h2{margin:0;font-size:4.2cqw;color:#fff;text-shadow:0 0 2.4cqw rgb(155 133 255/.8);animation:hlSlam .7s var(--ease-out) both}
+.sc-verdict .head p{margin:0;font-weight:600;font-size:1.6cqw;color:#d9d4ff;animation:fadeIn 1s .5s both}
+.sc-verdict .head small{font-size:1.3cqw;color:rgb(255 255 255/.55);animation:fadeIn 1s 1.1s both}
+.sc-verdict.tie .ring .pt .flame{animation-duration:.18s}
+/* ───── LATER card ───── */
+.sc-later .sky{background:#02030c}.sc-later .tx{inset:0;display:grid;place-items:center;font-family:var(--font-display);font-weight:600;font-size:2.4cqw;letter-spacing:.3em;color:#cfd3ff;animation:fadeIn 1.2s both}
+/* ───── FINAL ───── */
+.sc-final .cards{left:0;right:0;bottom:5cqw;display:flex;justify-content:center;gap:1.4cqw;perspective:90cqw;z-index:4}
+.fc{width:9.6cqw;height:13.4cqw;position:relative;opacity:0;transform:translateY(3cqw);animation:cardIn .5s var(--ease-out) var(--ci) forwards}
+@keyframes cardIn{to{opacity:1;transform:none}}
+.fc-in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,1.3,.5,1)}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:1.2cqw;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5cqw;overflow:hidden}
+.face.q{background:linear-gradient(160deg,#2a2f63,#171a3a);border:.14cqw solid #4a519a;font-family:var(--font-display);font-weight:900;font-size:4cqw;color:#6e6c9a}
+.face.rv{transform:rotateY(180deg);background:linear-gradient(170deg,color-mix(in oklab,var(--rc) 24%,#171a3a),#0d0f24);border:.14cqw solid var(--rc);box-shadow:0 0 2cqw -.4cqw var(--rc)}
+.face.rv .ic{width:3.6cqw;height:3.6cqw;color:var(--rc)}
+.face.rv b{font-family:var(--font-display);font-weight:800;font-size:1.3cqw}.face.rv small{font-weight:700;font-size:.95cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--rc)}
+.face.rv .av{--sz:3.2cqw;margin-bottom:.3cqw}
+.fc.dead::after{content:"";}
+.fc .tomb{position:absolute;right:.5cqw;top:.5cqw;width:1.6cqw;height:1.6cqw;color:#fff;opacity:.7;display:none}
+.fc.dead .tomb{display:block}
+.fc.win .face.rv{animation:winPulse 1.6s ease-in-out infinite}
+@keyframes winPulse{50%{box-shadow:0 0 3.4cqw .2cqw var(--rc)}}
+.fc.lose{transition:filter .8s,opacity .8s}.fc.lose.shown{filter:grayscale(.75) brightness(.6)}
+.fc .scratch{position:absolute;inset:0;width:100%;height:100%;z-index:3;opacity:0;pointer-events:none}
+.fc.lose.shown .scratch{opacity:1}
+.scratch path{fill:none;stroke:var(--blood-hot);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.fc.lose.shown.cl-wolves .scratch path{animation:slash .35s var(--ease-out) calc(var(--i)*90ms) forwards}
+.sc-final .head{left:0;right:0;top:5cqw;display:flex;flex-direction:column;align-items:center;gap:1cqw;z-index:8;pointer-events:none}
+.sc-final .head h2{margin:0;font-size:6.6cqw;opacity:0}
+.sc-final .head p{margin:0;font-weight:600;font-size:1.8cqw;opacity:0}
+.sc-final .head.in h2{animation:hlSlam .8s var(--ease-out) both}.sc-final .head.in p{animation:fadeIn 1s .6s both}
+.sc-final.village .sky{background:linear-gradient(#2a2f63 0%,#a05a8a 45%,#ffb06b 100%)}
+.sc-final.village h2{color:#fff4d0;text-shadow:0 0 3cqw rgb(255 190 90/.95),0 .35cqw 0 rgb(130 60 10/.7)}
+.sc-final.village p{color:#fff}
+.firefly{width:.5cqw;height:.5cqw;border-radius:50%;background:#ffe9a0;box-shadow:0 0 1cqw .3cqw rgb(255 220 120/.8);animation:rise 8s linear var(--fd) infinite;opacity:0}
+.sc-final.wolves .sky{background:radial-gradient(70% 70% at 50% 18%,#6e0710,#1b0509 70%,#07010a)}
+.bigmoon{left:50%;top:-12cqw;width:30cqw;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 36% 32%,#ff9a9a,#d4182f 55%,#6e0710);box-shadow:0 0 10cqw 3cqw rgb(255 30 60/.45)}
+.howl{left:50%;top:6cqw;width:20cqw;aspect-ratio:1;border-radius:50%;border:.22cqw solid rgb(255 80 100/.7);transform:translate(-50%,-50%) scale(.3);opacity:0}
+.howl.go{animation:howl 3s ease-out var(--hd) infinite}
+@keyframes howl{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(4.2)}}
+.mist{left:-10%;right:-10%;bottom:0;height:45%;background:radial-gradient(ellipse at 40% 100%,rgb(190 10 30/.35),transparent 65%),radial-gradient(ellipse at 80% 100%,rgb(120 0 20/.35),transparent 60%);animation:drift 14s ease-in-out infinite alternate;filter:blur(1cqw)}
+.sc-final.wolves h2{color:#fff;text-shadow:0 0 3cqw rgb(255 40 70/.95),0 .35cqw 0 rgb(70 0 10/.95)}
+.sc-final.wolves p{color:#ffd4da}
+.sc-final .foot{left:0;right:0;bottom:1.4cqw;text-align:center;font-size:1.3cqw;font-weight:600;color:rgb(255 255 255/.6);z-index:5;animation:fadeIn 1s 6s both}
+.sc-final .claws{z-index:9}
+/* ═════════════ PHONES (px) ═════════════ */
+.phones{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:40px 24px;justify-items:center;align-items:start}
+.device{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:310px}
+.device figcaption{font-size:14px;color:var(--muted);text-align:center;max-width:38ch}
+.device figcaption b{color:var(--ink);font-family:var(--font-display)}
+.dev-tools{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:32px;align-items:center}
+.phone{width:100%;height:620px;border-radius:40px;background:var(--frame);padding:9px;box-shadow:var(--elev-3)}
+.screen{height:100%;border-radius:32px;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);position:relative;isolation:isolate;container-type:inline-size;color:var(--ink)}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:10px 22px 4px;font-size:13px;font-weight:700;position:relative;z-index:3}
+.sb .notch{width:72px;height:20px;border-radius:12px;background:var(--frame)}
+.pbody{flex:1;display:flex;flex-direction:column;gap:10px;padding:4px 16px 14px;min-height:0;position:relative;z-index:2}
+.pbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 16px 8px;position:relative;z-index:2}
+.pbar .me{font-family:var(--font-display);font-weight:800;font-size:16px}
+.gclock{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;padding:3px 10px;border-radius:999px;background:rgb(255 255 255/.1)}
+.gtitle{display:flex;flex-direction:column;gap:2px}.gtitle .h{font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1.1}.gtitle .s{font-size:14px;color:var(--muted);font-weight:600}
+.bg-fill{position:absolute;inset:0;z-index:0}
+.fxp{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.mini{width:30px;height:30px;border-radius:50%;display:block;overflow:hidden;flex:none;background:#ffe3ea;box-shadow:0 0 0 1px rgb(255 255 255/.25)}
+.av .face-img,.mini .face-img{display:block;width:100%;height:100%}
+.tag{margin-left:auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgb(255 255 255/.12);color:#dfe3ff;white-space:nowrap}
+.tag.pack{background:rgb(255 255 255/.12);color:#dfe3ff}.tag.ok{background:rgb(43 227 139/.2);color:#9af5c8}.tag.bad{background:rgb(255 77 122/.25);color:#ffc2d0}
+/* — NIGHT SHELL: identical for every role (no role-colored backgrounds) — */
+.nshell .bg-fill{background:linear-gradient(#04061a 0%,#0a0e30 55%,#171455 100%)}
+.nshell .stars{position:absolute;inset:0;z-index:1}
+.nopt{display:flex;align-items:center;gap:10px;padding:4px 12px;border-radius:14px;background:rgb(255 255 255/.06);border:1px solid rgb(255 255 255/.1);min-height:38px;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,border-color .2s,box-shadow .2s,transform .12s;user-select:none}
+.nopt:active{transform:scale(.98)}
+.nopt.sel{border-color:var(--accent);background:rgb(0 229 199/.1);box-shadow:0 0 0 1px var(--accent),0 0 18px -6px var(--accent)}
+.nopt.dis{opacity:.4;pointer-events:none}
+.nlist{display:flex;flex-direction:column;gap:5px}
+.nshell .mini{width:28px;height:28px}
+.nshell .gtitle .h{font-size:20px}
+.moonmini .trk,.moonmini .prg{stroke-width:7}
+.power{display:flex;align-items:center;gap:8px;font-size:12px;color:#aab0e8;font-weight:600;padding:8px 10px;border-radius:12px;background:rgb(255 255 255/.05);margin-top:auto}
+.power .icw{color:var(--c,#cfd3ff);font-size:16px}
+.moonmini{width:34px;height:34px;position:relative;display:grid;place-items:center}
+.moonmini i{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfd5ff 60%,#9aa3dd);box-shadow:0 0 12px rgb(170 180 255/.5)}
+.moonmini svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.nshell.final5::after{content:"";position:absolute;inset:0;border-radius:32px;pointer-events:none;z-index:6;box-shadow:inset 0 0 38px 4px rgb(255 77 122/.5);animation:beat .8s ease-in-out infinite}
+.resbox{min-height:40px}
+.res{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:rgb(255 255 255/.06);border:1px solid rgb(255 255 255/.1);font-weight:700;font-size:13px;min-height:40px;color:#dfe3ff}
+.res small{font-weight:600;color:#aab0e8}
+/* — ROLE REVEAL (hold-to-reveal, same pattern as .cp-hold in the app) — */
+.rv .bg-fill{background:radial-gradient(120% 70% at 50% 0%,#20244d,#0d0f24)}
+.rcard{flex:1;border-radius:24px;position:relative;perspective:900px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.rcard .in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.25,.5,1)}
+.rcard.open .in{transform:rotateY(180deg)}
+.rcard .f{position:absolute;inset:0;border-radius:24px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px}
+.rcard .f.back{background:repeating-linear-gradient(135deg,#1a1e46 0 12px,#20244d 12px 24px);border:1px solid var(--border-strong);box-shadow:var(--elev-2)}
+.rcard .f.back .eye{width:74px;height:74px;color:#8a8fc9}
+.rcard .f.back b{font-family:var(--font-display);font-size:18px}
+.rcard .f.back span{font-size:13px;color:var(--muted);font-weight:600}
+.rcard .f.front{transform:rotateY(180deg);background:linear-gradient(170deg,#1d2150,#0d0f24);border:1px solid var(--border-strong);box-shadow:var(--elev-2)}
+.rcard .f.front .big{width:72px;height:72px;color:var(--rc);filter:none}
+.rcard .f.front h3{margin:0;font-family:var(--font-display);font-weight:900;font-size:28px;letter-spacing:.02em;color:var(--rc)}
+.rcard .f.front p{margin:0;color:#cfd3ff;font-size:14px;font-weight:600;max-width:24ch}
+.rcard .f.front .pack{font-size:13px;color:#dfe3ff;font-weight:700}
+.rcard.open .f.front .big{animation:pop .8s var(--ease-out) .25s both}
+@keyframes pop{0%{transform:scale(.4) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
+.hide-bar{height:6px;border-radius:999px;background:rgb(255 255 255/.1);overflow:hidden}.hide-bar i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left;box-shadow:0 0 10px var(--accent)}
+.screen.play .hide-bar i{animation:drain 10s linear forwards}@keyframes drain{to{transform:scaleX(0)}}
+/* — KILLED — */
+.kill .bg-fill{background:linear-gradient(#14040a,#2a0610 70%,#4a0a14)}
+.kill .ctr{position:absolute;left:0;right:0;top:56%;transform:translateY(-50%);text-align:center;z-index:4;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 24px;opacity:0}
+.kill.show .ctr{opacity:1}
+.kill .ctr h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:34px;line-height:1.05;color:#fff;text-shadow:0 0 22px rgb(255 40 70/.9);animation:hlSlam .7s var(--ease-out) both}
+.kill .ctr p{margin:0;color:#ffc2d0;font-weight:600;font-size:15px}
+.ecg{width:100%;height:46px;margin-top:6px}.ecg path{fill:none;stroke:#ff4d7a;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #ff2a4d)}
+.kill.show .ecg path{animation:slash 2.2s linear .3s forwards}
+.kill .ctr .btn{margin-top:8px;min-height:46px}
+.kill .ctr .btn,.kill .ctr small{opacity:0}.kill.show .ctr .btn,.kill.show .ctr small{animation:fadeIn .8s 2.4s both}
+.kill.dead .bg-fill{filter:saturate(.8)}
+.kill.news .bg-fill{background:linear-gradient(#1a1040 0%,#5a1140 55%,#8a2a2a 100%)}
+.kill.news .ctr{top:52%}
+.kill.news .ctr .pt{margin-bottom:6px}
+/* — DAWN SAFE / DAY — */
+.dsafe .bg-fill{background:linear-gradient(#2a2f63 0%,#8a4a9a 45%,#ffb06b 100%)}
+.dsafe .sunp{position:absolute;left:50%;bottom:-30px;width:120px;height:120px;border-radius:50%;transform:translate(-50%,120%);background:radial-gradient(circle at 40% 35%,#fffbe0,#ffd36b 50%,#ff9a3d);box-shadow:0 0 50px 18px rgb(255 190 90/.5);z-index:1}
+.dsafe.play .sunp{animation:sunr 3s var(--ease-out) .2s forwards}@keyframes sunr{to{transform:translate(-50%,-180%)}}
+.dsafe .ctr{position:absolute;left:0;right:0;top:20%;text-align:center;z-index:3;padding:0 20px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.dsafe .ctr h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:34px;color:#fff4d0;text-shadow:0 0 24px rgb(255 190 90/.9)}
+.dsafe.play .ctr h2{animation:hlGlow 1.3s 1.2s var(--ease-out) both}.dsafe .ctr p{margin:0;font-weight:600}.dsafe.play .ctr p{animation:fadeIn 1s 2s both}
+.day .bg-fill{background:linear-gradient(#20244d 0%,#4a3fa8 55%,#ff9f6b 140%)}
+.dopt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:16px;background:rgb(255 255 255/.1);border:1px solid rgb(255 255 255/.14);min-height:46px;font-weight:700;font-size:15px;position:relative;cursor:pointer;transition:.2s}
+.dopt.sel{border-color:#fff;background:rgb(255 255 255/.2);box-shadow:0 0 0 1px #fff,0 0 20px -6px #fff}
+.dopt .pbs{margin-left:auto;display:flex;gap:4px}
+.pb{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9e6ff,#9b85ff 55%,#4a37b8);box-shadow:0 1px 3px rgb(0 0 0/.5)}
+.pb.new{animation:pbDrop .55s cubic-bezier(.3,1.5,.5,1) both}
+.pb.ph{background:none;border:1.5px dashed rgb(255 255 255/.35);box-shadow:none}
+@keyframes pbDrop{0%{transform:translateY(-70px);opacity:0}60%{opacity:1}100%{transform:none}}
+.need2{font-size:13px;font-weight:700;color:#ffd4da;display:flex;gap:8px;align-items:center}.need2 b{font-family:var(--font-mono);background:rgb(255 77 122/.25);border:1px solid rgb(255 77 122/.6);padding:0 8px;border-radius:8px}
+.vp-hint{font-size:12px;color:rgb(255 255 255/.7);font-weight:600;text-align:center}
+.tlk{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:rgb(255 255 255/.9);padding:10px 12px;border-radius:16px;background:rgb(255 255 255/.1)}
+.alive-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.alive-grid .dopt{cursor:default;min-height:42px;font-size:14px}
+.sunring{display:grid;place-items:center;position:relative;width:96px;height:96px;margin:0 auto}
+.sunring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.sunring i{position:absolute;inset:11px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fffbe0,#ffd36b 55%,#ff9a3d);box-shadow:0 0 30px 6px rgb(255 190 90/.45)}
+.sunring b{position:relative;font-family:var(--font-mono);font-size:20px;color:#3a1f00}
+/* — VERDICT (phone) — */
+.vd .bg-fill{background:radial-gradient(90% 60% at 50% 40%,#1d1658,#06071d 80%)}
+.vd .stagep{position:relative;height:200px;display:grid;place-items:center}
+.vd .stagep .pbig{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px}
+.vd .stagep .pt{position:relative;--sz:92px}.vd .stagep .nm{font-size:16px}
+.vd .ctr2{text-align:center;display:flex;flex-direction:column;gap:6px;opacity:0}
+.vd.show .ctr2{opacity:1}.vd .ctr2 h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:28px;animation:hlSlam .6s var(--ease-out) both}
+.vd .ctr2 p{margin:0;color:#d9d4ff;font-weight:600}.vd .ctr2 small{color:rgb(255 255 255/.55);font-size:12px}
+/* — SPECTATOR / PENDING / FINAL — */
+.ghost .bg-fill{background:radial-gradient(120% 80% at 50% 25%,color-mix(in oklab,var(--muted) 20%,var(--bg)),var(--bg))}
+.ghostfig{font-size:70px;line-height:1;text-align:center;animation:bob 3.4s ease-in-out infinite;filter:drop-shadow(0 0 20px rgb(200 205 255/.5))}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.watch{background:rgb(255 255 255/.06);border:1px solid rgb(255 255 255/.1);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.watch .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.dots{display:flex;flex-wrap:wrap;gap:6px}.dotp{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;padding:3px 10px 3px 4px;border-radius:999px;background:rgb(255 255 255/.08)}
+.dotp .mini{width:22px;height:22px}.dotp.out{opacity:.4;text-decoration:line-through}
+.wait .bg-fill{background:linear-gradient(#04061a,#0a0e30 60%,#171455)}
+.lantern{position:relative;height:236px;display:grid;place-items:center}
+.lantern .rope{position:absolute;top:0;left:50%;width:2px;height:60px;background:#6e6c9a;transform-origin:top;animation:swing 3.6s ease-in-out infinite}
+.lantern .lamp{position:absolute;top:56px;left:50%;margin-left:-26px;width:52px;height:74px;border-radius:10px 10px 18px 18px;background:radial-gradient(circle at 50% 60%,#fff3b8,#ffb547 55%,#8a4a0a);box-shadow:0 0 50px 16px rgb(255 180 70/.45);transform-origin:50% -56px;animation:swing 3.6s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.lantern .gate{position:absolute;bottom:0;left:10%;right:10%;height:60px;border:2px solid #4a519a;border-bottom:0;border-radius:60px 60px 0 0;background:linear-gradient(rgb(255 255 255/.04),transparent)}
+.fin.won .bg-fill{background:radial-gradient(120% 80% at 50% 25%,color-mix(in oklab,var(--success) 38%,var(--bg)),var(--bg))}
+.fin.lost .bg-fill{background:radial-gradient(120% 80% at 50% 25%,color-mix(in oklab,var(--danger) 36%,var(--bg)),var(--bg))}
+.fin .t{font-family:var(--font-display);font-weight:900;font-size:34px;text-align:center;line-height:1.05;animation:hlSlam .7s var(--ease-out) both}
+.fin.won .t{color:var(--success);text-shadow:0 0 24px rgb(43 227 139/.6)}.fin.lost .t{color:var(--danger);text-shadow:0 0 24px rgb(255 77 122/.6)}
+.fin .sub{text-align:center;font-weight:600;color:#cfd3ff}
+.fin .rl{display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.fin .rl div{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:12px;background:rgb(255 255 255/.07);font-weight:700;font-size:13px;opacity:0;animation:fadeIn .4s both;animation-delay:calc(var(--i)*.12s + .5s)}
+.fin .rl div .tag{margin-left:auto}
+.confetti{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-10px;width:7px;height:12px;border-radius:2px;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(660px) rotate(540deg)}}
+.rolechips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+/* ═════════════ HOST CONSOLE ═════════════ */
+.hostgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;align-items:start}
+.hf{background:var(--surface);border-radius:24px;box-shadow:var(--elev-3);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.hf-h{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:color-mix(in oklab,var(--surface) 80%,var(--bg))}
+.hf-h .code{font-family:var(--font-mono);font-weight:700;font-size:18px}.hf-h .lbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hf-h .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
+.hf-b{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.hf-t{font-family:var(--font-display);font-weight:800;font-size:20px;margin:0}
+.counts{display:flex;flex-wrap:wrap;gap:6px}
+.cnt-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 8px;border-radius:999px;background:var(--surface-2);font-weight:700;font-size:13px}
+.cnt-chip .icw{color:var(--rc);font-size:15px}
+.banner{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:10px 12px;font-size:14px;font-weight:600}
+.banner.ok{background:rgb(43 227 139/.12);border:1px solid rgb(43 227 139/.5);color:#9af5c8}
+.banner.bad{background:rgb(255 77 122/.12);border:1px solid rgb(255 77 122/.5);color:#ffc2d0}
+.prow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:14px;background:var(--surface-2)}
+.prow .nm2{font-weight:700;min-width:60px}
+.prow .on{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success)}
+.seg4{margin-left:auto;display:flex;gap:4px}
+.seg4 button{width:34px;height:32px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;color:var(--muted);font-size:17px;transition:.15s}
+.seg4 button[aria-pressed="true"]{color:#0d0f24;background:var(--rc);border-color:transparent;box-shadow:0 0 14px -2px var(--rc)}
+.plist{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto;padding-right:2px}
+.tabs{display:flex;gap:6px}
+.tabs button{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);font-weight:700;font-size:13px}
+.tabs button[aria-pressed="true"]{background:var(--primary);border-color:transparent;box-shadow:0 0 16px -4px var(--primary)}
+.phase{font-family:var(--font-display);font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px;background:var(--surface-3)}
+.phase.night{background:#171455}.phase.day{background:#8a4a1f}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.hp{position:relative;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);font-weight:700;font-size:14px;overflow:hidden}
+.hp .rb{margin-left:auto;display:flex;align-items:center;gap:4px;color:var(--rc);font-size:11px;font-weight:700}
+.hp.dead{opacity:.5}.hp.dead .nm3{text-decoration:line-through}
+.hp .acted{position:absolute;right:6px;top:4px;font-size:10px;color:var(--success);font-weight:800}
+.panel2{background:var(--surface-2);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.panel2 h4{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.line{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;flex-wrap:wrap}
+.line .arrow{color:var(--muted)}
+.vbar{display:grid;grid-template-columns:62px 1fr 38px;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.vbar .tr{height:10px;border-radius:999px;background:var(--surface);position:relative;overflow:visible}
+.vbar .tr i{display:block;height:100%;border-radius:999px;background:var(--primary-neon);width:0;transition:width .8s var(--ease-out)}
+.vbar .tr b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.vbar.reach .tr i{background:var(--danger);box-shadow:0 0 12px var(--danger)}
+.vbar span:last-child{font-family:var(--font-mono);text-align:right}
+.secret-note{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--warning);font-weight:700}
+.pending{border:1px dashed var(--warning);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:rgb(255 181 71/.06)}
+.pending .top{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.ntable{width:100%;border-collapse:collapse;font-size:14px}.ntable th,.ntable td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+.ntable th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ntable td:first-child{font-weight:700;white-space:nowrap}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.chk{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:14px;color:var(--muted)}
+.chk b{color:var(--ink);display:block;font-family:var(--font-display);margin-bottom:4px;font-size:14px}
+</style></head>
+<body><div class="wrap">
+
+<header>
+  <span class="eyebrow">Werewolf · Arcade Night · screen designs for review</span>
+  <h1>Werewolf — các màn hình</h1>
+  <p class="lead">Mockup để duyệt style và animation, chưa phải code của app. Chữ trong màn hình là tiếng Anh; chú thích cho bạn bằng tiếng Việt. Mọi animation bấm được: chọn cảnh, bấm <b>Replay</b>, hoặc chạy cả vòng chơi. Chữ <i class="guess">(mình đoán)</i> là chỗ mình tự quyết, cần bạn xác nhận.</p>
+  <div class="note leak" style="margin-top:14px"><span>🔒</span><span><b>Luật bí mật chi phối mọi hiệu ứng.</b> Cả lớp ngồi cạnh nhau, nên: màn hình đêm của mọi role phải trông như nhau (cùng nền, cùng độ sáng, màu role chỉ ở chip nhỏ) · màn chiếu chỉ đếm phiếu, không có hiệu ứng "từ người vote bay tới người bị vote" · cảnh bình minh "không ai chết" chỉ có một animation, dù Guard có cứu hay sói không tấn công · hiệu ứng bị loại (mảnh vỡ, tro, khói) giống hệt cho sói và dân · kết quả Seer chỉ có "Werewolf" / "Not a werewolf".</span></div>
+  <div class="toolbar">
+    <button class="btn" id="sound" aria-pressed="false">🔇 Sound off</button>
+    <span class="dur">Âm thanh tổng hợp bằng Web Audio, mặc định tắt</span>
+    <span class="dur">Tôn trọng prefers-reduced-motion: tắt rung và flash</span>
+  </div>
+</header>
+
+<section class="sec" id="projector">
+  <div class="sec-head"><span class="eyebrow">Màn chiếu · chỉ thông tin công khai</span><h2>Điện ảnh trên màn chiếu</h2>
+    <p>Đây là nơi các hiệu ứng lớn diễn ra. Bấm một cảnh để xem lại, hoặc <b>Play full round</b> để chạy liền: đêm → đếm ngược → bình minh (máu) → thảo luận → vote → phán quyết → kết thúc.</p></div>
+  <div class="toolbar" style="margin:0">
+    <button class="btn primary" id="playAll">▶ Play full round</button>
+    <div class="chips" id="sceneChips"></div>
+  </div>
+  <div class="stage-shell"><div class="projector" id="stage" aria-live="polite"></div></div>
+  <div class="note" id="sceneNote"></div>
+  <div class="note warn"><span>⏱</span><span><b>Thời lượng cần đưa vào kế hoạch.</b> <span class="dur">NIGHT 30s</span> (5s cuối đếm ngược) · <span class="dur">DAWN 8s</span> (chuỗi máu dài ~6,5s, nên DAWN_MS ≥ 8000 đã đủ) · <span class="dur">VERDICT 9s</span> <b>(giai đoạn mới)</b> · <span class="dur">FINAL</span> giữ tới khi host thoát. Kế hoạch hiện đang chuyển thẳng VOTE → NIGHT; nếu bạn duyệt cảnh phán quyết thì cần thêm stage <code>VERDICT</code> giữa lúc chốt phiếu và đêm kế tiếp (và win-check xảy ra trước nó).</span></div>
+</section>
+
+<section class="sec" id="phones">
+  <div class="sec-head"><span class="eyebrow">Điện thoại người chơi</span><h2>Từng khoảnh khắc trên điện thoại</h2>
+    <p>Theo thứ tự một ván. Màn hình đêm của Werewolf, Seer, Guard và Villager <b>cố ý giống hệt về bố cục và độ sáng</b>.</p></div>
+  <div class="toolbar" style="margin:0"><button class="btn" id="all5">▶ Last 5 seconds on all four night phones</button><span class="dur">Cả 4 đồng loạt: viền nhịp cùng màu, cùng nhịp</span></div>
+  <div class="phones" id="phoneGrid"></div>
+</section>
+
+<section class="sec" id="host">
+  <div class="sec-head"><span class="eyebrow">Host Console</span><h2>Góc nhìn thượng đế của host</h2>
+    <p>Host không chơi. Trước khi bắt đầu: đổi role từng người, có kiểm tra hợp lệ. Trong ván: thấy role, lựa chọn ban đêm, và ai vote cho ai.</p></div>
+  <div class="hostgrid"><div class="hf" id="hostSetup"></div><div class="hf" id="hostGod"></div></div>
+</section>
+
+<section class="sec" id="notes">
+  <div class="sec-head"><span class="eyebrow">Ghi chú thiết kế</span><h2>Danh sách animation và quy tắc</h2></div>
+  <div style="overflow-x:auto"><table class="ntable">
+    <tr><th>Animation</th><th>Ở đâu</th><th>Thời lượng</th><th>Ghi chú</th></tr>
+    <tr><td>Đếm ngược cuối đêm</td><td>Màn chiếu (+ viền nhịp trên 4 điện thoại đêm)</td><td><span class="dur">5s</span></td><td>Số đập mỗi giây, viền đỏ đập 2 nhịp/s, trăng đỏ dần, rung 2s cuối, chớp sáng 1 lần ở 0.</td></tr>
+    <tr><td>Vuốt + máu bắn + máu chảy</td><td>Màn chiếu, điện thoại nạn nhân</td><td><span class="dur">~7,4s</span> chiếu · <span class="dur">~5s</span> phone</td><td>Vuốt 0,9s → va chạm 0,26s (+rung 0,55s, chớp đỏ 0,5s) → giọt 0,55s → máu chảy 1,6–3,2s → tiêu đề.</td></tr>
+    <tr><td>Bình minh yên</td><td>Màn chiếu, mọi điện thoại</td><td><span class="dur">~5,2s</span></td><td>Một animation duy nhất cho "Guard cứu" và "không bị tấn công".</td></tr>
+    <tr><td>Viên đá phiếu</td><td>Màn chiếu, điện thoại</td><td><span class="dur">0,62s</span> mỗi viên</td><td>Rơi từ trên cao, không từ người vote.</td></tr>
+    <tr><td>Phán quyết: đèn rọi + vỡ</td><td>Màn chiếu, điện thoại</td><td><span class="dur">~8,5s</span> chiếu · <span class="dur">~3s</span> phone</td><td>Quét ~2,4s, khoá + rung, tắt nến 0,45s, mảnh vỡ + tro 1,7s, tiêu đề.</td></tr>
+    <tr><td>Lật thẻ cuối game</td><td>Màn chiếu, điện thoại</td><td><span class="dur">0,75s</span> mỗi thẻ, cách nhau <span class="dur">0,33s</span></td><td>Sói thắng: vuốt + hú; dân thắng: tia nắng + đom đóm.</td></tr>
+    <tr><td>Lật thẻ role (giữ để xem)</td><td>Điện thoại</td><td><span class="dur">0,7s</span></td><td>Nằm trong thẻ, không phát sáng ra ngoài.</td></tr>
+  </table></div>
+  <div class="checks">
+    <div class="chk"><b>Không lộ thông tin</b>Màn hình đêm cùng nền, cùng độ sáng cho mọi role. Màu role chỉ ở chip/biểu tượng nhỏ; thẻ role mở ra có khung giống hệt cho mọi role; ô trạng thái đêm cùng kích thước và màu trên cả 4 role. Villager có danh sách bấm giả. Màn chiếu không có đường từ người vote tới người bị vote. Hiệu ứng bị loại giống hệt cho sói và dân. Seer chỉ có hai kết quả.</div>
+    <div class="chk"><b>Avatar</b>Mọi nơi hiện người chơi (màn chiếu, điện thoại, host) đều dùng avatar họ tự chỉnh trong lobby, vẽ bằng cùng DiceBear Big Smile với trình chỉnh avatar của app (mockup nhúng sẵn 9 avatar mẫu nên chạy offline). App chỉ cho đổi avatar trước khi host chọn game, nên người vào giữa ván giữ avatar mặc định.</div>
+    <div class="chk"><b>An toàn thị giác</b>Không có chớp toàn màn quá 3 lần/giây: chớp sáng một lần ở hết đêm, một lần chớp đỏ ở nhát vuốt. Có <code>prefers-reduced-motion</code>: tắt rung và chớp. Âm thanh mặc định tắt.</div>
+    <div class="chk"><b>Ảnh hưởng đến kế hoạch triển khai</b>(1) Thêm stage <code>VERDICT</code> ~9s giữa lúc chốt phiếu và đêm kế tiếp; win-check chạy trước nó. (2) <code>DAWN_MS</code> ≥ 8000. (3) Phone Villager gửi "bấm giả" chỉ ở client, server không nhận. (4) Seer khoá lựa chọn đầu tiên mỗi đêm.</div>
+    <div class="chk"><b>Cần bạn xác nhận <i class="guess">(mình đoán)</i></b>(a) Bấm giả cho Villager có ổn không? (b) Màn chiếu bật viền đỏ khi ai đó đủ phiếu trước khi hết giờ; không lộ ai vote, nhưng báo trước rằng có người sẽ bị loại. Giữ hay chỉ hiện ở lúc hết giờ? (c) Guard không được báo là đã cứu thành công. (d) Thêm stage VERDICT. (e) Có âm thanh (mặc định tắt).</div>
+  </div>
+</section>
+
+</div>
+<script>
+/* ───────── core helpers ───────── */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const NS='http://www.w3.org/2000/svg';
+const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function replay(el,cls='play'){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
+
+/* ───────── the cast (8 players; roles are only shown where the spec allows) ───────── */
+const CAST=[
+  {n:'Mai', c:'#7c5cff',r:'seer'},
+  {n:'Khoa',c:'#ff4d7a',r:'werewolf'},
+  {n:'Linh',c:'#00e5c7',r:'villager'},
+  {n:'Bao', c:'#ffb547',r:'guard'},
+  {n:'An',  c:'#2be38b',r:'villager'},
+  {n:'Vy',  c:'#4aa3ff',r:'werewolf'},
+  {n:'Tuan',c:'#ff8a4a',r:'villager'},
+  {n:'Hieu',c:'#c46bff',r:'villager'},
+];
+const ROLE={
+  werewolf:{label:'Werewolf',color:'var(--role-werewolf)',blurb:'Hunt the village. Vote with your pack each night.'},
+  villager:{label:'Villager',color:'var(--role-villager)',blurb:'Find the werewolves before they find you.'},
+  seer:{label:'Seer',color:'var(--role-seer)',blurb:'Each night, learn if one player is a werewolf.'},
+  guard:{label:'Guard',color:'var(--role-guard)',blurb:'Each night, protect one player from the wolves.'},
+};
+/* One icon family, stroke style, same as the app's svg.i */
+const ICON={
+  werewolf:'<svg viewBox="0 0 24 24" class="ic"><path d="M4 3l4.5 3.5L12 6l3.5.5L20 3l-1 8 1.5 3-3 5-4 2h-1l-4-2-3-5L5 11z"/><path d="M9 12l1.5 1M15 12l-1.5 1M10.5 17h3"/></svg>',
+  villager:'<svg viewBox="0 0 24 24" class="ic"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
+  seer:'<svg viewBox="0 0 24 24" class="ic"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  guard:'<svg viewBox="0 0 24 24" class="ic"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" class="ic"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" class="ic"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>',
+  skull:'<svg viewBox="0 0 24 24" class="ic"><path d="M12 3a8 8 0 0 0-8 8c0 3 1.5 4.7 3 5.7V20h3v-2h4v2h3v-3.3c1.5-1 3-2.7 3-5.7a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.3"/><circle cx="15" cy="11" r="1.3"/></svg>',
+  check:'<svg viewBox="0 0 24 24" class="ic"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+};
+const ic=(k,extra='')=>`<span class="icw ${extra}">${ICON[k]}</span>`;
+const init=n=>n[0];
+const avatar=(p,cls='')=>`<span class="av ${cls}" style="--c:${p.c};background:${avBg(p)}">${face(p)}</span>`;
+const byName=n=>CAST.find(p=>p.n===n);
+/* Avatars: generated with the app's own DiceBear "Big Smile" style (packages/ui/src/avatar-image.tsx) from sample
+   AvatarConfig values (packages/core/src/avatar.ts). In the real app these come from each player's AvatarEditor choices. */
+const AVATARS={"Mai":{"bg":"#efe6ff","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-979d1998\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#f5d7b1\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#f5d7b1\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-openedSmile-979d1998\"><path d=\"M155.7 51c3 1.7 24.1-24.8 38.2-16.7 4.7 2.7 8.3 7.3 11 12.3 6 11 8 24.4 5.6 36.8a67 67 0 0 1-29 41.2c-37.3 25.5-67 20.7-106.7 6C43.4 118.9.8 95 9.6 51.9c15.5-76 146-1 146.1-1\" fill=\"#873C41\"/><path d=\"M47.7 46c10.2 6.4 22.5 7 33.6 4.5 2-.5 3.8 1.3 4.3 3.4 5.4 21 36 32 51.5 18.5 1.2-1 3.3-1.3 4.5-.1 8.3 7.8 21.6 10 31.4 4.6 13.8-7.5 13.7-28.6 10-43.3-12.2 3.7-25 18.7-27.3 17.3 0 0-80.1-46-122.3-29.4a31 31 0 0 0 14.3 24.6\" fill=\"white\"/><path d=\"M162.7 127.8c-22-20.1-48.9-31.4-76.2-39.3C63 81.6 36.8 77.2 13 84c11 23.5 39.2 38.2 61.7 46.6 34.8 12.9 61.8 18.2 93 2.2z\" fill=\"#EE7E8B\"/></g><g id=\"eyes-cheery-979d1998\"><path d=\"M16.5 89.6c8.9-.2 17.7 3 25.5 7.7a24 24 0 0 0 5.2-21.5c-2.5-12-11.8-20-20.9-18S12 71.3 14.3 83.3q.8 3.4 2.2 6.3M132.3 91q2-4.4 2-10.2c-.2-9.5-5.3-17.2-11.4-17.2s-11 7.8-10.8 17.4c.1 5.2 1.7 9.9 4.2 13q7.6-3 16-3\" fill=\"#2A1200\"/><path d=\"M49.7 19a44 44 0 0 0-38.2 13.3c-3.2 3.4-4 9.3-.8 13 3 3.6 8.7 4.6 12 1l3.3-3c.3-.3 1.3-.8 1.6-1.2l.5-.4a38 38 0 0 1 6-3l1.7-.5a35 35 0 0 1 6.3-1.2h2l4.3.5c4.4.7 9-3.6 9.1-8.4.2-5.3-3-9.3-7.8-10m91.8 15.7a31 31 0 0 0-20.1-12.6c-2.1-.4-4.6.4-6.3 1.8a10 10 0 0 0-3.1 6.2c-.2 2.4.3 5 1.8 6.8a9 9 0 0 0 5.7 3.5q.6 0 1.1.3l3.3 1.4q1.7 1.2 3.3 2.7l1 1.3a9 9 0 0 0 5.7 3.5c2.1.2 4.7-.4 6.3-2 1.7-1.5 3-3.6 3.1-6q.4-3.9-1.8-7\" fill=\"#71472D\"/></g><g id=\"hair-bunHair-979d1998\"><path d=\"M198.3 202.8c-43.7 0-79.1-38.4-79.1-85.9 0-47.4 35.4-85.9 79-85.9 43.7 0 79.1 38.5 79.1 86 0 47.4-35.4 85.8-79 85.8\" fill=\"#605de4\"/><path d=\"M198.3 202.8c-43.7 0-79.1-38.4-79.1-85.9q0-12 2.8-22.9c12.7 9.5 61 22.8 152.5 0a93 93 0 0 1 2.8 23c0 47.4-35.4 85.8-79 85.8\" fill=\"black\" fill-opacity=\".2\"/><path d=\"M156 343c4.6-46.4 79-85.4 79-85.4a67 67 0 0 1-8.5 20.3c-1.5 2.4 0 5.5 2.6 5.7 70 5.5 160.2-70.1 160.2-70.1 19 24.5 41 58.5 52.2 69.9 1.6 1.6 4.2.3 4.1-2.1C441.4 121 287 89.2 182.4 124.4 86.7 156.7 7 281.7 73.4 373c3.7-11.7 17.7-34.3 44-31.5 4.4 1 16 6 27.6 18 1.7 1.9 16 7 11-16.5\" fill=\"#605de4\"/><path opacity=\".1\" d=\"M375 195.1s-8.3-9.8-26.3-8.2c0 0 12.7-7 21-6 0 0-22.6-16.8-55.6-6.2 0 0 23.3-16.4 41.7-14.3 0 0-19.6-8.6-32-6.6 0 0 9.8-12.2 22.6-11.8 0 0-10.2-18-26-23.7 0 0 31.6 9 40 15.5 18.3 7.8 35.3 30.7 35.3 30.7-5.7-3.3-14.7-2.5-14.7-2.5 14.7 9 26 25.8 26 25.8-7.2-5-15.8-3.3-15.8-3.3a77 77 0 0 1 18.4 31.9c-1.9-5.8-15.4-12.7-15.4-12.7a72 72 0 0 1 6.4 24.5l-11.3-14.7s-23 19.2-29 21.7c0 0 17.3-18 18.4-26.2 0 0-26 7-46.6 9.8 0 0 29-22 42.9-23.7\" fill=\"black\"/></g><g id=\"accessories-glasses-979d1998\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"m395.3 186.3-49-1.8-.6-10.5 49.8 2.3z\" fill=\"#896307\"/><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M220.3 123.7c-27.2 4.3-46.1 32.2-41.3 63 4.9 30.9 31.4 51.6 58.6 47.3s46.1-32.2 41.3-63-31.4-51.6-58.6-47.3m-52 52.2c.6-30.6 21-57.4 50.4-62 33.4-5.3 64.4 20 70 55.6l3.3-1.2a27 27 0 0 1 13-.7c.6-12.5 4.3-24 10.2-33a41 41 0 0 1 31.6-19.8 42 42 0 0 1 34 16.3 71 71 0 0 1 15.7 40.8 69 69 0 0 1-10 42.3 41 41 0 0 1-31.6 19.7 42 42 0 0 1-34-16.2 71 71 0 0 1-15.7-39.6q-5.2-1.9-10.4-.2-3.2 1-5.3 2.2c.3 31.3-20.3 59-50.3 63.8-33.4 5.2-64.4-20.1-70-55.6l-.3-2.2-86.4-14a102 102 0 0 0-44.4 2.6c-12 4-18.3 18.8-18.5 28l-9.9-.2c.3-15.3 11.4-32.6 25.3-37.3s31.7-5.3 48.9-3v.1zm155.2-35.8a59 59 0 0 0-8.5 36c1 14.1 6.1 26.5 13.4 35 7.4 8.7 16.6 13.3 26 12.8s17.8-6 23.8-15.2a59 59 0 0 0 8.5-36.1c-1-14.1-6.2-26.5-13.5-35s-16.5-13.3-25.9-12.8-17.8 6-23.8 15.3\" fill=\"#C5900F\"/></g><clipPath id=\"clip-979d1998\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-979d1998)\"><rect width=\"480\" height=\"480\" fill=\"#efe6ff\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-979d1998\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-openedSmile-979d1998\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-cheery-979d1998\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-bunHair-979d1998\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-glasses-979d1998\"/></g></svg>"},"Khoa":{"bg":"#ffe3ea","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-446c8254\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#c99c62\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#c99c62\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-gapSmile-446c8254\"><path d=\"M155.7 51c3 1.7 24.1-24.8 38.2-16.7 4.7 2.7 8.3 7.3 11 12.3 6 11 8 24.4 5.6 36.8a67 67 0 0 1-29 41.2c-37.3 25.5-67 20.7-106.7 6C43.4 118.9.8 95 9.6 51.9c15.5-76 146-1 146.1-1\" fill=\"#873C41\"/><path d=\"M81.3 50.5a45 45 0 0 1-33.6-4.4 31 31 0 0 1-14.3-24.6c26.3-10.3 67.3 3.6 94.5 15.6l-13 38.9c-12.9-2.1-26-9.4-29.3-22.1-.5-2-2.2-3.9-4.3-3.4M183 33.6c3.7 14.7-5.8 34.9-19.6 42.4-14 8.7-31.3 7-37.5 1.8L137 41.3c11.3 5.4 18.6 9.6 18.6 9.6 2.3 1.4 15-13.6 27.2-17.3\" fill=\"white\"/><path d=\"M162.7 127.8c-22-20.1-48.9-31.4-76.2-39.3C63 81.6 36.8 77.2 13 84c11 23.5 39.2 38.2 61.7 46.6 34.8 12.9 61.8 18.2 93 2.2z\" fill=\"#EE7E8B\"/></g><g id=\"eyes-winking-446c8254\"><path d=\"M57 89.3a48 48 0 0 0-43-6.7q-.4 0-.3-.4c21.6-24.5 37.9-6.1 43.7 6.8q0 .4-.4.3m78.2-8.6c0 8-3.6 16.5-12.9 15.5-7.7-.8-9.7-11-9.7-16 0-8.7 4.4-17 10.8-17 7 0 11.8 9.5 11.8 17.5\" fill=\"#2A1200\"/><path d=\"M49.7 19a44 44 0 0 0-38.2 13.3c-3.2 3.4-4 9.3-.8 13 3 3.6 8.7 4.6 12 1l3.3-3c.3-.3 1.3-.8 1.6-1.2l.5-.4a38 38 0 0 1 6-3l1.7-.5a35 35 0 0 1 6.3-1.2h2l4.3.5c4.4.7 9-3.6 9.1-8.4.2-5.3-3-9.3-7.8-10m91.8 15.7a31 31 0 0 0-20.1-12.6c-2.1-.4-4.6.4-6.3 1.8a10 10 0 0 0-3.1 6.2c-.2 2.4.3 5 1.8 6.8a9 9 0 0 0 5.7 3.5q.6 0 1.1.3l3.3 1.4q1.7 1.2 3.3 2.7l1 1.3a9 9 0 0 0 5.7 3.5c2.1.2 4.7-.4 6.3-2 1.7-1.5 3-3.6 3.1-6q.4-3.9-1.8-7\" fill=\"#71472D\"/></g><g id=\"hair-mohawk-446c8254\"><path d=\"M459 140.8c-74-50.6-244.4-113.6-334 40l28.2 32a210 210 0 0 0-25.7 43.2c-8.8 22-12 46.3-12.6 70.6q-.1 6.9.2 13.8c38.1 6.5 56.1 47.3 60.4 67 0 0 11.3.6 14-1.6 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 20.6-14.5 46.3-19.2 70.3-18.7l10 .5c29.2 2.3 54.4 11.5 62.7 18.2 12.8 10.4 19 14.4 20.4 15q-8.4-18.9-19-32.8c7.8-19 21.9-44.5 40.7-57.4q5.2-3.7 10.9-5.8\" fill=\"#220f00\"/><path d=\"M125 180.8c89.6-153.6 260-90.6 334-40-20-13.7-115.5-40.5-159-18.5l.4.7c-83-18-151.1 30.5-175.4 57.8\" fill=\"white\" fill-opacity=\".2\"/><path d=\"M459 140.8c-30.4 11.2-51 58-57 78-28.5-14-47-15-77-16 4-32.8-17.7-67.8-25-80.5 43.5-22 139 4.8 159 18.5\" fill=\"black\" fill-opacity=\".1\"/><path d=\"M325.2 201.2c-.8-12-40.7-41.1-81.2-36.4-54.1 6.4-86.5 45-89 50l-1.8-2a210 210 0 0 0-25.7 43.2c-8.8 22-12 46.3-12.6 70.6q-.1 6.9.2 13.8c38.1 6.5 56.1 47.3 60.4 67 0 0 11.3.6 14-1.6 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 20.6-14.5 46.3-19.2 70.3-18.7l-8.3-.3zm18.1 2.4c29.2 2.3 54.4 11.5 62.7 18.2 12.8 10.4 19 14.4 20.4 15q-8.4-18.9-19-32.8-3.6 8.6-5.4 14.7v.1a138 138 0 0 0-58.7-15.2\" fill=\"white\" fill-opacity=\".7\"/></g><g id=\"accessories-sunglasses-446c8254\"><path d=\"M175 195.1c3.8 15.9 11.2 30.3 24.3 35.3 29 11 71 3 77-3.5a67 67 0 0 0 7.7-20.4c17.1-9.6 31.9-4.4 36.7-1 1.3 7.7 2.7 14 3.7 15.8 3 5.6 24.3 12.5 39 3 14.8-9.5 15.3-67 12.5-73-3.4-7.3-55.7-3.8-57.9 10-1.5 4.2-.7 17.2.8 30-8-2.6-19.1-3.7-31.4.5 3-14.8 4.3-29.6 1.4-34.4-5-17.4-111.6-24.9-114-11.5-2.5 7-3.7 21.6-1.9 36.9a12627 12627 0 0 0-131-16.3 47 47 0 0 0-25.9 6.2c-4.6 2.7-9 6.5-12.1 11.9Q-1 192.8.3 204.2l11.9-1.4c-.6-5.3.4-9.3 2-12.3q2.9-4.5 7.9-7.4c6.8-4 15-5 18.5-4.6 16 1.7 91.3 11.1 134.5 16.6\" fill=\"#595757\" style=\"mix-blend-mode:multiply\"/><path opacity=\".2\" d=\"M243.2 141.4c-10.7-1.4-22-2.2-32.2-2.3l-40 55.5 4.2.5a68 68 0 0 0 8.6 21.8zm34.6 7.8a122 122 0 0 0-21.5-5.7L190.6 225q3.9 3.3 8.7 5.3 3.6 1.3 7.3 2.3zm98.8 33.5c1-13 .7-25.2-.3-29.8l-52.9 65.7 1 2.7c1.4 2.6 6.7 5.4 13.4 6.8z\" fill=\"white\"/></g><clipPath id=\"clip-446c8254\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-446c8254)\"><rect width=\"480\" height=\"480\" fill=\"#ffe3ea\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-446c8254\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-gapSmile-446c8254\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-winking-446c8254\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-mohawk-446c8254\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-sunglasses-446c8254\"/></g></svg>"},"Linh":{"bg":"#e2f5e9","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-c840d2aa\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#ffe4c0\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#ffe4c0\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-kawaii-c840d2aa\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M149.2 42q1.7 0 3 1.1c4.1 4 11.4 9.2 19.4 11.7s16.1 2.2 23.2-3.8a4 4 0 0 1 5.2 6 31 31 0 0 1-30.7 5.5 60 60 0 0 1-19.7-11 84 84 0 0 1-101.2 16 4 4 0 1 1 4-7 76 76 0 0 0 94-17.2 4 4 0 0 1 2.8-1.3\" fill=\"#592125\"/></g><g id=\"eyes-normal-c840d2aa\"><path d=\"M47.3 80.9c0 11.9-6.2 21.5-19 19.5C19 98 12.7 91.4 12.7 79c0-13 7.6-21.5 15.5-21.5 10.6 0 19 11.6 19 23.5m88-.3c0 8-3.6 16.5-12.9 15.5-7.7-.8-9.7-11-9.7-16 0-8.7 4.4-17 10.8-17 7 0 11.8 9.5 11.8 17.5\" fill=\"#2A1200\"/><path d=\"M53.1 24.6A44 44 0 0 0 12.7 26c-4 2.3-6.6 7.7-4.5 12.3 1.9 4.2 6.9 6.9 11.2 4.5l4-2c.4-.2 1.4-.4 1.9-.7l.6-.2a38 38 0 0 1 6.5-1.1h1.9a35 35 0 0 1 5.8.6l.5.2 2 .6q2 .7 3.9 1.6c4 2 9.7-.8 11.2-5.3 1.7-5-.3-9.8-4.6-12m86.6 4.5c-7.4-4.1-16-5-23.6-2.8-2 .6-4 2.4-4.9 4.4-.8 2-1 4.8-.2 7a10 10 0 0 0 4.6 5.3 9 9 0 0 0 6.7.7l1.1-.3h3.5q2.1.2 4.2 1l1.5.6c2 1.1 4.6 1.4 6.6.7s4-2.3 4.9-4.4c.8-2 1-4.6.2-6.9q-1.4-3.5-4.6-5.4\" fill=\"#71472D\"/></g><g id=\"hair-braids-c840d2aa\"><path d=\"M163 375.5C264 342.5 337.5 250 370 205c14 33.6 51.8 58 69 66-8-38-29-76-71-104.5-33.6-22.8-84.2-24.8-104-22.5C38 165.5 46 420 68.3 525c28 20 99 58.6 159.5 53-7.6-19.2-2-61.2 1.2-78-12.4-4.8-47.8-34.3-59-43-16.5 7-23 7-43.5 3-74-34-42-87.5-42-87.5s10-20 37.5-20.5c22-.4 34.2 11.8 41 23.5M452.5 563c-6.8-9.6-2.8-53.2 0-68-28 23.5-44.5 35-102 36.5C369 542 415.3 563 452.5 563\" fill=\"#220F01\"/><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M276.7 154c-18 19.4-49 50-84.4 79-34.5 28.1-74.1 55.6-110 69-1.4 1.4-4 4.9-7.1 12.4a177 177 0 0 0-10 41.1c-5.4 37.7-7 73.8 3.3 160.5.8 6.9-4.5 10.8-12.5 9-6.5-1.5-10.7-7.1-11.5-14-10.5-88-9.9-118.5-4.1-159 2.9-20.3 7-35.7 11.7-47.1 4.4-11 10-19.7 17-24.3l1.2-.8 1.5-.6c32.3-11.6 70-37.3 104.7-65.6 30-24.5 56.7-50.2 74.5-68.8 1.7-1.8 14-5.3 28.7-1.8.8 3.8-.2 8-3 11m-52.3.3c-24.6 24.7-80.7 79-136.2 102.7l-2.2 1a99 99 0 0 1 18.9-38c31.3-18 54.7-40.3 78-61 8.6-3.8 29.6-11.3 44.7-10.5q-.8 3.2-3.2 5.8M110.3 331.8c113-60.3 193.2-147.3 216.2-183.3-7.6-6.4-21.5-6.2-27.5-4.7-20.5 32-91.6 108.4-202.8 167.1l-.7.4-.7.5a23 23 0 0 0-7 9.1q-2.2 4.8-4 11.4c-2.3 9-4.3 21.6-5.8 38.8-3 34.4-4.4 76 0 157.4.4 6.9 8.5 12.5 12.5 14h.1c2 0 11.4 0 12.4-5-2-37.6-2.4-67.3-2.5-93.5l-2-2A55 55 0 0 1 78 397.5c2.5-21.2 8-27.9 10.2-30.4l.8-1.1c10-10 15.9-10.5 15.9-10.5q1.5-10.7 3.2-17 1.2-4.8 2.2-6.7m33 181.6q.3 10.8.2 18.6c.1 10.9.2 18.5 1 27.5.6 6.9-7 7-11 7-5-1-12.4-4.6-13-11.5v-.7l-.2-1.4c-1.1-12.3-1.6-17.1-2-39-.4-19.8 0-40.8 2.3-56.9 3.4 2 13 5.5 24.4 5.5a397 397 0 0 0-1.7 51M125.2 338c111-58.7 192.2-153.8 212.8-186 6.2.8 19.8 4.1 25 11-23.1 36.1-106 132-220.5 192.5-.8.4-2.7-.3-5-1.1q-3.1-1.2-6.5-1.9c-4-.7-11-.5-11-.5-3.2-6.1-1-10.8 5.2-14m246.1-125.4C342.1 252.7 266 335.5 169 375c-5.5 2.9-5.8 2.3-8-2.3l-1-1.7a20 20 0 0 0-4.1-5c-2.3-2.3-3.6-3.5.3-5.6C266.9 302 337.2 220.2 358 187.8q2.7-4.2 7.4-5.4a12.5 12.5 0 0 1 16.7 3.2 319 319 0 0 0 45 48.4c4.4 10.1 13.3 32 13.3 38.4a153 153 0 0 1-45.9-30.9c-5.7-5.7-11.1-13-16-19.6q-3.9-5.4-7.2-9.4M180.6 512.3a607 607 0 0 1 .9-46.3l-11.5-9a94 94 0 0 1-13.5 4.5l-.4 7.2v4.4a760 760 0 0 0 2.4 95.2v1.7c.5 6.9 13 10 13 10s11-.5 11.5-4a1075 1075 0 0 1-2.4-63.7m16 .4.3 24c0 13.7.1 24 1.1 36.3.5 6.9 7.6 10 14.5 9.5s11.5-1.6 11-8.5c-4.5-21.7-4.2-29-3.4-48.8l.4-10.2c0-2.9.2-6.6.5-10.3q.5-5 .5-8.7c-3.5-2-18-12.5-25-18a679 679 0 0 0 0 32.2zm247-10.2c5.2-4.3 9.6-8.6 9.4-7.5l-.6 3.9c-1.2 8.4-3 21.2-3.4 32.3a93 93 0 0 0 4 30.8c.9 2.5-7 2-13.5 2-7 0-13.5-2.5-14-4-3.6-10.6-1.9-16-1.5-29.5l.8-15s10.2-6 18.7-13M418 519c0-.5-5 2.5-13.5 5-9 3-14 3.5-14 3.5 0 5.7-.2 3-.7 12.5v10.5c3.3 6 6.2 5.6 13.2 7 7 .7 13 1.5 12.5-2.5s-1.1-5.4-.7-13.7c.4-7.6 3.2-17.6 3.2-22.3\" fill=\"#3a1a00\"/><path d=\"m195.2 154.3-7 2.5q.1 2.5.7 4.9l-8.4-.6-3.8 3.4-3.3 3a174 174 0 0 0 26.2 1.3h10.1l6.3-6.2-.6-1.9a34 34 0 0 1-9.8 1.2h-5.9l-3.6-.1q-1-3.3-.9-7.5m-19.4 45-.2-.5a34 34 0 0 1-9.7 1.1h-9.5a33 33 0 0 1-.4-13.9l.7-4-8 6.8q-.6 5.5.4 11c-4.3-.2-9-.6-13-1l-8.2 6a198 198 0 0 0 32 2l6 .1h.6q4.8-3.7 9.3-7.6M134 231q-3.1.9-7.7 1l-6 .3-3.6.1a27 27 0 0 1-1.2-12.2q.4-4.5 1.5-8l-8.2 5-.2 2.3c-.4 4.2-.4 9 .8 13.3-4.3 0-9.3 0-13.8-.2l-3.6 6.9a250 250 0 0 0 28.6-.2h.8zm-15.7 24.7 10.2-6.5a44 44 0 0 0-4.2 11.3 24 24 0 0 0-.2 11.4l3.7.4 6 .4 4.2.2-10.2 6.4h-.6q-3-.4-5.8-.5c-8.3-.6-24.5-4.1-32.3-5.8l-1.5-.4q5-2.3 10-5c6.1 1.3 13.4 2.8 19.2 3.6a34 34 0 0 1 1.5-15.5m-61.6 39.5q2.4-4.2 5-7.7 1 4.3 3.3 9.7c2 4.3 4.5 8 7.2 10l3-2h.1l5-3.1a37 37 0 0 0 7.6-6.2l3.1 2.6-8.8 3.5a38 38 0 0 0-6.6 11.3l-1.5 1a307 307 0 0 1-29.7 15.5l2.2-8.8c6-2.9 13.8-6.7 19.4-10-3.2-3-5.6-7-7.3-11zM37.4 378l1-10.2c1.5 2.4 4.3 6 7.8 9.4a27 27 0 0 0 10.5 6.5l2-3h.1l4-5.6q-.7 6.6-1.2 13.7l-.4.7a342 342 0 0 1-23.7 28l-1-1-.2-8a396 396 0 0 0 16.1-18.9 39 39 0 0 1-11-7.3zm.7 70.6-.7-10.3 2.8 2.9a27 27 0 0 0 10.5 6.5l2-3h.1l3.4-4.8a37 37 0 0 0 4.7-8.7l.4.1q.1 6 .5 12.7l-3.3 4.8-3.3 4.7c-3.2 4.8-9.6 12.2-15 18.4l-1-9.6q4-4.6 7.2-8.7-4.5-1.9-8.3-5m6.3 61.7-1.2-10.1 1 1a27 27 0 0 0 10.5 6.5l2-3h.1l3.4-4.8a37 37 0 0 0 4.7-8.7l.9.3 1.1 10.9-.9 1.4-3.5 5-3.3 4.7q-2.9 4.1-7.5 9.7-3-2-4.9-5.1l3.6-4.5q-3-1.3-6-3.3M81 535.5l6.4-7.9c-3.6-1.4-7-3.8-9.8-6.3l-.5-10.5q1.8 2.2 4.1 4.4a27 27 0 0 0 10.5 6.5l2-3h.1l3.4-4.8q3-4.4 4.4-7.8l.5 13-2.6 3.7-3.3 4.7c-2.3 3.4-6 8-10 12.7a24 24 0 0 1-5.2-4.7m38.1 2.8-.5-13c1.3 2.5 3.8 6.2 6.8 9.5a27 27 0 0 0 9.9 7.5q1-1.5 2.3-2.8l6-7.3v11l-.6.7-3.7 4.5c-2.7 3.4-8.4 9-14.2 14.3a12 12 0 0 1-4.2-5.7q5.6-5.1 9.5-9.2a37 37 0 0 1-11.3-9.5m38.8 23.9c3.9-3.3 7.7-6.7 10.5-9.6a38 38 0 0 1-11.7-8.8L156 532q2.5 3.8 6.7 8a27 27 0 0 0 10.2 7l2.2-3 6-8.2q0 6 .3 11.6l-.7.8-3.4 4.6a106 106 0 0 1-18.8 18l-.1-.8-.1-1.7zm22.8-81.2-.2 12q-1.6 2-2.8 3.9c-3 4.2-9.4 10-15.2 14.9l-6 5-.8.7-.1-9 2.4-2c4-3.4 7.9-7 10.7-9.9a38 38 0 0 1-13.1-10.3q0-5.8.3-11.2c1.5 2.4 4.1 5.9 7.3 9a27 27 0 0 0 10.2 6.8l2.2-3zm-61.3-13c1.3 2.5 3.8 6.3 7 9.8a27 27 0 0 0 9.9 7.4l2.3-2.7 3.8-4.6 1.4-1.8-.4 11.6-3.1 3.7a206 206 0 0 1-22 21.4l-.1-9.4h.1c4.9-4.5 9.7-9.1 13.1-12.6a37 37 0 0 1-12.8-11.3zm-19.1-24.2.2.2v12.3l-1 1.5-3.3 4.7a285 285 0 0 1-20.1 24l-.3-10c4-4.5 8.3-9.7 11.6-13.9a37 37 0 0 1-12.1-8.5l-.1-10.7a53 53 0 0 0 6 6.8 27 27 0 0 0 10.5 6.5l2-3h.1zm67-102.2-4.6.2q-3.1 0-5.9.3c-5 .3-15-.4-24.2-1.2l-10.5-1 3-2 7.6-4h.5c6.6.6 13.2 1.1 18.1 1.2-1-3.6-1.2-7.7-1-11.4l7.6-4.6-.4 3.6a27 27 0 0 0 1.2 12.3l3.6-.2 6-.3q5.9-.3 9.7-1.6l.6 1.8zm43.5-13.8 7.7-5.2a53 53 0 0 0-.9 8.5q0 7.2 2 12.2l3.7-.4 6-.7 3.5-.6-14.6 9c-5 .6-15 .6-24 .5l-15.8-.4-4.3-.1 11.4-6.7h26.9a37 37 0 0 1-1.6-16m64.8-17.1-1.7.2-5.8.6c-5 .6-12.8.7-19.9.5-4.9 0-9.6-.2-13-.4h-1.4l8.9-6.7h19.5a37 37 0 0 1-1.6-14.2l7.8-6.5a53 53 0 0 0-.8 8c-.2 4.6.4 9 1.9 12l3.6-.3 6-.6q4-.5 7-1.3zM333 258l-8.9 9-4.9.7-5.7.7c-8.4 1.3-22.3 2-29.3 2l7.8-7.2c5-.2 10.7-.6 15.5-1.1a36 36 0 0 1-2-12l7.5-7.6-.5 6.6c0 4.7.6 9 2.2 12q1.8 0 3.7-.4l5.9-.7q5.2-.7 8.6-2m31.5-36.3-6.2 7.7-3.6.3q-3 0-5.8.4c-7.8.7-18 .5-24.4.2l6-6.8h13a42 42 0 0 1-1.4-13.8q4.8-6 8.7-11.4a63 63 0 0 0-1.7 10.9c-.3 5.2 0 10.1 1.6 13.7l3.5-.2 6-.5zm19.7 7.7-4.9-6.6c3.7-.5 8.8-.7 14-.3 4.7.4 10 1.3 14.4 3.4l1.4-8.8 6.1 6.2a122 122 0 0 1-3 14.6l-1.3 6q-1.1 4.8-3 9.2-3-2.2-5.7-4.6 1-2.8 1.9-6.3l1.3-5.8.7-3.5c-3.3-2-8.1-3-13.3-3.4q-4.6-.4-8.6-.1m54.6 42.2q-9-4-17.6-9.3l2 .3 6 .8 3.6.4q2-4.2 2.2-10.6c2.9 7.6 5.3 15 5.5 18.6zm-208.1 26.9-10.5 7.9-5.1.2q-3 0-5.8.2c-5 .2-12.9-.3-20-1l-9.5-.9 8.8-6.1 15.2 1c-1-3.7-1-7.8-.8-11.5l8-6-1 5a27 27 0 0 0 1.2 12.4l3.6-.1 6-.3q5.9-.2 9.7-1.4zm48.1-40.5-9.1 8.2h-.2l-6.1.3-5.8.4c-7.8.6-20.3.4-27.7 0l8-6.7h14.1c-1-3.7-1.3-7.8-1-11.5l7.9-7.3-1 6c-.3 4.8 0 9.2 1.4 12.3l3.7-.2 6-.3q5.9-.4 9.6-1.7zm34.8-34.4-7.2 7.5h-10.9a191 191 0 0 1-24.3-1.4l6.4-6.4c4 .4 8.7.7 13 .8q-1.4-6.8-.5-13.7l9.2-9.9q-1.3 4.3-2.1 9.8a31 31 0 0 0 .6 13.8h9.5q3.4 0 6.3-.5m36.9-42.9-6 7.7H331c-6.3.3-14.2-.3-20.3-1l5.5-6.5q4.8.5 9.7.6-1.1-6-.5-12 6-7.9 10-13.8c-1 3-2.2 7.3-2.8 12-.7 5.1-.6 10 .6 13.8h9.5q4.3-.1 7.6-.8m-56.6-29.3q-1.3 4.1-2.2 9.6c-.8 5.2-.8 10.1.4 13.8h3.5l11.4-.1-6.2 7.2h-11c-6.3 0-14-.7-20.2-1.4l5.8-6.4 9.4.7q-1-5.5-.5-11 5.6-6.8 9.6-12.4m-43.8-5.4q-.8 2.8-1.2 6c-.8 5.1-.8 10 .3 13.8h9.6q4.1.1 7.3-.5l-7.4 7.6h-6l-5.8-.1c-7 0-15.9-.8-22.3-1.6l6.6-6.3q5.3.6 10.8.8-1-5.3-.5-11zm-48.3 46.1 8.4-7.5-1 5.4c-.8 5.2-.9 10.2.3 13.8h3.6q3 .2 6 .1 4.4 0 7.7-.6L218 211l-5.3-.1H207c-8 0-18.5-1-25-2l7.4-6.1q6.2.7 12.7 1a39 39 0 0 1-.5-11.7m-40.3 33.5 7.8-6.1-.7 4.7a27 27 0 0 0 1.2 12.3l3.7-.2 6-.2q5.9-.3 9.6-1.6l.3 1-9.6 7.6-6 .2q-3 0-5.8.3c-8.8.5-23.6 0-30.3-.5l9.2-6.5c5 .2 10.7.3 15.6.2q-1.4-5.5-1-11.2m87.1-23.8 9.5-9.3a63 63 0 0 0-2.6 10.7c-.8 5.1-.8 10 .4 13.8H267l-7.3 7h-6.3c-9 0-20.8-1.3-26.9-2.2l7-6.1c4.5.5 10 1 15 1.2q-1.3-7.4-.1-14.8zM209 236.6l8.7-7.3a51 51 0 0 0-2.1 10.5 27 27 0 0 0 1.1 12.3l3.7-.2 8.3-.4-9.1 7.5q-2.4 0-4.7.2a286 286 0 0 1-32-.6l.1-2 6.2-4.6c5.7.3 13.7.5 20.3.4a37 37 0 0 1-.6-15.8m-47.6 35.2 8.7-6 .5.3a48 48 0 0 0-3.4 13 27 27 0 0 0 1 12.2h3.6l5-.1-10.7 7.2c-5 .2-12.8-.4-19.8-1.1l-12.9-1.5-3.3-.4.4-3.8 4.4-2.7a664 664 0 0 0 26 2.5c-1.2-4.3-1-9-.6-13.2q.3-3.3 1.1-6.4m-52.5 32.3 7.2-4 1.3.5a50 50 0 0 0-3.2 13 27 27 0 0 0 1 12.3h3.7l2.5-.2-11 6-.6 1.4a319 319 0 0 1-25.7-1.5l2.1-6.8c6.7.5 15.3 1.2 21.7 1.3-1-4.3-1-9-.6-13.2a60 60 0 0 1 1.6-8.8m-29.4 53.6a53 53 0 0 0 9 9.1l-.2.3q-1.3 1.3-3.7 5.5a48 48 0 0 1-6.1-5.4zM75.9 404l.4-9.7 2.5-2.8-.8 6 .2 5-1.7 2zm-8.4 103.7.3 2.4-1.1-2zm129.1-.1v5.1l.1 6.2 1.2 1.1q4.4 4.7 10.5 7.6-4.7 4.6-10.8 9.9l-.7.6v9l5.3-4.3a106 106 0 0 0 18-18.7l.4-12.4a76 76 0 0 1-5.4 7.3l-2.2 3a27 27 0 0 1-10.2-7 53 53 0 0 1-6.2-7.4m232 5.6q1.5 2.7 3.9 6l3.5 4.8 2.2 3a27 27 0 0 0 11.7-8.4l-.8 10.2q-3 2.3-6.2 3.8l6.2 5.9q.1 5.5.9 10l-1-.7a106 106 0 0 1-18.6-19.6l-3.6-4.9-2.3-3.3.3-4.5zm-11.1 10.5-.9 4.8q-1 4.9-1.6 9.9l-.6.6q-4.6 4.7-10.5 7.6 4.5 4.6 10.7 9.9.2 0 .5.4c-1.3 1.5-5 1.3-9.6 1a78 78 0 0 1-14-15.7l-1.7-2v-.2l.5-7.3c.1-1.2.2-1.9.2-4a62 62 0 0 0 6.5 9.3l2.2 3a27 27 0 0 0 10.3-7c3.8-3.7 6.7-8 8-10.3\" fill=\"black\" fill-opacity=\".5\"/></g><g id=\"accessories-catEars-c840d2aa\"><path d=\"M108.5 5.9c11.1-17.1 55.7 14.7 77.2 33-29.2-1.8-45.2 37.3-50.4 56.4-9.2 9-24.5 10.7-30.7 10.7-3.4-26.3-7.3-83 3.9-100.1\" fill=\"#A09B9B\"/><path d=\"m101.7 74.4-.3-7 11.6 4zm.9 12.7 1.4 14c7.3-2.7 15.8-5.4 19.4-6.6z\" fill=\"#C4C4C4\"/><path d=\"M185.7 39c-28.5 9.7-45.4 41.2-50.3 55.7C113 66.8 101.7 18 113.3 5.6c9.3-10 52.1 18 72.4 33.3\" fill=\"#FEB3A4\"/><path d=\"M136 93c5.5-15 22.2-44.7 49.7-54l-5.9-4.4c-7.6-2.6-18-5-30.1-5.1C129.4 29 131.8 70 135.9 93\" fill=\"#FFE7E2\"/><path d=\"M304 56.9a25 25 0 0 1 13 10.7c1-19.4 0-57.3-13.3-57.7-8-.3-21.3 7.7-33.3 16.7A164 164 0 0 1 304 56.9\" fill=\"#A09B9B\"/><path d=\"M317.2 74.8c0-18-2.6-60.3-11.4-62.2-7-1.5-18 7.6-26.6 20.4a167 167 0 0 1 38 41.8\" fill=\"#FEB3A4\"/><path d=\"M317.2 74.8q0-6.4-.5-15.3-3-7-8.2-15.2c-4.5-7.1-11.8-6.5-19.2-2.8a168 168 0 0 1 28 33.3\" fill=\"#FFE7E2\"/></g><clipPath id=\"clip-c840d2aa\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-c840d2aa)\"><rect width=\"480\" height=\"480\" fill=\"#e2f5e9\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-c840d2aa\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-kawaii-c840d2aa\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-normal-c840d2aa\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-braids-c840d2aa\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-catEars-c840d2aa\"/></g></svg>"},"Bao":{"bg":"#fdf1d4","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-154332eb\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#efcc9f\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#efcc9f\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-teethSmile-154332eb\"><path d=\"M147.7 64.4c9.3.2 18.3-2.5 26-10.5 4-4.2 8.2-6.5 14-3 13.9 8.7 17.1 30.2 13.4 44.6a63 63 0 0 1-30.7 36.8c-38.2 22.4-67.6 17.4-106.8 3-30.8-11.2-72.5-33.9-62-72.9 13.2-48.3 69.6-25 101.4-12 13.5 5.5 29.6 13.5 44.7 14\" fill=\"white\"/><path d=\"m109.5 147.2-6-.8L126 59.7l5.7 1.9zm79.7-30.2-5 5.3-13-66q1.3-1 2.5-2.4l2.7-2.4zm-130-81.6L26.8 117l-5-3.7 31.4-79z\" fill=\"#D1D3D4\"/></g><g id=\"eyes-starstruck-154332eb\"><path d=\"M59.1 74.8c0 14.8-9.3 26.8-28.6 24.3-14-3-21.3-8.8-21.3-24.3 0-16.2 7.7-27 21.4-29.2C51.4 42.3 59 60 59 74.8m76.3-3.5c0 11.8-4.8 24.4-17.1 23-10.4-1.3-13-16.3-13-23.7 0-13 5.9-25.1 14.4-25.2 9.2 0 15.8 14.1 15.7 25.9\" fill=\"#2A1200\"/><path d=\"M118.3 54.4c.3-1 1.7-1.1 2-.2l2.6 9q.3.7 1 .6l5-.8c.9 0 1.5.8 1 1.5l-4.2 7.1v.8l2.5 8.8c.3 1-1 1.8-1.6 1l-3.7-3.7a1 1 0 0 0-1.5.1l-5.6 7c-.6.7-1.8.3-1.7-.7l.7-10.3q0-.4-.3-.7l-5.5-5.7c-.6-.5-.2-1.6.6-1.7l5.2-.8q.6 0 .8-.8zM34.2 53a1 1 0 0 1 1.8 0l4.8 11.6q.3.7 1 .6l9.7-1.2a1 1 0 0 1 .9 1.6l-7.2 8.2a1 1 0 0 0-.2 1l4.4 10.9a1 1 0 0 1-1.4 1.2l-8.4-5.7a1 1 0 0 0-1.2.1L26.8 91a1 1 0 0 1-1.6-1L27 77.8a1 1 0 0 0-.4-1l-9-6a1 1 0 0 1 .4-1.9l9.8-1.2q.6 0 .8-.6z\" fill=\"white\"/><path d=\"M47.3 14c-13.2-4-28.4-.8-39.5 8.2-3.6 3-5.2 8.7-2.4 12.9 2.6 3.8 8 5.6 11.8 2.5q1.6-1.4 3.6-2.6c.3-.3 1.4-.7 1.7-1l.6-.3a38 38 0 0 1 6.2-2.3l1.9-.3a35 35 0 0 1 6.4-.3l2 .3q2.1.4 4.1 1c4.3 1.2 9.4-2.5 10.2-7.2.8-5.2-2-9.6-6.6-11m91.6 10.2c-6.5-5.4-14.7-8-22.6-7.4a8 8 0 0 0-5.7 3.3 10 10 0 0 0-1.5 6.8 10 10 0 0 0 3.4 6.2 9 9 0 0 0 6.3 2h1.2q1.8.1 3.5.5a24 24 0 0 1 3.9 2l1.3.9a9 9 0 0 0 6.3 2 8 8 0 0 0 5.7-3.3c1.2-2 2-4.4 1.6-6.8q-.7-3.7-3.4-6.2\" fill=\"#71472D\"/></g><g id=\"hair-shortHair-154332eb\"><path d=\"M431.7 162.7c20.2-6 26.5 20 27.4 37.2v3.3c.3 20.2-6.6 42.2-24.4 51.4a78 78 0 0 1-8-8.4q-11.2-10.5-24-18.6a142 142 0 0 0-86.2-22.6c-36.2 2.3-75.8 11.9-103 36.8-26.9 24.5-43.4 66.5-42.5 106.7l.2 4.8c.6 9.9 1.7 28.9-2.2 31.7l-.6.3-2.4 1.8c-3 2.3-6.6-3.8-11.3-12.1-5.6-10-13-23-23.7-28.5A41 41 0 0 0 82 357c-2-9.4-3-16-3.5-21.6v.1l-.3-8v.6-5.6a225 225 0 0 1 1.6-27.5c3.8-38 15.1-75.6 37.1-105.9 22.4-30.8 56.8-52.3 90.9-65l10.8-3.8a173 173 0 0 1 105-.3 221 221 0 0 1 64.6 36.3q2-2.8 4.9-4.8c8.3-5.8 21-2.1 25.7 7.3q2.4 5 4 10.3 3.5-4.6 9-6.4\" fill=\"#71472d\"/><path d=\"M323.7 120c23.3 7.7 44.6 21 64.5 36.3q1.6-2.1 3.7-3.8a41 41 0 0 0-6.7 11c-8-6.8-18.2-10.6-28.3-7.5a35 35 0 0 0-20.7 20.9c-23.2-14-48-19.3-76.4-13.9-34 6.4-63.8 30-83.6 60.4-26.6 41-27 118.3-6.9 161.2L166 387c-6.8 5-15.5-30.6-35-40.6A41 41 0 0 0 82 357c-3.9-17.5-3.9-25.5-3.9-34.5 0-10.9.6-16.4 1.6-27v-.5c4-38 15.3-75.6 37.3-106 22.4-30.8 56.8-52.3 90.9-65q5.4-2 10.8-3.7a173 173 0 0 1 105-.4\" fill=\"black\" fill-opacity=\".1\"/></g><clipPath id=\"clip-154332eb\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-154332eb)\"><rect width=\"480\" height=\"480\" fill=\"#fdf1d4\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-154332eb\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-teethSmile-154332eb\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-starstruck-154332eb\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-shortHair-154332eb\"/></g></svg>"},"An":{"bg":"#e3edff","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-906cbf48\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#e2ba87\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#e2ba87\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-awkwardSmile-906cbf48\"><path d=\"M114.1 41.8c35.7 2.3 57.8 0 65 0 29.9-4.5 42.7 48.4 5 76.2-11.2 8.3-16.7 7-40.7 7s-50 9-64.5 4.9C37.8 118.3 30.5 88.5 34.2 72c5-22.1 15.2-34.4 80-30.3\" fill=\"white\"/><path d=\"m132.5 125.5-6 .7 3.2-83.6 6 .1zm64-19.6a58 58 0 0 1-5.1 5.9l-11.1-70.2q3.2-.2 6.1.3zM69.2 42.3 56.6 120q-3-2-5.5-4L63 43.5q3-.7 6.3-1.2\" fill=\"#D1D3D4\"/></g><g id=\"eyes-cheery-906cbf48\"><path d=\"M16.5 89.6c8.9-.2 17.7 3 25.5 7.7a24 24 0 0 0 5.2-21.5c-2.5-12-11.8-20-20.9-18S12 71.3 14.3 83.3q.8 3.4 2.2 6.3M132.3 91q2-4.4 2-10.2c-.2-9.5-5.3-17.2-11.4-17.2s-11 7.8-10.8 17.4c.1 5.2 1.7 9.9 4.2 13q7.6-3 16-3\" fill=\"#2A1200\"/><path d=\"M49.7 19a44 44 0 0 0-38.2 13.3c-3.2 3.4-4 9.3-.8 13 3 3.6 8.7 4.6 12 1l3.3-3c.3-.3 1.3-.8 1.6-1.2l.5-.4a38 38 0 0 1 6-3l1.7-.5a35 35 0 0 1 6.3-1.2h2l4.3.5c4.4.7 9-3.6 9.1-8.4.2-5.3-3-9.3-7.8-10m91.8 15.7a31 31 0 0 0-20.1-12.6c-2.1-.4-4.6.4-6.3 1.8a10 10 0 0 0-3.1 6.2c-.2 2.4.3 5 1.8 6.8a9 9 0 0 0 5.7 3.5q.6 0 1.1.3l3.3 1.4q1.7 1.2 3.3 2.7l1 1.3a9 9 0 0 0 5.7 3.5c2.1.2 4.7-.4 6.3-2 1.7-1.5 3-3.6 3.1-6q.4-3.9-1.8-7\" fill=\"#71472D\"/></g><g id=\"hair-curlyBob-906cbf48\"><path d=\"M385.8 208.9c-8 7.2-16.8 17.6-26.5 29.1-16.3 19.4-35.3 41.8-57.3 57.3a227 227 0 0 1-86.5 35.3 86 86 0 0 0-16.4 32c-3.2 9.9-5.5 17-13 17.4-9-20.6-25.4-54.2-71.1-39-38.5 12.8-40.4 56.3-28 78.5 7 12.4 35.3 40 81 34l29.5 25.5c-2.9 5.4-8.2 13.1-25.8 20.7-21.9 9.5-123.8 1-133.3-60.8-23.8-20.6-61.1-78.2-20-143.6a114 114 0 0 1 51.3-43.7q-.3-12.3.1-28.6c2-60 58.1-108.4 102-118.9 42.7-10.2 132.8-6.8 169.8 26.2C462 85.5 492.8 231.9 488.5 287.5c22.4 44 7 106.7-1 131.5-4-33.6-31.3-56-44-61.5 5.6-30.4-5-82-11-104a139 139 0 0 0-46.7-44.6\" fill=\"#d56c0c\"/></g><clipPath id=\"clip-906cbf48\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-906cbf48)\"><rect width=\"480\" height=\"480\" fill=\"#e3edff\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-906cbf48\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-awkwardSmile-906cbf48\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-cheery-906cbf48\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-curlyBob-906cbf48\"/></g></svg>"},"Vy":{"bg":"#efe6ff","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-874c5d72\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#a47539\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#a47539\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-braces-874c5d72\"><path d=\"M155.7 51c3 1.7 24.1-24.8 38.2-16.7 4.7 2.7 8.3 7.3 11 12.3 6 11 8 24.4 5.6 36.8a67 67 0 0 1-29 41.2c-37.3 25.5-67 20.7-106.7 6C43.4 118.9.8 95 9.6 51.9c15.5-76 146-1 146.1-1\" fill=\"#873C41\"/><path d=\"M47.7 46c10.2 6.4 22.5 7 33.6 4.5 2-.5 3.8 1.3 4.3 3.4 5.4 21 36 32 51.5 18.5 1.2-1 3.3-1.3 4.5-.1 8.3 7.8 21.6 10 31.4 4.6 13.8-7.5 13.7-28.6 10-43.3-12.2 3.7-25 18.7-27.3 17.3 0 0-80.1-46-122.3-29.4a31 31 0 0 0 14.3 24.6\" fill=\"white\"/><path d=\"M162.7 127.8c-22-20.1-48.9-31.4-76.2-39.3C63 81.6 36.8 77.2 13 84c11 23.5 39.2 38.2 61.7 46.6 34.8 12.9 61.8 18.2 93 2.2z\" fill=\"#EE7E8B\"/><path d=\"m42 19 7 4 14 7.1a470 470 0 0 0 51.6 20.1l2.2.8c14.4 5 32.2 10.4 51.4 10.4a31 31 0 0 0 15-4.3 1.5 1.5 0 1 1 1.3 2.6 34 34 0 0 1-16.2 4.7c-19.8 0-38-5.6-52.5-10.6l-2.2-.7a487 487 0 0 1-52-20.4l-1.1-.5-13.1-6.7q-5.6-3-9.6-5.6z\" fill=\"#C4C4C4\"/><rect x=\"162.1\" y=\"56\" width=\"12\" height=\"12\" rx=\"2\" transform=\"rotate(3.2 162 56)\" fill=\"#A09E9E\"/><rect x=\"111.5\" y=\"45\" width=\"12\" height=\"12\" rx=\"2\" transform=\"rotate(15 111.5 45)\" fill=\"#A09E9E\"/><rect x=\"59.7\" y=\"24\" width=\"12\" height=\"12\" rx=\"2\" transform=\"rotate(26.4 59.7 24)\" fill=\"#A09E9E\"/></g><g id=\"eyes-sleepy-874c5d72\"><path d=\"M57 69.5a48 48 0 0 1-43 6.7q-.4 0-.3.4c21.6 24.4 37.9 6.1 43.7-6.9q0-.2-.4-.2m55.1 7A18 18 0 0 0 134 81q.4 0 .3.3c-11.5 18.9-19.5 5.3-22.4-4.6q0-.5.3-.2\" fill=\"#2A1200\"/><path d=\"M53.1 24.6A44 44 0 0 0 12.7 26c-4 2.3-6.6 7.7-4.5 12.3 1.9 4.2 6.9 6.9 11.2 4.5l4-2c.4-.2 1.4-.4 1.9-.7l.6-.2a38 38 0 0 1 6.5-1.1h1.9a35 35 0 0 1 5.8.6l.5.2 2 .6q2 .7 3.9 1.6c4 2 9.7-.8 11.2-5.3 1.7-5-.3-9.8-4.6-12m86.6 4.5c-7.4-4.1-16-5-23.6-2.8-2 .6-4 2.4-4.9 4.4-.8 2-1 4.8-.2 7a10 10 0 0 0 4.6 5.3 9 9 0 0 0 6.7.7l1.1-.3h3.5q2.1.2 4.2 1l1.5.6c2 1.1 4.6 1.4 6.6.7s4-2.3 4.9-4.4c.8-2 1-4.6.2-6.9q-1.4-3.5-4.6-5.4\" fill=\"#71472D\"/></g><g id=\"hair-wavyBob-874c5d72\"><g fill=\"#238d80\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"m360.7 206 .9 1 .8-.8c20.8 3.8 37.4 10.5 44 15.8a156 156 0 0 0 20.3 15 249 249 0 0 1 15.9 55c4 24.8 3 53.7 2 65q2.2 1.8 4.9 3.5c5 3.5 10.7 7.5 18 14.5a61 61 0 0 0 6.6-47.5c-1.4-6.4-4-12.9-7.1-20.6-6.5-15.7-15-36.9-19.4-74.4-4-33.8-32-84.5-64-95.5-25.6-8.8-45.7-3.7-51 0-55-46-140-14-163 0-10.8 6.5-19.5 16-28.7 26.1a163 163 0 0 1-37.3 32.9c-29 17-35 60-29 89s9 53-6 72-23 47-6 80c13.6 26.4 9.6 49 6 57 17.4 16 55.3 29 92.5 38.4 1.8.5 2.3-4.7 2.7-10 .5-5.1 1-10.3 2.8-9.9l1.6 2.3.7 3.6c1.3 6.6 3.3 16.9 15.2 19.5a990 990 0 0 0 71.5 13.1c13.1-22.4-2.3-53.5-16.1-81.2a173 173 0 0 1-16-38.8c-3.3-18.1 3.5-31.1 12.3-47.7a202 202 0 0 0 19.8-48.3c4.5-18.2 3.3-33 2.1-47.3-1.7-21.2-3.4-41.5 13.6-70.7 27.5-15.4 61.8-15.8 89.4-11m63.5 25.5\"/><path d=\"M461 486c1.2 5.8 2.9 19.2 0 26a129 129 0 0 1-34 2c6.4-3.8 22-14.8 34-28\"/></g><path d=\"M362.4 206.2c20.8 3.8 37.4 10.5 44 15.8a156 156 0 0 0 20.3 15 163 163 0 0 0-5.5-11.4C410.2 205 395 190 375.1 196a22 22 0 0 0-8.1 6zm-84.8.8c29.8-44 67.2-19.6 83-1-27.5-4.8-61.8-4.4-89.3 11q2.8-4.8 6.3-10\" fill=\"black\" fill-opacity=\".3\"/><path d=\"M235.6 210c23.2-40 72.3-46.7 94-45-117-12-128 68-128 99 0 24.8 3 39-5 53a72 72 0 0 0-13 79c-5-26 5-45 27-70s-4-66 25-116m-34 272c-14.4-14.4-18-28-18-33 46.4 24 37.3 61.3 27 77 3-8.7 5.4-29.6-9-44m-70-165c8.8-20 7-43.7 5-53 0 30-19 62-40 100-16.8 30.4 7 66 21 80 3-16-10-28-11-57s14-45 25-70m331 54c5.2-16.4 1.5-39.5-1-49 0 16.4-3 36.2-4.5 44z\" fill=\"black\" fill-opacity=\".2\"/></g><g id=\"accessories-sailormoonCrown-874c5d72\"><path d=\"M64.2 63c101.9-11.2 203 37.8 229.5 60.5 9.6-11.2 25.4-24.7 36.4-26 2.7 6 7 21 8.1 24.5-16 0-33.5 19.8-42.1 33.5-66.9-58-160-58-254.9-58a96 96 0 0 1 23-34.5\" fill=\"#FFC00C\"/><path d=\"M200 108.8a308 308 0 0 0-18.4-3.6L204 79.7q8.1 2.6 15.8 5.4zm46.7 15.7-5.4-2.4L257 101l5.2 2.7zm19.1 9.9-11-6 14.7-21 9.4 5.6zm64.6-11a55 55 0 0 0-19 13l19.2-37.7c1.6 4 3.7 10.7 5.4 16z\" fill=\"#FFD45B\"/><ellipse cx=\"294.4\" cy=\"135.5\" rx=\"8.8\" ry=\"13.5\" fill=\"#FF3C15\"/><path d=\"M294.4 149c4.8 0 8.8-6 8.8-13.5l-.2-2.5a26 26 0 0 1-14 13q2.2 3 5.4 3\" fill=\"#CB1414\"/><path d=\"M290.7 133.5c1.5.6 3.5-1 4.3-3.7.8-2.5.2-5-1.3-5.6s-3.5 1.1-4.3 3.7c-.8 2.5-.2 5 1.3 5.6\" fill=\"#FF7256\"/></g><clipPath id=\"clip-874c5d72\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-874c5d72)\"><rect width=\"480\" height=\"480\" fill=\"#efe6ff\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-874c5d72\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-braces-874c5d72\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-sleepy-874c5d72\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-wavyBob-874c5d72\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-sailormoonCrown-874c5d72\"/></g></svg>"},"Tuan":{"bg":"#fdf1d4","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-44f67257\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#f5d7b1\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#f5d7b1\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-unimpressed-44f67257\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M79.4 68a4 4 0 0 1 4-4h92a4 4 0 0 1 0 8h-92a4 4 0 0 1-4-4\" fill=\"#592125\"/></g><g id=\"eyes-confused-44f67257\"><path d=\"M46.3 80.9c0 11.9-6.2 21.5-19 19.5C18 98 11.7 91.4 11.7 79c0-13 7.6-21.5 15.5-21.5 10.6 0 19 11.6 19 23.5m85-11.5c2 3.3 3 7.4 3 11.2 0 8-3.6 16.5-12.9 15.5-7.7-.8-9.7-11-9.7-16q0-3.6 1-6.8c5.6.3 13.4-.3 18.6-3.9\" fill=\"#2A1200\"/><path d=\"M48.2 18.5a44 44 0 0 0-37.7 14.6c-3.1 3.4-3.8 9.4-.4 13 3.2 3.4 8.8 4.3 12.1.6q1.5-1.7 3.1-3.1c.4-.4 1.3-1 1.6-1.4q.3 0 .5-.3a38 38 0 0 1 5.8-3.2L35 38a35 35 0 0 1 6.2-1.4h2q2.3 0 4.3.3c4.5.6 9-4 8.9-8.7 0-5.3-3.5-9.2-8.2-9.8m87.5 38.1c-7.5 4-16 5-23.7 2.7a8 8 0 0 1-4.8-4.4c-.9-2-1-4.8-.2-7a10 10 0 0 1 4.6-5.3 9 9 0 0 1 6.6-.7l1.2.3h3.5q2.1-.2 4.2-1l1.4-.6c2-1.1 4.6-1.4 6.7-.7 2 .6 4 2.3 4.8 4.4.9 2 1.2 4.6.2 6.9q-1.4 3.5-4.5 5.4\" fill=\"#71472D\"/></g><g id=\"hair-halfShavedHead-44f67257\"><path d=\"M366 207c8 36.8 49.7 54.3 69.5 58.5 6.8 23.6 8.5 71.8 8.5 92.5a84 84 0 0 1 33.5 31.5 47 47 0 0 1 1-28c1-4.4 2.4-9.4 3.5-16 3.1-18.7-16.3-42.8-26.6-55.7l-3.4-4.3c-4.1-5.4-2.8-17-1.4-29.9 1.6-13.5 3.3-28.4-1.1-38.6-8.5-20-36-37.5-50.5-39-6-.6-9.4-4.4-14.3-9.7-7-7.7-17.2-18.8-42.2-28.8a98 98 0 0 0-78 3.7c-97.4 8.3-133 108-135 113.1v.2a203 203 0 0 0-14.4 84c38.1 6.6 56.1 47.4 60.4 67 0 0 11.3.7 14-1.5 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 30.4-21.5 72-21.3 103-15m106 263a123 123 0 0 0 14-41.5 63 63 0 0 1 18.5 34.5 50 50 0 0 1-7.5 27.6c-3.3 6.5-6.1 12.2-5 16.9a31 31 0 0 0 8.5 15.5c-13.7 6.2-50.1 15-80.5-5 10-5 35-22.4 52-48\" fill=\"#e9b729\"/><path d=\"M366 207c-8.5-19.5-41-59.4-103-63l1.5-.8c-97.4 8.3-133 108-135 113.1v.2a203 203 0 0 0-14.4 84c38.1 6.6 56.1 47.4 60.4 67 0 0 11.3.7 14-1.5 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 30.4-21.5 72-21.3 103-15\" fill=\"black\" fill-opacity=\".3\"/><path d=\"M466 374.4c-2-4.7-1-8.9.3-13.8q1.1-4.1 1.7-9.1c.8-8.8-2-20-3.5-24.5 0 4.8-.5 16.5-2.5 24.5a37 37 0 0 1-6.8 13.5q6.1 4.6 10.7 9.4m23.6 152.4 1.5-1.8c-12.5-18.5-5.5-36.5 0-48.5a26 26 0 0 0 0-22c0 12.6-3.3 16.9-7.9 22.6a52 52 0 0 0-12.8 35.8c0 4.6 0 7.2-2.3 6.1-4-2-5.7-6.8-6-9a53 53 0 0 0 .6 20.4c10.2 0 19.5-1.5 27-3.6M396 232.5a81 81 0 0 1-23-33c3.5 6.5 16 22.3 38 33s30.2 22.8 31.5 27.5c-4.7-8.4-14.4-12.3-24.8-16.4-7.4-3-15.2-6-21.7-11.1\" fill=\"black\" fill-opacity=\".2\" style=\"mix-blend-mode:multiply\"/></g><g id=\"accessories-mustache-44f67257\"><path d=\"M309.7 232.7c9-5.2 30.7-14.3 45.7-9 18 6.3 25.4 29.3 37.6 26.7q.6.2.4.6c-5.8 4.7-26 20-39.5 20.6-17.9 1-25.6-8.6-40.1-22.7-4 10.2-18 23.7-50.5 40-59 29.5-97.6-3-116.3-25-.2-.3.3-.8.6-.7 7.2 4.2 15.3.5 35.8-9 32.5-15 53.5-31.3 78.5-31.5a125 125 0 0 1 47.8 10\" fill=\"#71472D\"/><path d=\"M255.9 240.5c11-4.8 32.5-1 42 1.4-33-1-42.4 11.1-68.9 25.3a54 54 0 0 1-49.6 1c27.8 8.8 62.8-21.6 76.5-27.7m26.9 17.9c-8.2 7.6-28.2 22.8-42.2 23.2 10.4-7.9 33.4-23.5 42.2-23.2m44.7-22.6c4.6-2.2 15.8-5.1 24 .8 9.3 6.5 16.5 12.3 21.2 12.4-4.8.4-14-.2-21.4-5.4a48 48 0 0 0-23.8-7.8\" fill=\"#5E351B\"/></g><clipPath id=\"clip-44f67257\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-44f67257)\"><rect width=\"480\" height=\"480\" fill=\"#fdf1d4\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-44f67257\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-unimpressed-44f67257\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-confused-44f67257\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-halfShavedHead-44f67257\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-mustache-44f67257\"/></g></svg>"},"Hieu":{"bg":"#e3edff","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-2679e176\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#8c5a2b\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#8c5a2b\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-openedSmile-2679e176\"><path d=\"M155.7 51c3 1.7 24.1-24.8 38.2-16.7 4.7 2.7 8.3 7.3 11 12.3 6 11 8 24.4 5.6 36.8a67 67 0 0 1-29 41.2c-37.3 25.5-67 20.7-106.7 6C43.4 118.9.8 95 9.6 51.9c15.5-76 146-1 146.1-1\" fill=\"#873C41\"/><path d=\"M47.7 46c10.2 6.4 22.5 7 33.6 4.5 2-.5 3.8 1.3 4.3 3.4 5.4 21 36 32 51.5 18.5 1.2-1 3.3-1.3 4.5-.1 8.3 7.8 21.6 10 31.4 4.6 13.8-7.5 13.7-28.6 10-43.3-12.2 3.7-25 18.7-27.3 17.3 0 0-80.1-46-122.3-29.4a31 31 0 0 0 14.3 24.6\" fill=\"white\"/><path d=\"M162.7 127.8c-22-20.1-48.9-31.4-76.2-39.3C63 81.6 36.8 77.2 13 84c11 23.5 39.2 38.2 61.7 46.6 34.8 12.9 61.8 18.2 93 2.2z\" fill=\"#EE7E8B\"/></g><g id=\"eyes-normal-2679e176\"><path d=\"M47.3 80.9c0 11.9-6.2 21.5-19 19.5C19 98 12.7 91.4 12.7 79c0-13 7.6-21.5 15.5-21.5 10.6 0 19 11.6 19 23.5m88-.3c0 8-3.6 16.5-12.9 15.5-7.7-.8-9.7-11-9.7-16 0-8.7 4.4-17 10.8-17 7 0 11.8 9.5 11.8 17.5\" fill=\"#2A1200\"/><path d=\"M53.1 24.6A44 44 0 0 0 12.7 26c-4 2.3-6.6 7.7-4.5 12.3 1.9 4.2 6.9 6.9 11.2 4.5l4-2c.4-.2 1.4-.4 1.9-.7l.6-.2a38 38 0 0 1 6.5-1.1h1.9a35 35 0 0 1 5.8.6l.5.2 2 .6q2 .7 3.9 1.6c4 2 9.7-.8 11.2-5.3 1.7-5-.3-9.8-4.6-12m86.6 4.5c-7.4-4.1-16-5-23.6-2.8-2 .6-4 2.4-4.9 4.4-.8 2-1 4.8-.2 7a10 10 0 0 0 4.6 5.3 9 9 0 0 0 6.7.7l1.1-.3h3.5q2.1.2 4.2 1l1.5.6c2 1.1 4.6 1.4 6.6.7s4-2.3 4.9-4.4c.8-2 1-4.6.2-6.9q-1.4-3.5-4.6-5.4\" fill=\"#71472D\"/></g><g id=\"hair-froBun-2679e176\"><path d=\"M138 38.1v-.6a37.5 37.5 0 0 1 70.5-17.8 37.4 37.4 0 0 1 66 29.5 37.5 37.5 0 0 1 .6 74.5c-3.2 44.3-37.3 79.1-78.8 79.1a77 77 0 0 1-62.8-33.7A37.6 37.6 0 0 1 88 132.6c0-12 5.6-22.6 14.3-29.5a37.4 37.4 0 0 1 35.7-65\" fill=\"#220f00\"/><path d=\"M138 38.1v-.6a37.5 37.5 0 0 1 70.5-17.8 37.4 37.4 0 0 1 66 29.5 37.5 37.5 0 0 1 .6 74.5c-3.2 44.3-37.3 79.1-78.8 79.1a77 77 0 0 1-62.8-33.7A37.6 37.6 0 0 1 88 132.6c0-12 5.6-22.6 14.3-29.5a37.4 37.4 0 0 1 35.7-65\" fill=\"white\" fill-opacity=\".1\"/><path d=\"M138.5 38.5c5 1 16.3 5.2 21.5 14-4.7-10-11-28.2-10.3-42.2a37 37 0 0 0-11.7 26zM92.9 55c5.6 14 22 38.1 51.1 38.5-3.7 4.2-9.9 14.7-5.5 23.5 5.5 11 74.5 13.5 96.5 14 20 .5 59-32.6 69-61.5q3.9 7.8 4 17c0 19.2-14.4 35-33 37.2q-.5 9.1-3 17.7c-32.2 12.4-86.2 29-127 41a84 84 0 0 1-11.5-13.2A37.6 37.6 0 0 1 88 132.5c0-12 5.6-22.6 14.3-29.5A37.4 37.4 0 0 1 93 55\" fill=\"black\" fill-opacity=\".3\"/><path d=\"M288.3 53.5A32 32 0 0 1 261 70a103 103 0 0 0 13.6-20.8q7.4.8 13.7 4.3M249 7.8c-16 3.6-31.2 17.6-37.5 25.2a45 45 0 0 0-2.4-14 37 37 0 0 1 40-11.2\" fill=\"black\" fill-opacity=\".3\"/><path d=\"M332.4 196c6.2-8.4 8.3-12.5 15-12.5s13.8 10.9 21.7 12.5c9.8 2 18-3 25.8-2s4.7 6 9.8 17.5 14 15 16.6 18.5 0 10.5 2 15.5c2.1 5 8.3 7 9.9 11.5s-1.6 6 1.5 12.5A38 38 0 0 0 444 281l-12.4-46a105 105 0 0 0-84.2-67C239.9 138 149 251 117 311.5l23 44.5c6-1.8 14.4-5.5 21.4-13.5 8.8-10 5.7-34 8.8-44s8.3-15 25.8-22.5c17.6-7.5 16.6-21.5 25.4-32.5s27.8-5 36.1-12 1-17 12.4-26 28.4-4.5 37.7 0 17 1 24.8-9.5\" fill=\"#351700\" opacity=\".3\" style=\"mix-blend-mode:multiply\"/><path d=\"M180.4 124.4C84.7 156.7 40.5 264.5 73.4 373c3.7-11.7 15.7-34.3 42-31.5 4.4 1 16 6 27.6 18 37.4-195 193.5-192.5 239-174 44.4 18 55 88 57.5 97.9 1.6 1.6 4.2.3 4.1-2.1C439.4 121 285 89.2 180.4 124.4\" fill=\"#220f00\"/><path d=\"M251 119c21.3 9 67.8 31.4 83 49a93 93 0 0 0-83-49m-24 10c4.3 15.3 15.2 48.4 24 58 .7-10.2-3.2-36-24-58m-33.5 4c-1.5 16.7-.7 55.5 14.5 77.5a56 56 0 0 1-14.5-77.5M156 271.5a141 141 0 0 1 11.5-126C113.9 212.3 130.8 273.7 146 296c-8-12.8-8.3-38-7.5-49 .4 11.6 11.8 21.2 17.5 24.5\" fill=\"black\" fill-opacity=\".1\"/><path d=\"M134.5 168c-17.2 28.8-44.6 98.9-17 148.5-17.8-20-39.4-77.7 17-148.5M309 125c20.2 6 65.1 25.3 83.5 54.5A112 112 0 0 0 309 125\" fill=\"black\" fill-opacity=\".1\"/></g><g id=\"accessories-clownNose-2679e176\"><ellipse cx=\"303.2\" cy=\"231.5\" rx=\"29\" ry=\"28.5\" fill=\"#FF3C15\"/><path d=\"M331.8 235.6a32 32 0 0 1-25.6 13.9A43 43 0 0 1 276 237a28.4 28.4 0 0 0 56-1.4\" fill=\"#DD2400\"/><path d=\"M291.9 227.3c5 1.2 11.1-2.3 13.8-7.7s.8-10.7-4.1-11.8c-5-1.1-11.2 2.3-13.9 7.7-2.6 5.4-.8 10.7 4.2 11.8\" fill=\"#FF7256\"/></g><clipPath id=\"clip-2679e176\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-2679e176)\"><rect width=\"480\" height=\"480\" fill=\"#e3edff\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-2679e176\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-openedSmile-2679e176\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-normal-2679e176\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-froBun-2679e176\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-clownNose-2679e176\"/></g></svg>"},"Quang":{"bg":"#ffe3ea","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 480 480\" fill=\"none\" shape-rendering=\"auto\" aria-hidden=\"true\"><!-- Generated by DiceBear (https://www.dicebear.com) --><metadata xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\"><rdf:RDF><rdf:Description><dc:title>Custom Avatar</dc:title><dc:creator>Ashley Seo</dc:creator><dc:source xsi:type=\"dcterms:URI\">https://www.figma.com/community/file/881358461963645496</dc:source><dcterms:license xsi:type=\"dcterms:URI\">https://creativecommons.org/licenses/by/4.0/</dcterms:license><dc:rights>Remix of “Custom Avatar” (https://www.figma.com/community/file/881358461963645496) by “Ashley Seo”, licensed under “CC BY 4.0” (https://creativecommons.org/licenses/by/4.0/)</dc:rights></rdf:Description></rdf:RDF></metadata><defs><g id=\"head-base-47726801\"><path d=\"M264.2 5.4s131.6 20.6 121.6 208c0 .8 15.2 11 16.4 12a77 77 0 0 1 23.5 36.3c13.8 51.4-35.8 104.2-76 118.3q-22.7 7.6-46.7 8.2c-103.2 3-240-62.6-247-190.9q-.3-6.9-.2-13.8a203 203 0 0 1 15.4-70s57.5-142.6 193-108.1\" fill=\"#f5d7b1\"/><path d=\"M389.1 215.5A57 57 0 0 0 386 226a40 40 0 0 0 8.5 30.3 42 42 0 0 0 33 15.7c-3.2-31.7-29-50.7-38.3-56.5m-185.5 83.3c24.5-5.3 39.6-31 33.9-57.5s-30.2-43.8-54.6-38.5-39.6 31-33.9 57.5 30.2 43.7 54.6 38.5\" fill=\"#DC2400\" opacity=\".1\" style=\"mix-blend-mode:multiply\"/><path opacity=\".1\" d=\"M323.3 224.6s21-19.8 37-1.2Z\" fill=\"black\"/><path d=\"M128.8 323.6C59.4 358.4-3.7 271.1 16.5 222c12.9-31.3 50.4-33.8 72.2-5.1a185 185 0 0 1 29.1 59\" fill=\"#f5d7b1\"/><path opacity=\".1\" d=\"M71.6 245.7c9 9 16.1 22.6 25 30-1.7-12.5-4.3-26-10.4-37.3-6.2-11.5-17.5-21-29-20.3-14.3 1-26 17.6-27.5 32.7 1-9 19-15.1 26-14.3 10.8 20.4 15 60.7 15 60.7 9-22.8 5.3-40.7.9-51.5\" fill=\"black\"/></g><g id=\"mouth-gapSmile-47726801\"><path d=\"M155.7 51c3 1.7 24.1-24.8 38.2-16.7 4.7 2.7 8.3 7.3 11 12.3 6 11 8 24.4 5.6 36.8a67 67 0 0 1-29 41.2c-37.3 25.5-67 20.7-106.7 6C43.4 118.9.8 95 9.6 51.9c15.5-76 146-1 146.1-1\" fill=\"#873C41\"/><path d=\"M81.3 50.5a45 45 0 0 1-33.6-4.4 31 31 0 0 1-14.3-24.6c26.3-10.3 67.3 3.6 94.5 15.6l-13 38.9c-12.9-2.1-26-9.4-29.3-22.1-.5-2-2.2-3.9-4.3-3.4M183 33.6c3.7 14.7-5.8 34.9-19.6 42.4-14 8.7-31.3 7-37.5 1.8L137 41.3c11.3 5.4 18.6 9.6 18.6 9.6 2.3 1.4 15-13.6 27.2-17.3\" fill=\"white\"/><path d=\"M162.7 127.8c-22-20.1-48.9-31.4-76.2-39.3C63 81.6 36.8 77.2 13 84c11 23.5 39.2 38.2 61.7 46.6 34.8 12.9 61.8 18.2 93 2.2z\" fill=\"#EE7E8B\"/></g><g id=\"eyes-normal-47726801\"><path d=\"M47.3 80.9c0 11.9-6.2 21.5-19 19.5C19 98 12.7 91.4 12.7 79c0-13 7.6-21.5 15.5-21.5 10.6 0 19 11.6 19 23.5m88-.3c0 8-3.6 16.5-12.9 15.5-7.7-.8-9.7-11-9.7-16 0-8.7 4.4-17 10.8-17 7 0 11.8 9.5 11.8 17.5\" fill=\"#2A1200\"/><path d=\"M53.1 24.6A44 44 0 0 0 12.7 26c-4 2.3-6.6 7.7-4.5 12.3 1.9 4.2 6.9 6.9 11.2 4.5l4-2c.4-.2 1.4-.4 1.9-.7l.6-.2a38 38 0 0 1 6.5-1.1h1.9a35 35 0 0 1 5.8.6l.5.2 2 .6q2 .7 3.9 1.6c4 2 9.7-.8 11.2-5.3 1.7-5-.3-9.8-4.6-12m86.6 4.5c-7.4-4.1-16-5-23.6-2.8-2 .6-4 2.4-4.9 4.4-.8 2-1 4.8-.2 7a10 10 0 0 0 4.6 5.3 9 9 0 0 0 6.7.7l1.1-.3h3.5q2.1.2 4.2 1l1.5.6c2 1.1 4.6 1.4 6.6.7s4-2.3 4.9-4.4c.8-2 1-4.6.2-6.9q-1.4-3.5-4.6-5.4\" fill=\"#71472D\"/></g><g id=\"hair-halfShavedHead-47726801\"><path d=\"M366 207c8 36.8 49.7 54.3 69.5 58.5 6.8 23.6 8.5 71.8 8.5 92.5a84 84 0 0 1 33.5 31.5 47 47 0 0 1 1-28c1-4.4 2.4-9.4 3.5-16 3.1-18.7-16.3-42.8-26.6-55.7l-3.4-4.3c-4.1-5.4-2.8-17-1.4-29.9 1.6-13.5 3.3-28.4-1.1-38.6-8.5-20-36-37.5-50.5-39-6-.6-9.4-4.4-14.3-9.7-7-7.7-17.2-18.8-42.2-28.8a98 98 0 0 0-78 3.7c-97.4 8.3-133 108-135 113.1v.2a203 203 0 0 0-14.4 84c38.1 6.6 56.1 47.4 60.4 67 0 0 11.3.7 14-1.5 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 30.4-21.5 72-21.3 103-15m106 263a123 123 0 0 0 14-41.5 63 63 0 0 1 18.5 34.5 50 50 0 0 1-7.5 27.6c-3.3 6.5-6.1 12.2-5 16.9a31 31 0 0 0 8.5 15.5c-13.7 6.2-50.1 15-80.5-5 10-5 35-22.4 52-48\" fill=\"#3a1a00\"/><path d=\"M366 207c-8.5-19.5-41-59.4-103-63l1.5-.8c-97.4 8.3-133 108-135 113.1v.2a203 203 0 0 0-14.4 84c38.1 6.6 56.1 47.4 60.4 67 0 0 11.3.7 14-1.5 14-7.3 38.9-37.4 26.5-99-6-28-2-50.3 47-85 30.4-21.5 72-21.3 103-15\" fill=\"black\" fill-opacity=\".3\"/><path d=\"M466 374.4c-2-4.7-1-8.9.3-13.8q1.1-4.1 1.7-9.1c.8-8.8-2-20-3.5-24.5 0 4.8-.5 16.5-2.5 24.5a37 37 0 0 1-6.8 13.5q6.1 4.6 10.7 9.4m23.6 152.4 1.5-1.8c-12.5-18.5-5.5-36.5 0-48.5a26 26 0 0 0 0-22c0 12.6-3.3 16.9-7.9 22.6a52 52 0 0 0-12.8 35.8c0 4.6 0 7.2-2.3 6.1-4-2-5.7-6.8-6-9a53 53 0 0 0 .6 20.4c10.2 0 19.5-1.5 27-3.6M396 232.5a81 81 0 0 1-23-33c3.5 6.5 16 22.3 38 33s30.2 22.8 31.5 27.5c-4.7-8.4-14.4-12.3-24.8-16.4-7.4-3-15.2-6-21.7-11.1\" fill=\"black\" fill-opacity=\".2\" style=\"mix-blend-mode:multiply\"/></g><g id=\"accessories-sunglasses-47726801\"><path d=\"M175 195.1c3.8 15.9 11.2 30.3 24.3 35.3 29 11 71 3 77-3.5a67 67 0 0 0 7.7-20.4c17.1-9.6 31.9-4.4 36.7-1 1.3 7.7 2.7 14 3.7 15.8 3 5.6 24.3 12.5 39 3 14.8-9.5 15.3-67 12.5-73-3.4-7.3-55.7-3.8-57.9 10-1.5 4.2-.7 17.2.8 30-8-2.6-19.1-3.7-31.4.5 3-14.8 4.3-29.6 1.4-34.4-5-17.4-111.6-24.9-114-11.5-2.5 7-3.7 21.6-1.9 36.9a12627 12627 0 0 0-131-16.3 47 47 0 0 0-25.9 6.2c-4.6 2.7-9 6.5-12.1 11.9Q-1 192.8.3 204.2l11.9-1.4c-.6-5.3.4-9.3 2-12.3q2.9-4.5 7.9-7.4c6.8-4 15-5 18.5-4.6 16 1.7 91.3 11.1 134.5 16.6\" fill=\"#595757\" style=\"mix-blend-mode:multiply\"/><path opacity=\".2\" d=\"M243.2 141.4c-10.7-1.4-22-2.2-32.2-2.3l-40 55.5 4.2.5a68 68 0 0 0 8.6 21.8zm34.6 7.8a122 122 0 0 0-21.5-5.7L190.6 225q3.9 3.3 8.7 5.3 3.6 1.3 7.3 2.3zm98.8 33.5c1-13 .7-25.2-.3-29.8l-52.9 65.7 1 2.7c1.4 2.6 6.7 5.4 13.4 6.8z\" fill=\"white\"/></g><clipPath id=\"clip-47726801\"><rect width=\"480\" height=\"480\" rx=\"0\" ry=\"0\"/></clipPath></defs><g clip-path=\"url(#clip-47726801)\"><rect width=\"480\" height=\"480\" fill=\"#e3edff\"/><use transform=\"matrix(.85682 0 0 .85439 52 75.4)\" href=\"#head-base-47726801\"/><use transform=\"matrix(.85472 0 0 .855 222 253.2)\" href=\"#mouth-gapSmile-47726801\"/><use transform=\"matrix(.85472 0 0 .855 261.6 170.8)\" href=\"#eyes-normal-47726801\"/><use transform=\"matrix(.85472 0 0 .85667 1.8 -47.6)\" href=\"#hair-halfShavedHead-47726801\"/><use transform=\"matrix(.85472 0 0 .85667 85.6 71)\" href=\"#accessories-sunglasses-47726801\"/></g></svg>"}};
+const QUANG={n:'Quang',c:'#4aa3ff'};   // late joiner: never customised, so he gets the default seeded avatar
+const AVURI={};
+const avUri=n=>AVURI[n]||(AVURI[n]='data:image/svg+xml;utf8,'+encodeURIComponent(AVATARS[n].svg));
+const avBg=p=>AVATARS[p.n]?AVATARS[p.n].bg:'#ffe3ea';
+const face=p=>`<img class="face-img" src="${avUri(p.n)}" alt="${p.n}'s avatar" draggable="false">`;
+const mini=p=>`<span class="mini" style="--c:${p.c};background:${avBg(p)}">${face(p)}</span>`;
+
+/* ───────── sound: tiny synthesized effects, off by default ───────── */
+const sfx=(()=>{
+  let ctx=null,on=false;
+  const get=()=>ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());
+  const tone=(f,d,type='sine',v=.15,when=0,slide=0)=>{if(!on)return;const c=get(),t=c.currentTime+when,o=c.createOscillator(),g=c.createGain();
+    o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f+slide),t+d);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(c.destination);o.start(t);o.stop(t+d+.02)};
+  const noise=(d,v=.25,when=0,lp=900)=>{if(!on)return;const c=get(),n=c.sampleRate*d,b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);
+    for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+    s.buffer=b;f.type='lowpass';f.frequency.value=lp;g.gain.value=v;s.connect(f).connect(g).connect(c.destination);s.start(c.currentTime+when)};
+  return{
+    set(v){on=v;if(on)get().resume()},
+    tick(){tone(880,.07,'square',.04)},
+    beat(){tone(62,.16,'sine',.5);tone(55,.2,'sine',.4,.2)},
+    slam(){tone(90,.5,'sawtooth',.2,0,-50);noise(.35,.3,0,500)},
+    splat(){noise(.5,.5,0,1400);tone(70,.35,'sine',.5,0,-30)},
+    claw(){noise(.18,.25,0,6000);noise(.18,.25,.1,6000);noise(.18,.25,.2,6000)},
+    drop(){tone(520,.12,'sine',.12,0,-300)},
+    lock(){tone(60,.7,'sine',.7,0,-20);noise(.25,.35,0,300)},
+    shatter(){noise(.6,.4,0,5000)},
+    flip(){tone(660,.08,'triangle',.08,0,200)},
+    win(){[523,659,784,1047].forEach((f,i)=>tone(f,.5,'triangle',.12,i*.12))},
+    lose(){[220,196,165,110].forEach((f,i)=>tone(f,.7,'sawtooth',.1,i*.18))},
+    dawn(){[392,494,587].forEach((f,i)=>tone(f,.9,'sine',.1,i*.25))},
+  }
+})();
+$('#sound').addEventListener('click',e=>{const b=e.currentTarget,on=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',on);b.textContent=on?'🔊 Sound on':'🔇 Sound off';sfx.set(on);if(on)sfx.beat()});
+
+/* ───────── blood: splat blobs, flung droplets, drips ───────── */
+function blobPath(r,n=16,jag=.38){
+  const pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2,k=r*(1-jag/2+Math.random()*jag*(i%2?1.25:.7));pts.push([Math.cos(a)*k,Math.sin(a)*k])}
+  let d=`M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for(let i=0;i<n;i++){const p=pts[(i+1)%n],q=pts[i],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;d+=` Q${q[0].toFixed(1)},${q[1].toFixed(1)} ${mx.toFixed(1)},${my.toFixed(1)}`}
+  return d+'Z';
+}
+/** Adds a splat to `layer` at x/y (% of layer). size is % of layer width. */
+function bloodSplat(layer,x,y,size=26,{delay=0,drips=true,droplets=26}={}){
+  const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','-150 -150 300 300');svg.setAttribute('class','splat');
+  svg.style.cssText=`left:${x}%;top:${y}%;width:${size}%;--delay:${delay}ms`;
+  const id='bg'+Math.random().toString(36).slice(2,7);
+  let h=`<defs><radialGradient id="${id}" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#ff3b57"/><stop offset=".55" stop-color="#c1121f"/><stop offset="1" stop-color="#5d0610"/></radialGradient></defs>`;
+  h+=`<path class="blob" d="${blobPath(rand(58,72))}" fill="url(#${id})"/>`;
+  h+=`<path class="blob b2" d="${blobPath(rand(30,42),12,.5)}" fill="#ff5b73" opacity=".35" transform="translate(-14,-16)"/>`;
+  for(let i=0;i<droplets;i++){
+    const a=rand(0,Math.PI*2),dist=rand(80,150),r=rand(2,9)*(dist<110?1.3:1),dx=Math.cos(a)*dist,dy=Math.sin(a)*dist;
+    h+=`<g class="drop" style="--dx:${dx.toFixed(0)}px;--dy:${dy.toFixed(0)}px;--d:${rand(0,90).toFixed(0)}ms"><circle r="${r.toFixed(1)}" fill="#b30f1d"/></g>`;
+    if(r>6.5)h+=`<line class="streak" pathLength="1" x1="0" y1="0" x2="${(dx*.62).toFixed(0)}" y2="${(dy*.62).toFixed(0)}" stroke="#a50e1c" stroke-width="${(r*.3).toFixed(1)}" stroke-linecap="round" style="--d:${rand(0,60).toFixed(0)}ms"/>`;
+  }
+  if(drips)for(let i=0;i<5;i++){const xx=rand(-50,50),w=rand(5,10),len=rand(50,130);
+    h+=`<rect class="drip" x="${xx.toFixed(0)}" y="30" width="${w.toFixed(1)}" height="${len.toFixed(0)}" rx="${(w/2).toFixed(1)}" fill="#a50e1c" style="--t:${rand(1.6,3.2).toFixed(1)}s;--d:${rand(200,900).toFixed(0)}ms"/>`;
+    h+=`<circle class="drip-end" cx="${(xx+w/2).toFixed(0)}" cy="${(30+len).toFixed(0)}" r="${(w*.85).toFixed(1)}" fill="#a50e1c" style="--t:${rand(1.6,3.2).toFixed(1)}s;--d:${rand(200,900).toFixed(0)}ms"/>`}
+  h+=`<ellipse cx="-22" cy="-30" rx="14" ry="7" fill="#fff" opacity=".28" transform="rotate(-30 -22 -30)"/>`;
+  svg.innerHTML=h;layer.appendChild(svg);requestAnimationFrame(()=>svg.classList.add('go'));return svg;
+}
+/** Screen-spanning drips running down from the top edge. */
+function bloodCurtain(layer,count=9,wMul=1){
+  for(let i=0;i<count;i++){const d=document.createElement('i');d.className='curtain-drip';
+    d.style.cssText=`left:${(i+rand(.1,.9))/count*100}%;--w:${(rand(.5,1.4)*wMul).toFixed(2)}cqw;--len:${rand(16,52).toFixed(0)}%;--t:${rand(2,4.5).toFixed(1)}s;--d:${rand(0,700).toFixed(0)}ms`;layer.appendChild(d)}
+}
+/** Three diagonal claw slashes drawn on, then burning off. */
+function clawSlash(layer){
+  const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 160 90');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('class','claws');
+  const paths=['M22,-4 Q60,38 112,96','M44,-8 Q84,36 134,96','M68,-8 Q104,30 150,88'];
+  svg.innerHTML=paths.map((d,i)=>`<path d="${d}" pathLength="1" class="cl core" style="--i:${i}"/><path d="${d}" pathLength="1" class="cl glow" style="--i:${i}"/>`).join('');
+  layer.appendChild(svg);requestAnimationFrame(()=>svg.classList.add('go'));return svg;
+}
+/** Candle flame + the shard/ash breakup used for banishment. Identical for every role. */
+function shatter(el,{shards=9}={}){
+  const r=el.getBoundingClientRect(),host=el.parentElement,hr=host.getBoundingClientRect();
+  const polys=[];const cols=3,rows=3;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+    const x0=x/cols*100,x1=(x+1)/cols*100,y0=y/rows*100,y1=(y+1)/rows*100,j=()=>rand(-9,9);
+    polys.push(`polygon(${x0+j()}% ${y0+j()}%,${x1+j()}% ${y0+j()}%,${x1+j()}% ${y1+j()}%,${x0+j()}% ${y1+j()}%)`)}
+  polys.slice(0,shards).forEach((clip,i)=>{
+    const s=el.cloneNode(true);s.classList.add('shard');s.classList.remove('lit');
+    s.style.cssText+=`;position:absolute;left:${r.left-hr.left}px;top:${r.top-hr.top}px;width:${r.width}px;height:${r.height}px;margin:0;clip-path:${clip};`+
+      `--sx:${rand(-120,120).toFixed(0)}px;--sy:${rand(-60,40).toFixed(0)}px;--sr:${rand(-70,70).toFixed(0)}deg;--sd:${(i*18)}ms`;
+    host.appendChild(s);setTimeout(()=>s.remove(),2600)});
+  for(let i=0;i<22;i++){const a=document.createElement('i');a.className='ash';
+    a.style.cssText=`left:${r.left-hr.left+rand(0,r.width)}px;top:${r.top-hr.top+rand(0,r.height)}px;--ax:${rand(-60,60).toFixed(0)}px;--ay:${rand(-140,-40).toFixed(0)}px;--ad:${rand(0,400).toFixed(0)}ms;width:${rand(3,8).toFixed(0)}px;height:${rand(3,8).toFixed(0)}px`;
+    host.appendChild(a);setTimeout(()=>a.remove(),2600)}
+}
+function stars(layer,n=70,mul=1){
+  for(let i=0;i<n;i++){const s=document.createElement('i');s.className='star';
+    s.style.cssText=`left:${rand(0,100)}%;top:${rand(0,70)}%;--s:${(rand(.1,.32)*mul).toFixed(2)}cqw;--t:${rand(2,5).toFixed(1)}s;--dl:${rand(0,4).toFixed(1)}s;opacity:${rand(.3,1).toFixed(2)}`;layer.appendChild(s)}
+}
+function fmt(sec){return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')}
+
+/* ═════════════ PROJECTOR SCENES ═════════════ */
+const stage=$('#stage');
+let runId=0;
+/** Cancellable sleep: starting a new scene rejects every pending wait of the old one. */
+const wait=ms=>{const id=runId;return new Promise((res,rej)=>setTimeout(()=>id===runId?res():rej('cancelled'),ms))};
+const ALIVE7=CAST.filter(p=>p.n!=='Linh');
+const pt=(p,o={})=>`<div class="pt ${o.cls||''}" data-n="${p.n}" style="--c:${p.c};${o.style||''}"><i class="flame"></i><span class="av" style="--c:${p.c};background:${avBg(p)}">${face(p)}<span class="xe">✕ ✕</span></span><b class="nm">${p.n}</b><span class="z" style="--zd:${(Math.random()*3).toFixed(1)}s">z</span>${o.bubble?'<span class="bubble"><i></i><i></i><i></i></span>':''}</div>`;
+const clock=(cls,t,total,extra='')=>`<div class="ring-clock ${cls}" ${extra}><svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="46"/><circle class="prg" cx="50" cy="50" r="46" pathLength="100" style="stroke-dasharray:${t/total*100} 100"/></svg><i class="core"></i><b>${fmt(t)}</b></div>`;
+const setClock=(el,t,total)=>{$('b',el).textContent=fmt(t);$('.prg',el).style.strokeDasharray=`${t/total*100} 100`;el.classList.toggle('warn',t<=10&&t>5);el.classList.toggle('hot',t<=5)};
+
+const S={
+  /* idle poster shown before anything is played */
+  async poster(st){
+    st.innerHTML=`<div class="scene sc-night"><div class="sky"></div><div class="stars"></div><div class="fog f1"></div><div class="fog f2"></div>
+      <div class="moonwrap" style="top:44%"><div class="moon"><i class="cr c1"></i><i class="cr c2"></i><i class="cr c3"></i></div></div>
+      <div class="hl" style="left:0;right:0;top:66%;font-size:3.4cqw">WEREWOLF</div>
+      <div style="left:0;right:0;top:77%;text-align:center;color:#cfd3ff;font-weight:600;font-size:1.5cqw">Press “Play full round” or pick a scene</div></div>`;
+    stars($('.stars',st));
+  },
+
+  /* NIGHT: 30 s, last 5 s are the dramatic countdown. Everyone is shown asleep: no role information. */
+  async night(st,{fast=false}={}){
+    st.innerHTML=`<div class="scene sc-night">
+      <div class="sky"></div><div class="stars"></div><i class="shoot"></i><div class="fog f1"></div><div class="fog f2"></div>
+      <div class="moonwrap"><svg class="mring" viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="46"/><circle class="prg" cx="50" cy="50" r="46" pathLength="100"/></svg><div class="moon"><i class="cr c1"></i><i class="cr c2"></i><i class="cr c3"></i></div></div>
+      <div class="ttl"><span class="k">Night 2</span><b>The village sleeps…</b></div>
+      <div class="mtime">0:30</div>
+      <div class="row">${CAST.map(p=>pt(p,{cls:'sleep'})).join('')}</div>
+      <div class="vig"></div><div class="cdlabel"><span>Dawn is coming</span></div><div class="cd"></div><div class="flash"></div><div class="dawnword">DAWN</div></div>`;
+    const sc=$('.sc-night',st);stars($('.stars',sc));
+    const set=t=>{$('.mtime',sc).textContent=fmt(t);$('.prg',sc).style.strokeDasharray=`${t/30*100} 100`};
+    let t=fast?8:11;set(t);
+    while(t>5){await wait(1000);t--;set(t)}
+    sc.dataset.cd='1';
+    for(let n=5;n>=1;n--){
+      sc.style.setProperty('--k',6-n);sc.style.setProperty('--bt',(1.15-(5-n)*.14).toFixed(2)+'s');sc.style.setProperty('--bl',((6-n)/5).toFixed(2));
+      if(n<=2)sc.classList.add('tremble');
+      set(n);$('.prg',sc).style.stroke=n<=3?'var(--danger)':'var(--warning)';
+      $('.cd',sc).innerHTML=`<b class="num">${n}</b>`;sfx.beat();
+      await wait(1000);
+    }
+    sc.classList.remove('tremble');$('.cd',sc).innerHTML='';set(0);
+    $('.flash',sc).classList.add('go');$('.dawnword',sc).classList.add('go');sfx.dawn();
+    await wait(1700);
+  },
+
+  /* DAWN (a player was killed): ~7.4 s, fits inside DAWN_MS = 8000. Role stays hidden. */
+  async dawnKill(st){
+    const v=byName('Linh'),others=CAST.filter(p=>p!==v);
+    st.innerHTML=`<div class="scene sc-dawn"><div class="sky"></div><div class="glowlow"></div>
+      <div class="tag k">Morning · Day 3</div>
+      ${pt(v,{cls:'victim'})}
+      <div class="row">${others.map(p=>pt(p)).join('')}</div>
+      <div class="fx"></div><div class="redflash"></div>
+      <div class="head"><h2 class="hl">LINH WAS KILLED</h2><p>The werewolves struck in the night.</p></div></div>`;
+    const sc=$('.sc-dawn',st),fx=$('.fx',sc),vic=$('.victim',sc);
+    await wait(500);vic.classList.add('in');sfx.beat();
+    await wait(900);$('.row',sc).classList.add('in');
+    await wait(1000);clawSlash(fx);sfx.claw();
+    await wait(520);                      // impact
+    replay(sc,'shake');$('.redflash',sc).classList.add('go');sfx.splat();vic.classList.add('dead');
+    bloodSplat(fx,50,40,34);bloodSplat(fx,16,26,22,{delay:80});bloodSplat(fx,86,34,19,{delay:140});
+    bloodSplat(fx,74,80,17,{delay:200,droplets:16});bloodSplat(fx,26,78,15,{delay:260,droplets:14});
+    bloodCurtain(fx,10);
+    await wait(900);$('.head',sc).classList.add('in');
+    await wait(3600);
+  },
+
+  /* DAWN (nobody died). ONE animation for both "guard saved someone" and "wolves attacked nobody". */
+  async dawnSafe(st){
+    st.innerHTML=`<div class="scene sc-safe"><div class="sky"></div><div class="rays"></div><div class="sun"></div>
+      ${[0,2.4,4.8].map(d=>`<svg class="bird" style="--bd:${d}s;left:0;top:${18+d*2.4}%" viewBox="0 0 30 14"><path d="M1 12 Q8 0 15 8 Q22 0 29 12"/></svg>`).join('')}
+      <div class="head"><h2 class="hl">NO ONE DIED</h2><p>Everyone survived the night.</p></div>
+      <div class="row">${CAST.map(p=>pt(p)).join('')}</div></div>`;
+    sfx.dawn();await wait(5200);
+  },
+
+  /* DAY: discussion. Voting opens when the timer ends. */
+  async discussion(st,{secs=7,ms=1000}={}){
+    st.innerHTML=`<div class="scene sc-talk"><div class="sky"></div>
+      <div class="ttl"><span class="k">Day 3 · Discussion</span><b>Talk it out</b></div>
+      ${clock('sunc',160,180)}
+      <div class="grid">${ALIVE7.map(p=>pt(p,{cls:'rel',bubble:true})).join('')}</div>
+      <div class="hint">Voting opens when the timer ends.</div></div>`;
+    const sc=$('.sc-talk',st),cl=$('.sunc',sc),nodes=$$('.grid .pt',sc);
+    for(let i=0,t=160;i<secs;i++,t--){
+      setClock(cl,t,180);nodes.forEach(n=>n.classList.remove('talk'));pick(nodes).classList.add('talk');await wait(ms);
+    }
+  },
+
+  /* VOTE: totals only. Pebbles fall from above, never from a voter. Threshold slots show how many are needed. */
+  async vote(st,{ms=1000}={}){
+    const T=4;
+    st.innerHTML=`<div class="scene sc-vote"><div class="sky"></div>
+      <div class="ttl"><span class="k">Day 3 · Vote</span><b>Who is a werewolf?</b></div>
+      <div class="need">Needed to banish: <b>${T}</b><span>half of 7 alive, rounded up</span></div>
+      ${clock('clk',9,9)}
+      <div class="cols">${ALIVE7.map(p=>`<div class="vcol" data-n="${p.n}">${pt(p,{cls:'rel'})}<div class="slots">${'<i class="slot"><b></b></i>'.repeat(T)}</div><span class="cnt">0 / ${T}</span></div>`).join('')}</div>
+      <div class="locked">VOTES LOCKED</div>
+      <div style="left:0;right:0;bottom:1.4cqw;text-align:center;font-size:1.25cqw;font-weight:600;color:rgb(255 255 255/.55)">Only totals are public. Votes can change until the timer ends.</div></div>`;
+    const sc=$('.sc-vote',st),cl=$('.clk',sc);
+    const col=n=>$(`.vcol[data-n="${n}"]`,sc);
+    const upd=c=>{const k=c.querySelectorAll('.slot.on:not(.off)').length;$('.cnt',c).textContent=`${k} / ${T}`;c.classList.toggle('reached',k>=T)};
+    const fill=n=>{const c=col(n),s=c.querySelector('.slot:not(.on)');if(!s)return;s.classList.add('on');sfx.drop();upd(c)};
+    const unfill=n=>{const c=col(n),on=[...c.querySelectorAll('.slot.on:not(.off)')].pop();if(!on)return;on.classList.add('off');upd(c);setTimeout(()=>{on.classList.remove('on','off')},450)};
+    const plan=[['Khoa'],['Tuan'],['Khoa','An'],[],['Khoa'],['Tuan'],[],['move'],[]];
+    for(let s=0;s<plan.length;s++){
+      const t=9-s;setClock(cl,t,9);
+      for(const e of plan[s]){if(e==='move'){unfill('An');setTimeout(()=>fill('Khoa'),420)}else fill(e)}
+      await wait(ms);
+    }
+    setClock(cl,0,9);$('.locked',sc).classList.add('in');sfx.slam();
+    await wait(1500);
+  },
+
+  /* VERDICT (new stage): searchlight picks someone, then the candle is snuffed and the portrait breaks up.
+     Banishment visuals are identical for every role. tie=true shows the "nobody reached the threshold" ending. */
+  async verdict(st,{victim='Khoa',tie=false}={}){
+    const list=ALIVE7,n=list.length,posOf=i=>{const a=-Math.PI/2+i/n*Math.PI*2;return[50+33*Math.cos(a),53+31*Math.sin(a)]};
+    const idxOf=nm=>list.findIndex(p=>p.n===nm);
+    st.innerHTML=`<div class="scene sc-verdict${tie?' tie':''}"><div class="sky"></div>
+      ${[...Array(16)].map(()=>`<i class="ember" style="left:${rand(5,95)}%;bottom:${rand(-5,15)}%;--ex:${rand(-6,6)}cqw;animation-delay:${rand(0,7).toFixed(1)}s"></i>`).join('')}
+      <div class="pre"><span>The village has decided<i>.</i><i>.</i><i>.</i></span></div>
+      <div class="ring">${list.map((p,i)=>{const[x,y]=posOf(i);return pt(p,{style:`left:${x}%;top:${y}%`})}).join('')}</div>
+      <div class="spot" style="left:50%;top:53%;opacity:0"></div><div class="shock"></div><div class="head"></div></div>`;
+    const sc=$('.sc-verdict',st),spot=$('.spot',sc),ring=$('.ring',sc),nodes=$$('.pt',ring),head=$('.head',sc);
+    await wait(1200);
+    spot.style.opacity=1;
+    const hops=[110,110,120,140,170,210,260,330,430,560];
+    const vi=idxOf(tie?'Khoa':victim),a=idxOf('Khoa'),b=idxOf('Tuan');
+    const seq=hops.map((_,k)=>tie?(k%2?b:a):(((vi-(hops.length-1-k))%n)+n)%n);
+    for(let k=0;k<hops.length;k++){
+      const i=seq[k],[x,y]=posOf(i);spot.style.setProperty('--hop',(hops[k]*.9)+'ms');spot.style.left=x+'%';spot.style.top=y+'%';
+      nodes.forEach((nd,j)=>nd.classList.toggle('lit',j===i));sfx.tick();await wait(hops[k]);
+    }
+    if(tie){
+      nodes.forEach(nd=>nd.classList.remove('lit'));spot.style.opacity=0;
+      await wait(900);
+      head.classList.add('in');head.innerHTML=`<h2 class="hl">NO ONE IS BANISHED</h2><p>The village could not agree.</p><small>Nobody reached 4 votes, or two players tied.</small>`;
+      sfx.lose();await wait(3000);return;
+    }
+    const v=nodes[vi],[x,y]=posOf(vi);
+    nodes.forEach((nd,j)=>{if(j!==vi)nd.classList.add('dim')});
+    const sh=$('.shock',sc);sh.style.left=x+'%';sh.style.top=y+'%';sh.classList.add('go');replay(sc,'shake');sfx.lock();
+    await wait(1000);
+    v.classList.add('out');
+    const sm=document.createElement('i');sm.className='smoke';sm.style.cssText=`left:calc(${x}% - .8cqw);top:calc(${y}% - 4.6cqw)`;ring.appendChild(sm);
+    await wait(420);
+    shatter(v);v.classList.add('gone');spot.style.opacity=0;sfx.shatter();
+    await wait(500);
+    head.classList.add('in');head.innerHTML=`<h2 class="hl">${victim.toUpperCase()} IS BANISHED</h2><p>4 of 7 votes</p><small>Their role stays hidden until the game ends.</small>`;
+    await wait(3000);
+  },
+
+  async later(st){
+    st.innerHTML=`<div class="scene sc-later"><div class="sky"></div><div class="tx">Two nights later…</div></div>`;await wait(1800);
+  },
+
+  /* FINAL: cards flip one by one to reveal every role, then the verdict slams in. */
+  async final(st,{winner='wolves'}={}){
+    const wolves=winner==='wolves',dead=new Set(['Linh','Khoa']);
+    const won=p=>wolves?p.r==='werewolf':p.r!=='werewolf';
+    const card=(p,i)=>`<div class="fc ${dead.has(p.n)?'dead':''} ${won(p)?'win':'lose'} cl-${winner}" style="--rc:${ROLE[p.r].color};--ci:${i*60}ms"><div class="fc-in"><div class="face q">?</div><div class="face rv">${avatar(p)}${ICON[p.r]}<b>${p.n}</b><small>${ROLE[p.r].label}</small></div></div>
+      <svg class="scratch" viewBox="0 0 100 140" preserveAspectRatio="none">${['M8,6 Q50,60 94,136','M30,2 Q64,52 98,100','M2,50 Q40,86 70,138'].map((d,k)=>`<path d="${d}" pathLength="1" style="--i:${k}"/>`).join('')}</svg>
+      <span class="tomb">${ICON.skull}</span></div>`;
+    st.innerHTML=`<div class="scene sc-final ${wolves?'wolves':'village'}"><div class="sky"></div>
+      ${wolves?`<div class="bigmoon"></div>${[0,1,2].map(d=>`<div class="howl" style="--hd:${d}s"></div>`).join('')}<div class="mist"></div>`
+        :`<div class="rays" style="animation:spin 60s linear infinite;opacity:1"></div>${[...Array(14)].map(()=>`<i class="firefly" style="left:${rand(5,95)}%;bottom:${rand(0,30)}%;--ex:${rand(-8,8)}cqw;--fd:${rand(0,6).toFixed(1)}s"></i>`).join('')}`}
+      <div class="head"><h2 class="hl">${wolves?'THE WOLVES WIN':'THE VILLAGE WINS'}</h2><p>${wolves?'The pack outnumbers the village.':'Every werewolf has been found.'}</p></div>
+      <div class="cards">${CAST.map(card).join('')}</div><div class="foot">Waiting for the host…</div></div>`;
+    const sc=$('.sc-final',st),cards=$$('.fc',sc);
+    await wait(900+cards.length*60);
+    for(const c of cards){c.classList.add('flip');sfx.flip();if(c.classList.contains('lose'))setTimeout(()=>c.classList.add('shown'),520);await wait(330)}
+    await wait(500);
+    $('.head',sc).classList.add('in');
+    if(wolves){clawSlash(sc);replay(sc,'shake');sfx.lose();$$('.howl',sc).forEach(h=>h.classList.add('go'))}else sfx.win();
+    await wait(4500);
+  },
+};
+
+/* scene catalogue + UI */
+const SCENE_LIST=[
+  {id:'night',label:'1 · Night + countdown',run:o=>S.night(stage,o),note:'<b>Đêm 30s, 5s cuối là đếm ngược.</b> Số khổng lồ đập vào màn hình mỗi giây, viền đỏ đập như tim và nhanh dần (tối đa 2 nhịp/giây, đã dưới ngưỡng 3 chớp/giây), trăng ngả dần sang đỏ, rung nhẹ ở 2 giây cuối. Hết giờ: chớp sáng một lần và chữ DAWN. Bên dưới, mọi người đều ngủ giống nhau, không có gì lộ role. <span class="dur">NIGHT 30s</span>'},
+  {id:'dawnKill',label:'2 · Dawn: someone is killed',run:o=>S.dawnKill(stage),note:'<b>Bình minh có người chết (~7,4s).</b> Chân dung nạn nhân phóng to giữa màn hình → ba vệt vuốt → va chạm: rung, chớp đỏ, máu bắn, máu chảy xuống từ mép trên → tiêu đề đập vào. Chỉ danh tính nạn nhân hiện ra, role vẫn ẩn. <span class="dur">DAWN 8s</span> đủ chứa chuỗi này.'},
+  {id:'dawnSafe',label:'3 · Dawn: no one died',run:o=>S.dawnSafe(stage),note:'<b>Mặt trời mọc, chim bay qua.</b> Đây là <b>animation duy nhất</b> cho cả hai trường hợp: Guard cứu được hoặc sói không tấn công ai. Không có khiên, tia lửa hay chặn vuốt, nên không ai suy ra được gì. <span class="dur">DAWN 8s</span>'},
+  {id:'discussion',label:'4 · Day: discussion',run:o=>S.discussion(stage),note:'<b>Thảo luận.</b> Mặt trời là đồng hồ vòng. Chân dung của người đang được nhắc tới sáng lên với bong bóng "đang nói" (ở đây là minh hoạ ngẫu nhiên; app thật không biết ai đang nói nên có thể bỏ). <span class="dur">DISCUSSION 3 min</span> <i class="guess">(mình đoán)</i>'},
+  {id:'vote',label:'5 · Day: vote',run:o=>S.vote(stage),note:'<b>Chỉ hiện số phiếu.</b> Viên đá rơi từ trên cao xuống, <b>không bay từ người vote</b>, nên không lộ ai vote cho ai. Mỗi người có sẵn đúng "4 ô cần có" (nửa số người sống, làm tròn lên); đủ ô thì viền đỏ nhịp nhưng chưa ai bị loại tới khi hết giờ. Có một lần đổi phiếu (viên đá bay lên và rơi sang người khác). <span class="dur">VOTE 60s</span>'},
+  {id:'verdict',label:'6 · Verdict: banished',run:o=>S.verdict(stage,{victim:'Khoa'}),note:'<b>Phán quyết (stage mới).</b> Đèn rọi quét quanh vòng chân dung, chậm dần rồi khoá vào một người: sóng xung kích và rung. Ngọn nến của họ tắt, khói bay lên, chân dung vỡ thành mảnh rồi thành tro. Hiệu ứng <b>y hệt cho sói và dân</b>. Role không hiện. <span class="dur">VERDICT ~9s</span>'},
+  {id:'verdictTie',label:'6b · Verdict: nobody',run:o=>S.verdict(stage,{tie:true}),note:'<b>Không ai đạt ngưỡng, hoặc hoà.</b> Đèn rọi chao đảo giữa hai người rồi tắt, nến chập chờn nhưng vẫn cháy. Dùng chung cho cả hai trường hợp. <span class="dur">VERDICT ~7s</span>'},
+  {id:'finalV',label:'7 · Final: Village wins',run:o=>S.final(stage,{winner:'village'}),note:'<b>Dân thắng.</b> Bình minh vàng, tia nắng xoay, đom đóm bay lên. Thẻ úp lần lượt lật từng người để lộ role; thẻ sói xám đi. Sau đó tiêu đề đập vào.'},
+  {id:'finalW',label:'7b · Final: Wolves win',run:o=>S.final(stage,{winner:'wolves'}),note:'<b>Sói thắng.</b> Trăng máu, sương đỏ, sóng hú toả ra từ mặt trăng. Thẻ lật lần lượt; thẻ dân bị cào xước. Tiêu đề đập vào kèm ba vệt vuốt và rung.'},
+];
+let current=null;
+function setActive(id){$$('#sceneChips .chip').forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.id===id)));const s=SCENE_LIST.find(x=>x.id===id);$('#sceneNote').innerHTML=s?`<span>🎬</span><span>${s.note}</span>`:''}
+async function playScene(id){
+  const s=SCENE_LIST.find(x=>x.id===id);current=id;runId++;setActive(id);
+  try{await s.run()}catch(e){if(e!=='cancelled')console.error(e)}
+}
+async function playAll(){
+  runId++;current=null;
+  const go=async(id,fn)=>{setActive(id);await fn()};
+  try{
+    await go('night',()=>S.night(stage,{fast:true}));
+    await go('dawnKill',()=>S.dawnKill(stage));
+    await go('discussion',()=>S.discussion(stage,{secs:4,ms:800}));
+    await go('vote',()=>S.vote(stage,{ms:700}));
+    await go('verdict',()=>S.verdict(stage,{victim:'Khoa'}));
+    setActive(null);await S.later(stage);
+    await go('finalW',()=>S.final(stage,{winner:'wolves'}));
+  }catch(e){if(e!=='cancelled')console.error(e)}
+}
+(function initScenes(){
+  const box=$('#sceneChips');
+  SCENE_LIST.forEach(s=>{const b=document.createElement('button');b.className='chip';b.dataset.id=s.id;b.textContent=s.label;b.setAttribute('aria-pressed','false');b.onclick=()=>playScene(s.id);box.appendChild(b)});
+  const r=document.createElement('button');r.className='chip';r.textContent='↻ Replay';r.onclick=()=>current&&playScene(current);box.appendChild(r);
+  $('#playAll').onclick=playAll;
+  S.poster(stage);
+})();
+
+/* ═════════════ PHONES ═════════════ */
+const sbar=(time='21:40')=>`<div class="sb"><span>${time}</span><span class="notch"></span><span>5G</span></div>`;
+const device=({id,cap,tools='',body,cls='',time})=>`<figure class="device" id="${id}"><div class="dev-tools">${tools}</div><div class="phone"><div class="screen ${cls}"><div class="bg-fill"></div>${sbar(time)}${body}</div></div><figcaption>${cap}</figcaption></figure>`;
+const rbtn=(id,label='↻ Replay')=>`<button class="btn sm" data-replay="${id}">${label}</button>`;
+const timers=new WeakMap();
+const T=(dev,fn,ms)=>{const a=timers.get(dev)||[];a.push(setTimeout(fn,ms));timers.set(dev,a)};
+const clearT=dev=>{(timers.get(dev)||[]).forEach(clearTimeout);timers.set(dev,[])};
+const scr=dev=>$('.screen',dev);
+const PH={};            // id -> {play(dev)}
+const phones=[];        // html strings in display order
+
+/* ---- 1. Role reveal: hold-to-reveal card (the app's existing secret-card pattern) ---- */
+(function(){
+  const front=r=>{const R=ROLE[r];return `<div class="f front" style="--rc:${R.color}">${ICON[r].replace('class="ic"','class="ic big"')}<h3>${R.label}</h3><p>${R.blurb}</p>${r==='werewolf'?'<span class="pack">Your pack: Vy</span>':''}</div>`};
+  const tools=['werewolf','villager','seer','guard'].map((r,i)=>`<button class="chip" data-role="${r}" aria-pressed="${i===0}">${ROLE[r].label}</button>`).join('')+rbtn('ph-reveal');
+  phones.push(device({id:'ph-reveal',cls:'rv play',tools,
+    cap:'<b>Nhận role.</b> Thẻ úp giống nhau cho mọi role; phải <b>giữ ngón tay</b> mới lật (như thẻ bí mật có sẵn của app), thả ra là úp lại. Mặt thẻ mở có khung, nền và độ sáng <b>giống hệt cho mọi role</b>, không phát sáng; màu role chỉ ở nét icon và tên role. Thanh bên dưới cạn dần trong 10 giây.',
+    body:`<div class="pbar"><span class="me">An</span><span class="gclock">Role reveal</span></div>
+      <div class="pbody"><div class="gtitle"><span class="h">Your role</span><span class="s">Hold the card to look. Let go to hide it.</span></div>
+      <div class="rcard" tabindex="0" role="button" aria-label="Hold to reveal your role"><div class="in"><div class="f back">${ICON.seer.replace('class="ic"','class="ic eye"')}<b>Hold to reveal</b><span>Keep your screen out of sight</span></div>${front('werewolf')}</div></div>
+      <div class="hide-bar"><i></i></div><div class="vp-hint">Hides itself in 10 seconds</div></div>`}));
+  PH['ph-reveal']={
+    init(dev){
+      const card=$('.rcard',dev),open=v=>card.classList.toggle('open',v);
+      card.addEventListener('pointerdown',e=>{e.preventDefault();open(true);sfx.flip()});
+      ['pointerup','pointerleave','pointercancel'].forEach(ev=>card.addEventListener(ev,()=>open(false)));
+      card.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();open(!card.classList.contains('open'))}});
+      $$('[data-role]',dev).forEach(b=>b.onclick=()=>{$$('[data-role]',dev).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('.f.front',dev).outerHTML=front(b.dataset.role);open(false)});
+    },
+    play(dev){const s=scr(dev);replay(s,'play');$('.rcard',dev).classList.remove('open')},
+  };
+})();
+
+/* ---- 2–5. Night: ONE shell for every role ---- */
+(function(){
+  const nrow=(p,{me=false,dis=false,tag=''}={})=>`<div class="nopt ${dis?'dis':''}" data-n="${p.n}">${mini(p)}<span>${me?'You':p.n}</span>${tag}</div>`;
+  const rows=(me,kind)=>{
+    const out=[nrow(byName(me),{me:true,dis:kind!=='guard',tag:kind==='guard'?'<span class="tag">1 left</span>':''})];
+    CAST.filter(p=>p.n!==me).forEach(p=>{let o={};
+      if(kind==='wolf'&&p.r==='werewolf')o={dis:true,tag:'<span class="tag pack">Packmate</span>'};
+      if(kind==='wolf'&&p.n==='Linh')o={tag:'<span class="tag pack">Vy chose</span>'};
+      out.push(nrow(p,o))});
+    return out.join('');
+  };
+  const body=(me,kind,power)=>`<div class="stars"></div><div class="pbar"><span class="me">${me}</span><span class="moonmini"><svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="46"/><circle class="prg" cx="50" cy="50" r="46" pathLength="100" style="stroke-dasharray:63 100"/></svg><i></i></span><span class="gclock" data-clk>0:19</span></div>
+    <div class="pbody"><div class="gtitle"><span class="h">Night 2</span><span class="s">Choose before dawn</span></div><div class="nlist">${rows(me,kind)}</div><div class="resbox"><div class="res" data-res>${power.i}</div></div>
+    <div class="power" style="--c:${ROLE[power.r].color}">${ic(power.r)}<span>${power.t}</span></div></div>`;
+  const defs=[
+    {id:'ph-wolf',me:'Khoa',kind:'wolf',r:'werewolf',i:'Pack is choosing…',t:'Werewolf: vote with your pack on who to attack. Ties are random.',
+      cap:'<b>Đêm · Werewolf.</b> Sói thấy đồng bọn (chip "Packmate") và phiếu của họ. Nền, độ sáng, bố cục <b>y hệt</b> mọi role khác.'},
+    {id:'ph-seer',me:'Mai',kind:'seer',r:'seer',i:'Choose who to inspect',t:'Seer: pick one player to inspect. You only learn werewolf or not.',
+      cap:'<b>Đêm · Seer.</b> Chọn một người, kết quả hiện ngay và <b>khoá luôn</b> (một lần mỗi đêm). Chỉ có hai kết quả: "Werewolf" hoặc "Not a werewolf". Kết quả nằm trong ô trạng thái <b>cùng kích thước, cùng màu, không animation</b> với ô của ba role còn lại. Thử chọn Khoa rồi Linh (Replay giữa hai lần).'},
+    {id:'ph-guard',me:'Bao',kind:'guard',r:'guard',i:'Choose who to protect',t:'Guard: protect one player. You may protect yourself once per game.',
+      cap:'<b>Đêm · Guard.</b> Có hàng "You" bật được với nhãn "1 left" (tự bảo vệ một lần). Người khác thì hàng này mờ, để bố cục giống nhau. Guard <b>không</b> được báo cứu thành công hay không.'},
+    {id:'ph-vill',me:'An',kind:'villager',r:'villager',i:'Sleeping…',t:'No power tonight. Taps are decoys: they change nothing.',
+      cap:'<b>Đêm · Villager.</b> <i class="guess">(mình đề xuất)</i> Dân cũng có danh sách bấm được nhưng <b>không gửi gì</b>, để cả lớp đều bấm điện thoại ở mỗi đêm. Nếu chỉ sói/seer/guard bấm thì người ngồi cạnh nhìn là đoán được.'},
+  ];
+  defs.forEach(d=>{
+    phones.push(device({id:d.id,cls:'nshell',time:'21:40',tools:rbtn(d.id)+`<button class="btn sm" data-last5="${d.id}">▶ Last 5s</button>`,cap:d.cap,body:body(d.me,d.kind,d)}));
+    PH[d.id]={
+      init(dev){
+        stars($('.stars',dev),34,4);
+        const panel=$('[data-res]',dev);
+        dev.addEventListener('click',e=>{
+          const row=e.target.closest('.nopt');if(!row||row.classList.contains('dis'))return;
+          const n=row.dataset.n;
+          if(d.kind==='seer'){
+            if(dev.dataset.locked)return;dev.dataset.locked='1';
+            row.classList.add('sel');$$('.nopt',dev).forEach(r=>{if(r!==row)r.classList.add('dis')});
+            const wolf=byName(n).r==='werewolf';
+            setTimeout(()=>{panel.innerHTML=`<b>${wolf?'Werewolf':'Not a werewolf'}</b><small>${n} · locked for tonight</small>`},450);return;
+          }
+          if(d.kind==='wolf'){$$('.tag.mine',dev).forEach(x=>x.remove());row.insertAdjacentHTML('beforeend','<span class="tag pack mine">You</span>');panel.textContent=`You chose ${n}`}
+          if(d.kind==='guard')panel.textContent=n===d.me?'Protecting yourself (last time)':`Protecting ${n}`;
+          if(d.kind==='villager')panel.textContent=`Dreaming of ${n}`;
+          $$('.nopt.sel',dev).forEach(r=>r.classList.remove('sel'));row.classList.add('sel');sfx.drop();
+        });
+      },
+      play(dev){clearT(dev);delete dev.dataset.locked;scr(dev).classList.remove('final5');$('[data-res]',dev).textContent=d.i;
+        $$('.nopt',dev).forEach(r=>{r.classList.remove('sel');const me=r.querySelector('span:nth-child(2)').textContent==='You';const pack=r.textContent.includes('Packmate');
+          r.classList.toggle('dis',(me&&d.kind!=='guard')||pack)});$$('.tag.mine',dev).forEach(x=>x.remove())},
+      last5(dev){clearT(dev);const s=scr(dev),clk=$('[data-clk]',dev);s.classList.add('final5');
+        for(let n=5;n>=0;n--)T(dev,()=>{clk.textContent=fmt(n);$('.prg',dev).style.strokeDasharray=`${n/30*100} 100`;if(n)sfx.beat();if(!n){s.classList.remove('final5');clk.textContent='0:00'}},(5-n)*1000)},
+    };
+  });
+})();
+
+/* ---- 6. Dawn: you were killed (blood) ---- */
+(function(){
+  phones.push(device({id:'ph-killed',cls:'kill',time:'06:02',tools:rbtn('ph-killed'),
+    cap:'<b>Bình minh · bạn bị giết.</b> Vuốt cào qua màn hình, rung, máu bắn và chảy từ mép trên, nhịp tim thành đường thẳng. Chỉ máy người bị giết có màn này (cả lớp thấy tên trên màn chiếu). Role của họ vẫn ẩn tới cuối game.',
+    body:`<div class="fxp"></div><div class="ctr"><h2>YOU WERE KILLED</h2><p>The werewolves got you in the night.</p>
+      <svg class="ecg" viewBox="0 0 300 40" preserveAspectRatio="none"><path pathLength="1" d="M0 22H34L42 22L48 6L56 36L62 22H100L106 22L112 4L121 38L128 22H165L171 22L176 12L182 30L188 22H300"/></svg>
+      <button class="btn">Keep watching</button><small>You can still see the game, but you can't act.</small></div>`}));
+  PH['ph-killed']={play(dev){
+    clearT(dev);const s=scr(dev),fx=$('.fxp',dev);fx.innerHTML='';s.classList.remove('show','dead');
+    T(dev,()=>{clawSlash(fx);sfx.claw()},400);
+    T(dev,()=>{replay(s,'shake');bloodSplat(fx,50,17,66);bloodSplat(fx,12,44,40,{delay:90});bloodSplat(fx,88,50,38,{delay:150,droplets:16});bloodSplat(fx,70,90,34,{delay:210,droplets:12});bloodCurtain(fx,8,2.6);sfx.splat();s.classList.add('dead')},900);
+    T(dev,()=>s.classList.add('show'),1800);
+  }};
+})();
+
+/* ---- 6b. Dawn: someone else was killed (what every surviving player sees; identical for every role) ---- */
+(function(){
+  const v=byName('Linh');
+  phones.push(device({id:'ph-news',cls:'kill news',time:'06:02',tools:rbtn('ph-news'),
+    cap:'<b>Bình minh · người khác bị giết.</b> Đây là màn hình mà <b>mọi người còn sống</b> thấy (sói, dân, Seer, Guard đều giống hệt). Chỉ có một vệt máu nhỏ và vài giọt chảy, tiết chế hơn màn của nạn nhân. Role của nạn nhân không hiện.',
+    body:`<div class="fxp"></div><div class="ctr"><div class="pt rel" style="--c:${v.c};--sz:84px"><span class="av" style="--c:${v.c};background:${avBg(v)}">${face(v)}<span class="xe">✕ ✕</span></span></div>
+      <h2 style="font-size:28px">LINH WAS KILLED</h2><p>The werewolves struck in the night.</p><span class="tag" style="margin:6px 0 0">7 players still alive</span></div>`}));
+  PH['ph-news']={play(dev){
+    clearT(dev);const s=scr(dev),fx=$('.fxp',dev);fx.innerHTML='';s.classList.remove('show','dead');$('.pt',dev).classList.remove('dead');
+    T(dev,()=>{s.classList.add('show');$('.pt',dev).classList.add('dead');sfx.splat();bloodSplat(fx,50,26,34,{droplets:14});bloodCurtain(fx,5,1.6)},500);
+  }};
+})();
+
+/* ---- 7. Dawn: nobody died (identical for "guard saved" and "no attack") ---- */
+(function(){
+  phones.push(device({id:'ph-safe',cls:'dsafe play',time:'06:02',tools:rbtn('ph-safe'),
+    cap:'<b>Bình minh · không ai chết.</b> Cùng một animation dù Guard đã cứu hay sói không tấn công, kể cả trên máy Guard. Không khiên, không tia lửa.',
+    body:`<div class="sunp"></div><div class="ctr"><h2>NO ONE DIED</h2><p>Everyone survived the night.</p></div>`}));
+  PH['ph-safe']={play(dev){replay(scr(dev),'play')}};
+})();
+
+/* ---- 8. Day: discussion ---- */
+(function(){
+  phones.push(device({id:'ph-talk',cls:'day',time:'06:03',tools:rbtn('ph-talk'),
+    cap:'<b>Ban ngày · thảo luận.</b> Mặt trời là đồng hồ vòng. Điện thoại chỉ cần nhìn, mọi người nói to với nhau ngoài đời.',
+    body:`<div class="pbar"><span class="me">An</span><span class="gclock">Day 3</span></div><div class="pbody"><div class="gtitle"><span class="h">Talk it out</span><span class="s">Who is acting like a werewolf?</span></div>
+      <div class="sunring"><svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="46" style="stroke-width:5"/><circle class="prg" cx="50" cy="50" r="46" pathLength="100" style="stroke-width:5;stroke-dasharray:88 100;stroke:#ffd36b;filter:none"/></svg><i></i><b data-t>2:38</b></div>
+      <div class="alive-grid">${ALIVE7.map(p=>`<div class="dopt">${mini(p)}${p.n==='An'?'You':p.n}</div>`).join('')}</div>
+      <div class="tlk"><span>💬</span>Voting opens when the timer ends.</div></div>`}));
+  PH['ph-talk']={play(dev){clearT(dev);const b=$('[data-t]',dev),prg=$('.prg',dev);
+    for(let i=0;i<8;i++)T(dev,()=>{const t=158-i;b.textContent=fmt(t);prg.style.strokeDasharray=`${t/180*100} 100`},i*1000)}};
+})();
+
+/* ---- 9. Day: vote (totals only; your own pebble drops in) ---- */
+(function(){
+  const NEED=4,base={Khoa:3,Tuan:1},mine={v:null};
+  const others=ALIVE7.filter(p=>p.n!=='An');
+  const slots=(n,counts,fresh)=>Array.from({length:NEED},(_,i)=>`<i class="pb${i<(counts[n]||0)?(fresh===n&&i===(counts[n]-1)?' new':''):' ph'}"></i>`).join('');
+  const row=(p,counts,sel,fresh)=>`<div class="dopt ${sel?'sel':''}" data-n="${p.n}">${mini(p)}${p.n}<span class="pbs">${slots(p.n,counts,fresh)}</span></div>`;
+  phones.push(device({id:'ph-vote',cls:'day',time:'06:06',tools:rbtn('ph-vote'),
+    cap:'<b>Ban ngày · vote.</b> Chỉ thấy <b>số phiếu</b> của từng người, không thấy ai vote ai. Bấm lại để đổi phiếu tới khi hết giờ; viên đá của bạn rơi vào hàng được chọn. Mỗi hàng có sẵn 4 ô "cần có".',
+    body:`<div class="pbar"><span class="me">An</span><span class="gclock">Vote · <span data-t>0:38</span></span></div><div class="pbody"><div class="gtitle"><span class="h">Who is a werewolf?</span><span class="s">Pick one player</span></div>
+      <div class="need2">Needed to banish <b>${NEED}</b> of 7 alive</div><div class="nlist" data-rows>${others.map(p=>row(p,base,false)).join('')}</div>
+      <div class="vp-hint" style="margin-top:auto">Only totals are public. You can change your vote until the timer ends.</div></div>`}));
+  PH['ph-vote']={
+    init(dev){
+      dev.addEventListener('click',e=>{const r=e.target.closest('.dopt');if(!r||!r.dataset.n)return;
+        const counts={...base};if(r.dataset.n===mine.v)return;mine.v=r.dataset.n;counts[mine.v]=(counts[mine.v]||0)+1;
+        $('[data-rows]',dev).innerHTML=others.map(p=>row(p,counts,p.n===mine.v,mine.v)).join('');sfx.drop()});
+    },
+    play(dev){clearT(dev);mine.v=null;$('[data-rows]',dev).innerHTML=others.map(p=>row(p,base,false)).join('');
+      const b=$('[data-t]',dev);for(let i=0;i<8;i++)T(dev,()=>{b.textContent=fmt(38-i)},i*1000)},
+  };
+})();
+
+/* ---- 10. Verdict (phone): same candle + shatter, same for every role ---- */
+(function(){
+  phones.push(device({id:'ph-verdict',cls:'vd',time:'06:08',tools:rbtn('ph-verdict'),
+    cap:'<b>Phán quyết.</b> Bản thu nhỏ của cảnh trên màn chiếu: nến tắt, chân dung vỡ thành mảnh và tro. Giống hệt cho sói và dân; role không hiện.',
+    body:`<div class="pbody" style="justify-content:center"><div class="gtitle" style="text-align:center"><span class="s" style="letter-spacing:.2em;text-transform:uppercase">The village has decided…</span></div>
+      <div class="stagep"><div class="pbig"></div></div>
+      <div class="ctr2"><h2>KHOA IS BANISHED</h2><p>4 of 7 votes</p><small>Their role stays hidden until the game ends.</small></div></div>`}));
+  PH['ph-verdict']={play(dev){
+    clearT(dev);const s=scr(dev),host=$('.pbig',dev);s.classList.remove('show');$$('.shard,.ash,.smoke',host).forEach(x=>x.remove());
+    host.innerHTML=pt(byName('Khoa'));const p=$('.pt',host);
+    T(dev,()=>{p.classList.add('out');const sm=document.createElement('i');sm.className='smoke';sm.style.cssText='left:calc(50% - 6px);top:-4px';host.appendChild(sm);sfx.lock()},900);
+    T(dev,()=>{shatter(p);p.classList.add('gone');sfx.shatter()},1400);
+    T(dev,()=>s.classList.add('show'),1900);
+  }};
+})();
+
+/* ---- 11. Spectator ---- */
+(function(){
+  phones.push(device({id:'ph-spec',cls:'ghost',time:'06:12',
+    cap:'<b>Đã bị loại.</b> Vẫn xem được ai còn sống, nhưng không nói, không bấm. Role người khác vẫn ẩn tới cuối game.',
+    body:`<div class="pbar"><span class="me" style="color:var(--muted)">Linh</span><span class="gclock">Day 3</span></div><div class="pbody">
+      <div class="ghostfig">👻</div><div class="gtitle" style="text-align:center"><span class="h" style="color:var(--muted)">You're out</span><span class="s">Watch quietly. No talking, no voting.</span></div>
+      <div class="watch"><span class="lbl">Still in (7)</span><div class="dots">${ALIVE7.map(p=>`<span class="dotp">${mini(p)}${p.n}</span>`).join('')}</div></div>
+      <div class="watch"><span class="lbl">Out</span><div class="dots"><span class="dotp out">${mini(byName('Linh'))}Linh</span></div></div>
+      <div class="watch"><span class="lbl">Now</span><b style="font-family:var(--font-display)">Discussion · <span class="mono" style="color:var(--accent)">2:11</span></b></div></div>`}));
+})();
+
+/* ---- 12. Late joiner waiting for dawn ---- */
+(function(){
+  phones.push(device({id:'ph-pend',cls:'wait',time:'21:44',tools:'',
+    cap:'<b>Vào giữa ván.</b> Người vào muộn thấy chiếc đèn lồng chờ ở cổng làng. Avatar của họ là avatar mặc định (app khoá việc chỉnh avatar từ lúc host chọn game). Role do host chọn (mặc định Villager) và chỉ hiện khi họ bước vào lúc bình minh. Không ai biết role đó do host chọn.',
+    body:`<div class="stars"></div><div class="pbar"><span class="me" style="display:flex;align-items:center;gap:8px">${mini(QUANG)}Quang</span><span class="gclock">Night 2</span></div><div class="pbody">
+      <div class="lantern"><i class="rope"></i><i class="lamp"></i><i class="gate"></i></div>
+      <div class="gtitle" style="text-align:center"><span class="h">The gates open at dawn</span><span class="s">You'll join the village when morning comes.</span></div>
+      <div class="power" style="--c:#ffb547"><span class="icw">${ICON.moon}</span><span>You're in the lobby. Your role will be revealed when you enter the game.</span></div></div>`}));
+  PH['ph-pend']={init(dev){stars($('.stars',dev),30,4)}};
+})();
+
+/* ---- 13. Game over (phone) ---- */
+(function(){
+  const rows=wolves=>CAST.map((p,i)=>`<div style="--i:${i}">${mini(p)}${p.n}<span class="tag" style="color:${ROLE[p.r].color};background:color-mix(in oklab,${ROLE[p.r].color} 18%,transparent)">${ROLE[p.r].label}</span></div>`).join('');
+  const build=won=>`<div class="confetti">${won?[...Array(26)].map(()=>`<i style="left:${rand(0,100).toFixed(0)}%;background:${pick(['#ffb547','#2be38b','#9b85ff','#00e5c7','#ff4d7a'])};animation-duration:${rand(3,6).toFixed(1)}s;animation-delay:${rand(0,3).toFixed(1)}s"></i>`).join(''):''}</div>
+    <div class="pbody" style="padding-top:18px;gap:12px"><div class="t">${won?'YOU WIN!':'YOU LOSE'}</div><div class="sub">${won?'The village found every werewolf.':'The werewolves took the village.'}</div><div class="rl">${rows()}</div></div>`;
+  phones.push(device({id:'ph-final',cls:'fin won',time:'06:30',tools:`<button class="chip" data-fin="won" aria-pressed="true">Won</button><button class="chip" data-fin="lost" aria-pressed="false">Lost</button>`,
+    cap:'<b>Kết thúc.</b> Thắng: pháo giấy rơi, màn xanh. Thua: màn đỏ, không pháo. Cả hai đều lật toàn bộ role từng người, lần lượt.',
+    body:build(true)}));
+  PH['ph-final']={init(dev){$$('[data-fin]',dev).forEach(b=>b.onclick=()=>{const won=b.dataset.fin==='won';$$('[data-fin]',dev).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    const s=scr(dev);s.classList.toggle('won',won);s.classList.toggle('lost',!won);$$('.confetti,.pbody',s).forEach(x=>x.remove());s.insertAdjacentHTML('beforeend',build(won));won?sfx.win():sfx.lose()})}};
+})();
+
+/* mount phones, wire controls, auto-play the first time each phone scrolls into view */
+(function mountPhones(){
+  $('#phoneGrid').innerHTML=phones.join('');
+  Object.entries(PH).forEach(([id,h])=>{const dev=document.getElementById(id);if(h.init)h.init(dev)});
+  document.addEventListener('click',e=>{
+    const r=e.target.closest('[data-replay]');if(r){PH[r.dataset.replay].play(document.getElementById(r.dataset.replay))}
+    const l=e.target.closest('[data-last5]');if(l){PH[l.dataset.last5].last5(document.getElementById(l.dataset.last5))}
+  });
+  $('#all5').onclick=()=>['ph-wolf','ph-seer','ph-guard','ph-vill'].forEach(id=>PH[id].last5(document.getElementById(id)));
+  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){io.unobserve(en.target);const h=PH[en.target.id];if(h&&h.play&&!/^ph-(wolf|seer|guard|vill)$/.test(en.target.id))h.play(en.target)}}),{threshold:.6});
+  Object.keys(PH).forEach(id=>io.observe(document.getElementById(id)));
+})();
+
+/* ═════════════ HOST CONSOLE ═════════════ */
+(function hostConsole(){
+  const ORDER=['werewolf','villager','seer','guard'];
+  const MIN=5;
+  const roles=Object.fromEntries(CAST.map(p=>[p.n,p.r]));
+  const validate=()=>{
+    const n=CAST.length,w=Object.values(roles).filter(r=>r==='werewolf').length;
+    if(n<MIN)return`Need at least ${MIN} players (have ${n}).`;
+    if(w<1)return'Add at least one Werewolf.';
+    if(w>=n-w)return'Werewolves must be fewer than everyone else.';
+    return null;
+  };
+  const seg=(n,r)=>`<div class="seg4">${ORDER.map(k=>`<button style="--rc:${ROLE[k].color}" aria-pressed="${k===r}" data-set="${n}:${k}" title="${ROLE[k].label}" aria-label="${n}: ${ROLE[k].label}">${ICON[k]}</button>`).join('')}</div>`;
+  function setup(){
+    const err=validate(),cnt=k=>Object.values(roles).filter(r=>r===k).length;
+    $('#hostSetup').innerHTML=`<div class="hf-h"><div><div class="lbl">Host · Setup</div><div class="code">K7PQ2M</div></div><div class="sp"><span class="gclock">${CAST.length} players</span></div></div>
+      <div class="hf-b"><h3 class="hf-t">Werewolf</h3>
+        <div class="counts">${ORDER.map(k=>`<span class="cnt-chip" style="--rc:${ROLE[k].color}">${ic(k)}${ROLE[k].label} <b class="mono">${cnt(k)}</b></span>`).join('')}</div>
+        <div class="banner ${err?'bad':'ok'}">${err?'⚠':'✓'}<span>${err||'Roles look good. Starting deals them out and locks them.'}</span></div>
+        <div class="plist">${CAST.map(p=>`<div class="prow">${mini(p)}<span class="nm2">${p.n}</span><i class="on" title="online"></i>${seg(p.n,roles[p.n])}</div>`).join('')}</div>
+        <button class="btn primary lg" ${err?'disabled':''} id="hostStart">▶ Start game</button>
+        <span class="secret-note">🔒 Only the host sees this screen. Roles are fixed once the game starts, except for late joiners.</span></div>`;
+    $('#hostStart').onclick=()=>{sfx.beat();$('#hostStart').textContent='Dealing roles…'};
+  }
+  $('#hostSetup').addEventListener('click',e=>{const b=e.target.closest('[data-set]');if(!b)return;const[n,r]=b.dataset.set.split(':');roles[n]=r;setup()});
+  setup();
+
+  /* god view */
+  let tab='night';const pendingRole={v:'villager'};
+  const dead=()=>tab==='night'?new Set():new Set(['Linh']);
+  const grid=()=>`<div class="hgrid">${CAST.map(p=>{const d=dead().has(p.n),acts=['werewolf','seer','guard'].includes(p.r)&&tab==='night';
+    return`<div class="hp ${d?'dead':''}" style="--rc:${ROLE[p.r].color}">${mini(p)}<span class="nm3">${p.n}</span><span class="rb">${ic(d?'skull':p.r)}${d?'':ROLE[p.r].label}</span>${acts?'<span class="acted">✓ acted</span>':''}</div>`}).join('')}</div>`;
+  const side=()=>{
+    if(tab==='night')return`<div class="panel2"><h4>Tonight, live</h4>
+        <div class="line">${ic('werewolf')}<b>Wolves</b> Khoa<span class="arrow">→</span>Linh · Vy<span class="arrow">→</span>Linh <span class="tag pack">Linh leads 2–0</span></div>
+        <div class="line">${ic('seer')}<b>Seer</b> Mai inspects Vy <span class="tag bad">Werewolf</span></div>
+        <div class="line">${ic('guard')}<b>Guard</b> Bao protects Linh <span class="tag">self-protect: 1 left</span></div></div>
+      <div class="panel2"><h4>Outcome if the night ended now</h4><div class="line"><span>Linh is protected, so <b>no one dies</b>. Players and the projector will see "No one died".</span></div></div>`;
+    const v={Khoa:4,Tuan:2,An:0};const NEED=4;
+    return`<div class="panel2"><h4>Votes · needs ${NEED} of 7</h4>${Object.entries(v).map(([n,k])=>`<div class="vbar ${k>=NEED?'reach':''}"><span>${n}</span><div class="tr"><i data-w="${k/NEED*100}"></i><b style="left:100%"></b></div><span>${k}/${NEED}</span></div>`).join('')}</div>
+      <div class="panel2"><h4>Who voted for whom (host only)</h4>
+        <div class="line"><span class="arrow">Mai</span>→ Khoa · <span class="arrow">Bao</span>→ Khoa · <span class="arrow">An</span>→ Khoa · <span class="arrow">Vy</span>→ Khoa</div>
+        <div class="line"><span class="arrow">Khoa</span>→ Tuan · <span class="arrow">Hieu</span>→ Tuan</div></div>
+      <div class="secret-note">🔒 Players and the projector only see the totals.</div>`;
+  };
+  function god(){
+    const night=tab==='night';
+    $('#hostGod').innerHTML=`<div class="hf-h"><div><div class="lbl">Host · God view</div><div class="code">K7PQ2M</div></div>
+        <div class="sp"><span class="phase ${night?'night':'day'}">${night?'NIGHT 2':'DAY 3 · VOTE'}</span><span class="gclock">${night?'0:19':'0:38'}</span></div></div>
+      <div class="hf-b"><div class="tabs"><button aria-pressed="${night}" data-tab="night">Night</button><button aria-pressed="${!night}" data-tab="vote">Vote</button></div>
+        ${grid()}${side()}
+        <div class="pending"><div class="top">${mini(QUANG)}Quang <span class="tag" style="margin-left:6px">joined mid-game</span><span class="tag ok" style="margin-left:auto">enters at dawn</span></div>
+          <div class="line" style="justify-content:space-between"><span style="color:var(--muted);font-size:13px">Role when they enter (default Villager)</span>${seg('Quang',pendingRole.v)}</div></div></div>`;
+    requestAnimationFrame(()=>$$('.vbar i',$('#hostGod')).forEach(i=>i.style.width=i.dataset.w+'%'));
+  }
+  $('#hostGod').addEventListener('click',e=>{
+    const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;god();return}
+    const b=e.target.closest('[data-set^="Quang:"]');if(b){pendingRole.v=b.dataset.set.split(':')[1];god()}
+  });
+  god();
+})();
+//@@HOST_JS
+</script>
+</body></html>

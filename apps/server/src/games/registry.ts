@@ -6,6 +6,7 @@ import whosTheSpy from "@cangsplayground/game-whos-the-spy";
 import sharkTank from "@cangsplayground/game-shark-tank";
 import guessTheCharacter from "@cangsplayground/game-guess-the-character";
 import murderMystery from "@cangsplayground/game-murder-mystery";
+import werewolf from "@cangsplayground/game-werewolf";
 
 export const registry = new Map<string, GameModule>([
   [freeTalk.id, freeTalk],
@@ -14,4 +15,5 @@ export const registry = new Map<string, GameModule>([
   [sharkTank.id, sharkTank],
   [guessTheCharacter.id, guessTheCharacter],
   [murderMystery.id, murderMystery],
+  [werewolf.id, werewolf],
 ]);

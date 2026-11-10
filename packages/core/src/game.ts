@@ -100,6 +100,12 @@ export interface GameModule<Config = any, Data = any, Shared = any> {
   /** Core validates group plans against this (GRP-10, edge case "too few players"). */
   minPlayersPerGroup: number;
   maxPlayersPerGroup?: number;
+  /**
+   * When true the whole lobby plays one game: `prepare` puts every player into exactly one group
+   * (no group assignment step), and players who join while the game is ACTIVE are added to that
+   * group and announced through {@link GameModule.onSharedPlayerJoined}. Omitted means false.
+   */
+  wholeLobby?: boolean;
   /** Shown on the game card, e.g. "3–6 per group". */
   recommended: string;
   /** Controls with no effect for this game; omitted means all are supported. */
@@ -144,6 +150,12 @@ export interface GameModule<Config = any, Data = any, Shared = any> {
   ): Shared;
   /** A player connected or disconnected (roster.connected changed). */
   onSharedRosterChange?(args: SharedArgs<Config, Shared>): Shared;
+  /**
+   * A new player joined while the game is ACTIVE. Only called for `wholeLobby` games; the player is
+   * already in `roster` and in the single group. Returning the same reference means no change.
+   * Reclaiming an offline player by name is not a join and does not call this.
+   */
+  onSharedPlayerJoined?(args: SharedArgs<Config, Shared> & { playerId: PlayerId }): Shared;
   /**
    * Optional: deadlines the server must wake the module for, so timed shared state
    * advances with no client online. Recomputed after every change.
@@ -219,6 +231,7 @@ export function catalogEntry(m: GameModule) {
     description: m.description,
     minPlayersPerGroup: m.minPlayersPerGroup,
     maxPlayersPerGroup: m.maxPlayersPerGroup,
+    wholeLobby: m.wholeLobby ?? false,
     recommended: m.recommended,
     configFields: m.configFields,
     defaultConfig: m.defaultConfig as Record<string, unknown>,

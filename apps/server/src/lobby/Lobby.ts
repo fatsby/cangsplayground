@@ -214,8 +214,29 @@ export class Lobby {
       lastSeenAt: this.now(),
     };
     this.players.set(player.id, player);
+    this.admitLateJoiner(player);
     this.changed();
     return player;
+  }
+  /**
+   * A player who joins an ACTIVE whole-lobby game is put into its single group and announced to
+   * the module (`onSharedPlayerJoined`). For every other game, or while the game is not ACTIVE,
+   * the player simply stays ungrouped until the host assigns groups.
+   */
+  private admitLateJoiner(player: Player): void {
+    const game = this.game;
+    const summary = this.groups[0];
+    const runtime = game?.groups[0];
+    if (!game || game.stage !== "ACTIVE" || !game.module.wholeLobby || !summary || !runtime) return;
+    summary.playerIds.push(player.id);
+    player.groupId = summary.id;
+    runtime.turnOrder.push(player.id);
+    this.settleSharedDeadlines();
+    if (game.module.onSharedPlayerJoined)
+      game.shared = game.module.onSharedPlayerJoined({
+        ...this.sharedArgs(game),
+        playerId: player.id,
+      });
   }
   updateAvatar(playerId: string, avatar: AvatarConfig) {
     if (this.status !== "open") fail("LOBBY_CLOSED", "This lobby has ended.");
@@ -480,6 +501,7 @@ export class Lobby {
     }
     if (cmd === "prepare") {
       if (game.stage !== "CONFIGURING") fail("INVALID_STATE", "This game is already ready.");
+      if (game.module.wholeLobby) this.assign("count", 1);
       const config =
         game.module.resolveConfig?.({ config: structuredClone(game.config), rng: this.rng }) ??
         game.config;

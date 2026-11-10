@@ -217,6 +217,9 @@ importers:
       '@cangsplayground/game-shark-tank':
         specifier: workspace:*
         version: link:../../packages/games/shark-tank
+      '@cangsplayground/game-werewolf':
+        specifier: workspace:*
+        version: link:../../packages/games/werewolf
       '@cangsplayground/game-whos-the-spy':
         specifier: workspace:*
         version: link:../../packages/games/whos-the-spy
@@ -263,6 +266,9 @@ importers:
       '@cangsplayground/game-shark-tank':
         specifier: workspace:*
         version: link:../../packages/games/shark-tank
+      '@cangsplayground/game-werewolf':
+        specifier: workspace:*
+        version: link:../../packages/games/werewolf
       '@cangsplayground/game-whos-the-spy':
         specifier: workspace:*
         version: link:../../packages/games/whos-the-spy
@@ -467,6 +473,25 @@ importers:
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/games/werewolf:
+    dependencies:
+      '@cangsplayground/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@cangsplayground/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
